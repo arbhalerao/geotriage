@@ -1,0 +1,8 @@
+[tool.black]
+line-length = 200
+target-version = ["py312"]
+exclude = "backend/alembic/versions/"
+
+[tool.pytest.ini_options]
+pythonpath = ["backend"]
+testpaths = ["backend/tests"]
