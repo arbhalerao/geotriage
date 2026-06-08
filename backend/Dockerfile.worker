@@ -1,0 +1,28 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libffi-dev \
+    gdal-bin \
+    libgdal-dev \
+    python3-dev \
+    docker-cli \
+    && rm -rf /var/lib/apt/lists/*
+
+# The contract is vendored as a wheel (see backend/vendor/README.md), so this build
+# needs no registry, no network beyond the package index, and no sibling checkout.
+COPY backend/requirements.app.txt backend/requirements.worker.txt ./backend/
+COPY backend/vendor/*.whl /tmp/
+RUN pip install --no-cache-dir -r backend/requirements.app.txt -r backend/requirements.worker.txt /tmp/*.whl \
+    && rm -f /tmp/*.whl
+
+COPY backend/ .
+RUN rm -rf vendor
+
+COPY backend/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["python", "-m", "worker.run_worker"]

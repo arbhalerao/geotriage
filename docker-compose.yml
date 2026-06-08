@@ -1,0 +1,112 @@
+name: geotriage
+
+services:
+  # Infrastructure
+  postgres:
+    image: postgis/postgis:15-3.4
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-geotriage}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-geotriage}
+      POSTGRES_DB: ${POSTGRES_DB:-geotriage}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    configs:
+      - source: postgis_init
+        target: /docker-entrypoint-initdb.d/10_postgis.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-geotriage} -d ${POSTGRES_DB:-geotriage}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    restart: unless-stopped
+
+  titiler:
+    image: ghcr.io/developmentseed/titiler:latest
+    ports:
+      - "8080:80"
+    environment:
+      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-minioadmin}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      AWS_S3_ENDPOINT: minio:9000
+      AWS_HTTPS: "NO"
+      AWS_VIRTUAL_HOSTING: "FALSE"
+      GDAL_DISABLE_READDIR_ON_OPEN: "EMPTY_DIR"
+      CPL_VSIL_CURL_USE_HEAD: "FALSE"
+      CPL_VSIL_CURL_ALLOWED_EXTENSIONS: ".tif,.TIF,.tiff"
+      MOSAIC_CONCURRENCY: "1"
+    depends_on:
+      minio: { condition: service_started }
+    restart: unless-stopped
+
+  # Application services
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.api
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${RUN_SCRATCH_HOST:-./.run-scratch}:/run-scratch
+    environment:
+      RUN_SCRATCH: /run-scratch
+      RUN_SCRATCH_HOST: ${RUN_SCRATCH_HOST:-./.run-scratch}
+    ports: ["8000:8000"]
+    env_file: .env
+    depends_on:
+      postgres: { condition: service_healthy }
+      minio: { condition: service_started }
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.worker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${RUN_SCRATCH_HOST:-./.run-scratch}:/run-scratch
+    env_file: .env
+    environment:
+      SKIP_MIGRATIONS: "true"
+      RUN_SCRATCH: /run-scratch
+      RUN_SCRATCH_HOST: ${RUN_SCRATCH_HOST:-./.run-scratch}
+    depends_on:
+      postgres: { condition: service_healthy }
+      minio: { condition: service_started }
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    ports: ["3000:3000"]
+    depends_on:
+      api: { condition: service_started }
+      titiler: { condition: service_started }
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  minio_data:
+
+configs:
+  postgis_init:
+    content: |
+      CREATE EXTENSION IF NOT EXISTS postgis;
+      CREATE EXTENSION IF NOT EXISTS postgis_topology;
