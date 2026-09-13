@@ -10,10 +10,11 @@ This is the *contract*, not the catalogue.
 Adding a model or a provider is a container image registered through the API and never touches this directory.
 Refresh it only when the contract itself changes.
 
-|        |                                                                    |
-| ------ | ------------------------------------------------------------------ |
-| wheel  | `geotriage_sdk-0.1.0-py3-none-any.whl`                             |
-| sha256 | `2582c7bc7740ec7ec57ad1fb42cd273193d40d296e33ca77fca8dbb009d1c74b` |
+|            |                                                                    |
+| ---------- | ------------------------------------------------------------------ |
+| wheel      | `geotriage_sdk-0.1.0-py3-none-any.whl`                             |
+| sha256     | `eed506c5126b7d9052385e7d54908b54fa67af8fb4070252bdb21583208b52d9` |
+| built from | `7c571399977d8f81681aefbe2407424006643203`                         |
 
 ## Refreshing it
 
