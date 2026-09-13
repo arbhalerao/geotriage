@@ -3,11 +3,11 @@ from types import SimpleNamespace
 
 import pytest
 
-from core.db.models.enums import Severity, WorkflowStatus
+from core.db.models.enums import Severity, WorkflowItemStatus, WorkflowStatus
 from core.db.models.thresholds import ThresholdConfig
 from core.db.models.workflow import Workflow
 from pipeline.discover import cloud_ceiling
-from pipeline.finalize import is_due, workflow_status
+from pipeline.finalize import is_due, is_stranded, workflow_status
 from pipeline.score import apply_threshold, severity_rank, worst_severity
 
 
@@ -71,6 +71,36 @@ def test_some_scenes_failing_completes_with_errors():
 
 def test_no_failures_completes_cleanly():
     assert workflow_status(total=5, failed=0) == WorkflowStatus.completed
+
+
+@pytest.mark.parametrize(
+    "status",
+    [
+        WorkflowItemStatus.queued,
+        WorkflowItemStatus.screening,
+        WorkflowItemStatus.fetching,
+        WorkflowItemStatus.uploading,
+        WorkflowItemStatus.scoring,
+    ],
+)
+def test_a_scene_still_mid_pipeline_at_finalize_is_stranded(status):
+    """a signer that raised left scenes `fetching` and the workflow reading `completed`"""
+    assert is_stranded(status)
+
+
+@pytest.mark.parametrize(
+    "status",
+    [
+        WorkflowItemStatus.processed,
+        WorkflowItemStatus.screened_out,
+        WorkflowItemStatus.failed,
+        WorkflowItemStatus.fetch_failed,
+        WorkflowItemStatus.upload_failed,
+        WorkflowItemStatus.score_failed,
+    ],
+)
+def test_a_scene_that_reached_an_outcome_is_not_stranded(status):
+    assert not is_stranded(status)
 
 
 def test_a_workflow_never_checked_is_due():

@@ -7,6 +7,12 @@ from sqlalchemy.orm import Session
 from core.db.models.enums import TimeMode, WorkflowItemStatus, WorkflowStatus
 from core.db.models.results import WorkflowItem
 from core.db.models.workflow import Workflow
+from pipeline.stage import fail_runs_for_item
+
+SETTLED_ITEM_STATUSES = {
+    WorkflowItemStatus.processed,
+    WorkflowItemStatus.screened_out,
+}
 
 FAILED_ITEM_STATUSES = {
     WorkflowItemStatus.failed,
@@ -31,16 +37,34 @@ def workflow_status(total: int, failed: int) -> WorkflowStatus:
     return WorkflowStatus.completed
 
 
+def is_stranded(status: WorkflowItemStatus) -> bool:
+    """
+    finalize only runs once every job for the workflow has ended,
+    so a scene still mid-pipeline was abandoned by a job that died without marking it
+    """
+    return status not in SETTLED_ITEM_STATUSES and status not in FAILED_ITEM_STATUSES
+
+
 def finalize_workflow(db: Session, workflow_id: uuid.UUID) -> None:
     workflow = db.get(Workflow, workflow_id)
     if workflow is None:
         return
 
-    statuses = db.execute(select(WorkflowItem.status).where(WorkflowItem.workflow_id == workflow_id)).scalars().all()
-    total = len(statuses)
-    failed = sum(1 for s in statuses if s in FAILED_ITEM_STATUSES)
-
     now = datetime.now(timezone.utc)
+    items = db.execute(select(WorkflowItem).where(WorkflowItem.workflow_id == workflow_id)).scalars().all()
+
+    # otherwise the scene reads `fetching` forever beside a workflow that says it finished
+    for item in items:
+        if is_stranded(item.status):
+            message = f"abandoned while {item.status.value}: its jobs ended without finishing it"
+            item.status = WorkflowItemStatus.failed
+            item.error_message = item.error_message or message
+            item.processed_at = now
+            fail_runs_for_item(db, item.id, message)
+
+    total = len(items)
+    failed = sum(1 for item in items if item.status not in SETTLED_ITEM_STATUSES)
+
     workflow.status = workflow_status(total, failed)
     workflow.error_message = f"{failed}/{total} items failed" if failed else None
     workflow.completed_at = now

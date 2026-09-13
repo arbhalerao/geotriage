@@ -178,12 +178,14 @@ def stage_bands(workflow_item_id: uuid.UUID, session_factory=get_session) -> uui
             item.status = WorkflowItemStatus.fetching
             db.commit()
 
-            # one signing round-trip for the whole scene, not one per band
-            names = list(assets)
-            signed = dict(zip(names, provider.sign([assets[n]["href"] for n in names])))
-
             staged: list[tuple[str, str]] = []
             try:
+                # inside the try, because the item is already `fetching`:
+                # a signer that raises outside it strands the scene there with its runs still queued
+                # one signing round-trip for the whole scene, not one per band
+                names = list(assets)
+                signed = dict(zip(names, provider.sign([assets[n]["href"] for n in names])))
+
                 for name, asset in assets.items():
                     array, transform, crs = load_band(
                         asset["href"],
