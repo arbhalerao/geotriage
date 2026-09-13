@@ -89,7 +89,7 @@ def claim_due_workflows(db: Session, now: datetime | None = None) -> list[uuid.U
     candidates = (
         db.execute(
             select(Workflow).where(
-                Workflow.time_mode == TimeMode.fixed_future,
+                Workflow.time_mode == TimeMode.recurring,
                 Workflow.poll_interval_minutes.isnot(None),
                 Workflow.status.in_(_RESTARTABLE),
             )

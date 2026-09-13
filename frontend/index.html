@@ -1,16 +1,6 @@
 <!doctype html>
-<html lang="en" class="light">
+<html lang="en">
   <head>
-    <script>
-      // Apply the saved theme before first paint to avoid a flash of the wrong theme.
-      (function () {
-        try {
-          var t = localStorage.getItem("geotriage-theme") === "dark" ? "dark" : "light";
-          document.documentElement.classList.toggle("dark", t === "dark");
-          document.documentElement.classList.toggle("light", t === "light");
-        } catch (e) {}
-      })();
-    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Geotriage</title>

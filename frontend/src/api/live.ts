@@ -38,7 +38,8 @@ function keysFor(change: Change): QueryKey[] {
         ? [["registered", "model"], ["models"]]
         : [["registered", "provider"], ["collections"], ["models"]];
     case "queue":
-      return [["worker-status"]];
+      // nothing on screen reads the queue yet; the Infra page will once its backend exists
+      return [];
   }
 }
 

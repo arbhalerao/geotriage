@@ -1,201 +1,228 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "../api/client";
 import { useRegistered } from "../api/queries";
+import { CheckItem, Collapsible, Panel, Rows } from "./Panel";
+import { ToneText } from "./StatusBadge";
+import type { Tone } from "../status";
 import type { AdmissionResponse, Registered } from "../api/types";
+import { formatDateTime } from "../time";
 
 type Kind = "model" | "provider";
 
-function CheckRow({ name, passed, detail }: { name: string; passed: boolean; detail: string }) {
-  const pending = detail.startsWith("queued");
-  const mark = pending ? "…" : passed ? "✓" : "✕";
-  const tone = pending
-    ? "text-gray-500"
-    : passed
-      ? "text-green-600 dark:text-green-400"
-      : "text-red-600 dark:text-red-400";
+function Rejection({ image, problems, onDismiss }: { image: string; problems: string[]; onDismiss: () => void }) {
   return (
-    <li className="flex gap-2 items-baseline">
-      <span className={`font-mono ${tone}`}>{mark}</span>
-      <span className="text-gray-700 dark:text-gray-300">{name}</span>
-      {detail && <span className="text-gray-500 break-all">— {detail}</span>}
-    </li>
+    <div role="alert" className="mt-4 rounded-lg border border-red-200 bg-red-50/60 text-sm">
+      <div className="flex items-start gap-3 px-4 pt-3">
+        <div className="min-w-0 flex-1">
+          <p className="font-semibold text-red-800">Couldn't add this image</p>
+          <p className="font-mono text-xs text-gray-600 break-all">{image}</p>
+        </div>
+        <button
+          type="button"
+          onClick={onDismiss}
+          aria-label="Dismiss"
+          className="shrink-0 w-6 h-6 flex items-center justify-center rounded text-gray-500 hover:text-gray-800 hover:bg-white/70 transition-colors"
+        >
+          ×
+        </button>
+      </div>
+      <ul className="mx-4 mt-3 mb-4 space-y-2">
+        {[...new Set(problems)].map((p) => (
+          <li key={p} className="rounded border border-red-200 bg-white px-3 py-2 text-red-800 break-words">
+            {p}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
-function AddForm({ kind, onDone }: { kind: Kind; onDone: () => void }) {
+function AddForm({ kind, onAdded, onClose }: { kind: Kind; onAdded: () => void; onClose: () => void }) {
   const [image, setImage] = useState("");
-  const [result, setResult] = useState<AdmissionResponse | null>(null);
-
+  const [submitted, setSubmitted] = useState("");
+  const [problems, setProblems] = useState<string[] | null>(null);
   const register = useMutation({
-    mutationFn: () => api.post<AdmissionResponse>(`/${kind}s`, { image: image.trim() }),
+    mutationFn: (ref: string) => api.post<AdmissionResponse>(`/${kind}s`, { image: ref }),
     onSuccess: (data) => {
-      setResult(data);
-      if (data.admitted) {
-        setImage("");
-        onDone();
-      }
+      if (!data.admitted) return setProblems(data.problems);
+      onAdded();
     },
   });
 
   return (
-    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-5 mb-6">
-      <h2 className="text-sm font-semibold mb-1">Add a {kind}</h2>
-      <p className="text-xs text-gray-500 mb-4">
-        The image is pulled, asked to describe itself, and checked against the contract before it
-        is accepted. Build it <code className="font-mono">FROM geotriage/sdk</code> — see the
-        authoring guide.
-      </p>
+    <div
+      className="bg-white border border-gray-200 rounded-lg p-5 mb-6"
+      onKeyDown={(e) => {
+        if (e.key === "Escape") onClose();
+      }}
+    >
+      <h2 className="text-sm font-semibold mb-3">Add a {kind}</h2>
 
       <form
         className="flex flex-wrap gap-2 items-start"
         onSubmit={(e) => {
           e.preventDefault();
-          setResult(null);
-          register.mutate();
+          setProblems(null);
+          setSubmitted(image.trim());
+          register.mutate(image.trim());
         }}
       >
         <input
           id={`${kind}-image`}
           value={image}
-          onChange={(e) => setImage(e.target.value)}
-          placeholder={kind === "model" ? "acme/ship-detector:1.2" : "acme/archive:1.0"}
+          // going back to the input means the error has been read; typing covers the case where focus never left it
+          onFocus={() => setProblems(null)}
+          onChange={(e) => {
+            setImage(e.target.value);
+            setProblems(null);
+          }}
+          placeholder="Enter the Docker image name and tag"
+          aria-label={`${kind} image`}
           required
-          className="flex-1 min-w-56 text-sm px-2 py-1.5 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-950 font-mono"
+          autoFocus
+          disabled={register.isPending}
+          className="flex-1 min-w-56 bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm font-mono focus:outline-none focus:border-brand-500 disabled:text-gray-500"
         />
 
         <button
           type="submit"
           disabled={register.isPending || !image.trim()}
-          className="text-sm px-3 py-1.5 bg-blue-800 hover:bg-blue-700 disabled:opacity-50 text-blue-100 rounded transition-colors"
+          className="text-sm px-4 py-2 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white rounded transition-colors"
         >
-          {register.isPending ? "Checking…" : "Check & add"}
+          Add
         </button>
       </form>
 
-      {register.isPending && (
-        <p className="mt-3 text-xs text-gray-500">Running the image — this takes a few seconds.</p>
-      )}
+      <div role="status" aria-live="polite">
+        {register.isPending && <Progress>Checking the image…</Progress>}
+      </div>
 
       {register.isError && (
-        <p className="mt-3 text-xs text-red-500">
+        <p className="mt-3 text-xs text-red-700">
           The request failed: {(register.error as Error).message}
         </p>
       )}
 
-      {result && (
-        <div
-          className={`mt-4 rounded border px-4 py-3 text-xs ${
-            result.admitted
-              ? "border-green-300 dark:border-green-900 bg-green-50 dark:bg-green-950/40"
-              : "border-red-300 dark:border-red-900 bg-red-50 dark:bg-red-950/40"
-          }`}
-        >
-          <p className="font-medium mb-2">
-            {result.admitted ? "Added" : "Rejected — the image was not added"}
-          </p>
-          <ul className="space-y-1">
-            {result.checks.map((c) => (
-              <CheckRow key={c.name} {...c} />
-            ))}
-          </ul>
-          {result.problems.length > 0 && (
-            <ul className="mt-3 space-y-1 text-red-700 dark:text-red-300">
-              {result.problems.map((p, i) => (
-                <li key={i}>{p}</li>
-              ))}
-            </ul>
-          )}
-        </div>
-      )}
+      {problems && <Rejection image={submitted} problems={problems} onDismiss={() => setProblems(null)} />}
     </div>
   );
 }
 
-function RegisteredCard({ kind, entry, onRemove }: { kind: Kind; entry: Registered; onRemove: () => void }) {
+function Progress({ children }: { children: ReactNode }) {
+  return (
+    <p className="mt-3 flex items-center gap-2 text-sm text-gray-600">
+      <span className="w-4 h-4 rounded-full border-2 border-gray-300 border-t-brand-600 animate-spin" aria-hidden />
+      {children}
+    </p>
+  );
+}
+
+const STATUS: Record<string, { label: string; tone: Tone }> = {
+  ready: { label: "Ready", tone: "good" },
+  testing: { label: "Testing", tone: "progress" },
+  failed: { label: "Failed", tone: "bad" },
+};
+
+export type CardDetails = {
+  declared: [string, ReactNode][];
+  sections?: ReactNode;
+};
+
+const CHECK_LABELS: Record<string, string> = {
+  describe: "Built on the geotriage SDK",
+  declarations: "Declarations are valid",
+  "smoke run": "Scores a test scene",
+  "smoke screen": "Screens a test scene",
+  collections: "Collections not already taken",
+};
+
+function CheckList({ checks }: { checks: { name: string; passed: boolean; detail: string }[] }) {
+  return (
+    <ul className="space-y-1">
+      {checks.map((c) => (
+        <CheckItem key={c.name} state={c.detail.startsWith("queued") ? "queued" : c.passed ? "passed" : "failed"}>
+          {CHECK_LABELS[c.name] ?? c.name}
+        </CheckItem>
+      ))}
+    </ul>
+  );
+}
+
+function RegisteredCard({ entry, details, onRemove }: { entry: Registered; details: CardDetails; onRemove: () => void }) {
   // a disabled model is either still being smoke-tested or has failed it
   // those look the same in is_enabled alone, and telling a user "running" forever would be a lie
   const pending = !entry.is_enabled && entry.admission?.smoke_pending === true;
   const failed = !entry.is_enabled && !pending;
+  const status = STATUS[entry.is_enabled ? "ready" : pending ? "testing" : "failed"];
   const problems = entry.admission?.problems ?? [];
-  const d = entry.descriptor as Record<string, unknown>;
-  const requires = (d.requires ?? {}) as { bands?: string[] };
-  const scores = Object.keys((d.scores ?? {}) as Record<string, unknown>);
-  const collections = Object.keys((d.collections ?? {}) as Record<string, unknown>);
+  const checks = entry.admission?.checks ?? [];
+  const description = typeof entry.descriptor.description === "string" ? entry.descriptor.description : "";
 
   return (
-    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg px-5 py-4">
-      <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm font-semibold">{entry.name}</span>
-            {pending && (
-              <span className="text-xs px-1.5 py-0.5 rounded bg-yellow-100 dark:bg-yellow-900/60 text-yellow-700 dark:text-yellow-300">
-                smoke test running
-              </span>
-            )}
-            {failed && (
-              <span className="text-xs px-1.5 py-0.5 rounded bg-red-100 dark:bg-red-900/60 text-red-700 dark:text-red-300">
-                failed its smoke test
-              </span>
-            )}
-            {entry.is_enabled && (
-              <span className="text-xs px-1.5 py-0.5 rounded bg-green-100 dark:bg-green-900/60 text-green-700 dark:text-green-300">
-                ready
-              </span>
-            )}
-          </div>
-          <p className="text-xs text-gray-500 font-mono mt-1 break-all">{entry.image}</p>
-          <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
-            <span className="font-mono">{entry.slug}</span>
-            {kind === "model" ? (
-              <>
-                {" · bands "}
-                {(requires.bands ?? []).join(", ")}
-                {" · scores "}
-                {scores.join(", ")}
-              </>
-            ) : (
-              <>
-                {" · collections "}
-                {collections.join(", ")}
-              </>
-            )}
-          </p>
-        </div>
+    <Panel
+      title={entry.name}
+      subtitle={entry.slug}
+      actions={
         <button
+          type="button"
           onClick={onRemove}
-          className="shrink-0 text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-red-900 text-gray-600 dark:text-gray-400 hover:text-red-300 rounded transition-colors"
+          className="text-sm px-2.5 py-1 rounded text-gray-500 hover:text-red-700 hover:bg-red-50 transition-colors"
         >
           Remove
         </button>
-      </div>
+      }
+    >
+      <Collapsible title="Details" defaultOpen>
+        {description && <p className="text-sm text-gray-600 mb-4 max-w-3xl">{description}</p>}
+        <Rows
+          rows={[
+            ...details.declared,
+            ["Image", entry.image],
+            ["Added", formatDateTime(entry.registered_at)],
+          ]}
+        />
+      </Collapsible>
 
-      {failed && problems.length > 0 && (
-        <div className="mt-3 rounded border border-red-300 dark:border-red-900 bg-red-50 dark:bg-red-950/40 px-3 py-2 text-xs text-red-700 dark:text-red-300">
-          <p className="font-medium mb-1">Why it was disabled</p>
-          {problems.map((p, i) => (
-            <p key={i} className="whitespace-pre-wrap break-words font-mono">
-              {p}
-            </p>
-          ))}
-          <p className="mt-2 text-red-600/80 dark:text-red-400/80">
-            Fix the image, rebuild it, and add the same slug again to replace it.
-          </p>
-        </div>
-      )}
-    </div>
+      {/* a failure opens it, since its errors need reading */}
+      <Collapsible title="Status" defaultOpen={failed} summary={<ToneText tone={status.tone}>{status.label}</ToneText>}>
+        {checks.length > 0 ? <CheckList checks={checks} /> : <p className="text-sm text-gray-500">No checks recorded.</p>}
+        {failed && problems.length > 0 && (
+          <div className="mt-3 rounded border border-red-200 bg-red-50/60 px-3 py-2.5 text-sm text-red-800">
+            {problems.map((p, i) => (
+              <p key={i} className="whitespace-pre-wrap break-words font-mono text-xs">
+                {p}
+              </p>
+            ))}
+            <p className="mt-2 text-xs text-red-700/80">Fix the image, rebuild it, and add it again to replace this one.</p>
+          </div>
+        )}
+      </Collapsible>
+
+      {details.sections}
+    </Panel>
   );
 }
 
-export default function RegistrySection({ kind }: { kind: Kind }) {
+export default function RegistrySection({
+  kind,
+  adding,
+  onClose,
+  details,
+}: {
+  kind: Kind;
+  adding: boolean;
+  onClose: () => void;
+  details: (entry: Registered) => CardDetails;
+}) {
   const queryClient = useQueryClient();
   const { data: entries, isLoading } = useRegistered(kind);
 
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: ["registered", kind] });
-    // the catalogue only lists what a workflow can select, so it moves too
-    queryClient.invalidateQueries({ queryKey: [kind === "model" ? "models" : "collections"] });
+    // model compatibility depends on which providers exist, so both catalogues move
+    queryClient.invalidateQueries({ queryKey: ["models"] });
+    queryClient.invalidateQueries({ queryKey: ["collections"] });
   };
 
   const remove = useMutation({
@@ -205,19 +232,27 @@ export default function RegistrySection({ kind }: { kind: Kind }) {
 
   return (
     <section className="mb-10">
-      <AddForm kind={kind} onDone={invalidate} />
+      {adding && (
+        <AddForm
+          kind={kind}
+          onAdded={() => {
+            invalidate();
+            onClose();
+          }}
+          onClose={onClose}
+        />
+      )}
 
       {isLoading && <p className="text-gray-500 text-sm">Loading…</p>}
       {!isLoading && !entries?.length && (
-        <p className="text-gray-500 text-sm">
-          No {kind}s yet. Add one above, or run <code className="font-mono">make builtins</code> in
-          the geotriage-sdk repo and restart to get the defaults.
-        </p>
+        <div className="text-center py-20 text-gray-500">
+          <p>No {kind}s yet.</p>
+        </div>
       )}
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         {entries?.map((e) => (
-          <RegisteredCard key={e.id} kind={kind} entry={e} onRemove={() => remove.mutate(e.id)} />
+          <RegisteredCard key={e.id} entry={e} details={details(e)} onRemove={() => remove.mutate(e.id)} />
         ))}
       </div>
     </section>

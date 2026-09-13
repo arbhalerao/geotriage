@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
+import { BASEMAP_OPTIONS, showEnglishLabels } from "./basemap";
 
 type DrawMode = "polygon" | "rectangle" | "point";
 
@@ -51,27 +52,9 @@ export default function Map({ geometry, onDraw, onClear, className = "" }: MapPr
 
     const map = new maplibregl.Map({
       container: containerRef.current,
-      style: {
-        version: 8,
-        sources: {
-          "osm-tiles": {
-            type: "raster",
-            tiles: [
-              "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
-              "https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
-              "https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
-              "https://d.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
-            ],
-            tileSize: 256,
-            attribution: "© OpenStreetMap contributors © CARTO",
-          },
-        },
-        layers: [{ id: "osm", type: "raster", source: "osm-tiles" }],
-      },
-      center: [78.96, 20.59],
-      zoom: 2,
-      attributionControl: false,
+      ...BASEMAP_OPTIONS,
     });
+    showEnglishLabels(map);
     mapRef.current = map;
     map.addControl(new maplibregl.NavigationControl({ showZoom: false, showCompass: true }), "top-right");
 
@@ -326,31 +309,17 @@ export default function Map({ geometry, onDraw, onClear, className = "" }: MapPr
     <div className="relative">
       <div ref={containerRef} className={`rounded-lg overflow-hidden ${className}`} />
 
-      {/* mode toolbar + clear — shown while drawing */}
       {onDraw && (
         <div className="absolute top-2 left-2 flex gap-1 z-10">
           {!isDone && (
             <>
               {(["rectangle", "point", "polygon"] as DrawMode[]).map((m) => (
-                <button key={m} type="button" onClick={() => switchMode(m)}
-                  title={m === "rectangle" ? "Draw bounding box (two clicks)" : m === "polygon" ? "Draw polygon (click points)" : "Place a point"}
-                  className={`p-1.5 rounded border transition-colors ${mode === m
-                    ? "bg-blue-700 border-blue-500 text-white"
-                    : "bg-gray-900/90 border-gray-600 text-gray-300 hover:bg-gray-800"
+                <button key={m} type="button" onClick={() => switchMode(m)} aria-pressed={mode === m}
+                  className={`px-2.5 py-1 rounded border text-xs shadow-sm transition-colors ${mode === m
+                    ? "bg-brand-50 border-brand-500 text-brand-700"
+                    : "bg-white/95 border-gray-300 text-gray-700 hover:border-gray-400"
                     }`}>
-                  {m === "rectangle" ? (
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-                      <rect x="2" y="4" width="12" height="8" rx="0.5" />
-                    </svg>
-                  ) : m === "polygon" ? (
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-                      <polygon points="8,2 14,6 12,13 4,13 2,6" />
-                    </svg>
-                  ) : (
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                      <circle cx="8" cy="8" r="3.5" />
-                    </svg>
-                  )}
+                  {m === "rectangle" ? "Box" : m === "polygon" ? "Polygon" : "Point"}
                 </button>
               ))}
             </>
@@ -359,13 +328,13 @@ export default function Map({ geometry, onDraw, onClear, className = "" }: MapPr
             <>
               {polyCount > 0 && (
                 <button type="button" onClick={handleUndo}
-                  className="px-2.5 py-1 text-xs bg-gray-900/90 border border-gray-600 text-gray-200 rounded hover:bg-gray-800 transition-colors">
-                  ↩ Undo ({polyCount})
+                  className="px-2.5 py-1 text-xs bg-white/95 border border-gray-300 text-gray-700 rounded shadow-sm hover:border-gray-400 transition-colors">
+                  Undo ({polyCount})
                 </button>
               )}
               <button type="button" onClick={handleReset}
-                className="px-2.5 py-1 text-xs bg-gray-900/90 border border-red-700 text-red-300 rounded hover:bg-red-950/60 transition-colors">
-                ✕ Clear
+                className="px-2.5 py-1 text-xs bg-white/95 border border-gray-300 text-gray-700 rounded shadow-sm hover:text-red-700 hover:border-red-300 hover:bg-red-50 transition-colors">
+                Clear
               </button>
             </>
           )}
@@ -375,7 +344,7 @@ export default function Map({ geometry, onDraw, onClear, className = "" }: MapPr
       {/* hint bar at bottom */}
       {onDraw && !isDone && (
         <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
-          <span className="px-2.5 py-1 text-xs bg-gray-900/80 text-gray-400 rounded whitespace-nowrap">
+          <span className="px-2.5 py-1 text-xs bg-white/95 border border-gray-200 text-gray-600 rounded shadow-sm whitespace-nowrap">
             {mode === "point"
               ? "Click to place a point"
               : mode === "rectangle"

@@ -152,9 +152,9 @@ def discover(db: Session, workflow_id: uuid.UUID) -> Plan:
     aoi_shape = to_shape(aoi.geometry)
     aoi_filter_mode = workflow.aoi_filter_mode or "intersects"
 
-    # for fixed_future incremental runs, search only from last_checked_at forward
+    # a recurring workflow's later runs search only from last_checked_at forward
     search_time_start = workflow.time_start
-    if workflow.time_mode == TimeMode.fixed_future and workflow.last_checked_at:
+    if workflow.time_mode == TimeMode.recurring and workflow.last_checked_at:
         search_time_start = workflow.last_checked_at
 
     collections = db.execute(select(WorkflowCollection).where(WorkflowCollection.workflow_id == workflow_id)).scalars().all()

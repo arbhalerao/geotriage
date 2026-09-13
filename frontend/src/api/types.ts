@@ -1,22 +1,8 @@
-export interface BandInfo {
-  normalized_name: string;
-  asset_key: string;
-  description: string;
-  scale: number;
-  offset: number;
-}
-
 export interface CollectionInfo {
   slug: string;
   display_name: string;
-  description: string;
   processing_level: string;
-  sensor_type: string;
   resolution_m: number;
-  cloud_cover_property: string | null;
-  bands: BandInfo[];
-  provider_slug: string;
-  provider_name: string;
 }
 
 export interface ThresholdBand {
@@ -34,7 +20,6 @@ export interface ModelInfo {
   slug: string;
   name: string;
   description: string;
-  primary_score: string;
   required_bands: string[];
   derived_rasters: string[];
   max_cloud_cover: number | null;
@@ -43,7 +28,7 @@ export interface ModelInfo {
   compatible_collections: Record<string, { level: string; reasons: string[] }>;
 }
 
-export interface WorkflowSummary {
+interface WorkflowBase {
   id: string;
   name: string;
   description: string | null;
@@ -55,6 +40,13 @@ export interface WorkflowSummary {
   updated_at: string;
 }
 
+export interface WorkflowSummary extends WorkflowBase {
+  total_items: number;
+  processed_items: number;
+  identified_items: number;
+  failed_items: number;
+}
+
 export interface ModelConfigResponse {
   id: string;
   model_slug: string;
@@ -62,7 +54,7 @@ export interface ModelConfigResponse {
   parameters: Record<string, unknown> | null;
 }
 
-export interface Workflow extends WorkflowSummary {
+export interface Workflow extends WorkflowBase {
   aoi_id: string;
   aoi_geometry: GeoJSON.Geometry;
   aoi_filter_mode: string;
@@ -101,7 +93,6 @@ export interface WorkflowItemSummary {
   overall_severity: string | null;
   discovered_at: string;
   processed_at: string | null;
-  is_bookmarked: boolean;
   bbox: number[] | null;
 }
 
@@ -130,25 +121,9 @@ export interface ModelRun {
   scores: ModelScore[];
 }
 
-export interface Review {
-  id: string;
-  review_status: string;
-  notes: string | null;
-  reviewed_at: string | null;
-  updated_at: string;
-}
-
 export interface WorkflowItemDetail extends WorkflowItemSummary {
   stac_item: StacItem;
   model_runs: ModelRun[];
-  review: Review | null;
-}
-
-export interface Bookmark {
-  id: string;
-  workflow_item_id: string;
-  notes: string | null;
-  created_at: string;
 }
 
 export interface TimeseriesPoint {
@@ -163,33 +138,6 @@ export interface TimeseriesPoint {
 export interface TimeseriesResponse {
   available_scores: string[];
   points: TimeseriesPoint[];
-}
-
-export interface WorkerActiveTask {
-  id: string;
-  name: string;
-  args: unknown[];
-  worker: string | null;
-  attempts: number;
-  time_start?: string | null; // ISO datetime
-}
-
-export interface WorkerQueuedTask {
-  id: string;
-  name: string;
-  args: unknown[];
-  status: string; // "ready" | "blocked"
-  run_after?: string | null; // ISO datetime
-}
-
-export interface WorkerStatus {
-  workers: string[];
-  active_tasks: WorkerActiveTask[];
-  queued_tasks: WorkerQueuedTask[];
-  total_active: number;
-  total_queued: number;
-  counts: Record<string, number>;
-  error?: string;
 }
 
 export interface Registered {

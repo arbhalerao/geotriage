@@ -138,7 +138,7 @@ async def register_model(body: ImageRegister, db: AsyncSession = Depends(get_db)
     # and the queued job needs to name it
     await db.flush()
     db.add(build_job("smoke_test_model", [str(row.id)], max_attempts=1))
-    checks.append(AdmissionCheck(name="smoke run", passed=False, detail="queued — runs in the worker"))
+    checks.append(AdmissionCheck(name="smoke run", passed=False, detail="queued, runs in the worker"))
 
     await db.commit()
     await db.refresh(row)

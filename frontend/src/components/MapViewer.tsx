@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import maplibregl from "maplibre-gl";
+import { BASEMAP_OPTIONS, showEnglishLabels } from "./basemap";
 
 export interface MapViewerItem {
   id: string;
@@ -23,7 +24,7 @@ const RASTER_LAYER_ID = "cog-overlay-layer";
 
 const SEVERITY_COLORS: Record<string, string> = {
   green: "#22c55e",
-  yellow: "#eab308",
+  yellow: "#f59e0b",
   red: "#ef4444",
 };
 
@@ -63,27 +64,9 @@ export default function MapViewer({
 
     const map = new maplibregl.Map({
       container: containerRef.current,
-      style: {
-        version: 8,
-        sources: {
-          "osm-tiles": {
-            type: "raster",
-            tiles: [
-              "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
-              "https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
-              "https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
-              "https://d.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
-            ],
-            tileSize: 256,
-            attribution: "© OpenStreetMap contributors © CARTO",
-          },
-        },
-        layers: [{ id: "osm", type: "raster", source: "osm-tiles" }],
-      },
-      center: [78.96, 20.59],
-      zoom: 2,
-      attributionControl: false,
+      ...BASEMAP_OPTIONS,
     });
+    showEnglishLabels(map);
 
     map.addControl(new maplibregl.NavigationControl(), "top-right");
 

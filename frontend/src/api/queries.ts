@@ -1,17 +1,14 @@
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "./client";
 import { useLive } from "./live";
 import type {
-  Bookmark,
   CollectionInfo,
   ModelInfo,
-  Review,
   TimeseriesResponse,
   Workflow,
   WorkflowItemDetail,
   WorkflowItemPage,
   WorkflowSummary,
-  WorkerStatus,
   Registered,
 } from "./types";
 
@@ -102,6 +99,9 @@ export function useWorkflowItems(
     getNextPageParam: (last) => last.page < last.pages ? last.page + 1 : undefined,
     enabled: !!workflowId,
     refetchInterval: isRunning && !live ? 3000 : false,
+    // switching the severity filter is a new query; keep the current rows up until its results arrive,
+    // otherwise the table empties for a moment and the page jumps by its height
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -114,55 +114,11 @@ export function useWorkflowItem(workflowId: string, itemId: string) {
   });
 }
 
-export function useUpsertReview(workflowId: string, itemId: string) {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (data: { review_status: string; notes?: string }) =>
-      api.put<Review>(`/workflows/${workflowId}/items/${itemId}/review`, data),
-    onSuccess: () =>
-      qc.invalidateQueries({ queryKey: ["workflow-item", workflowId, itemId] }),
-  });
-}
-
-export function useAddBookmark(workflowId: string, itemId: string) {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: () =>
-      api.post<Bookmark>(`/workflows/${workflowId}/items/${itemId}/bookmark`),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["workflow-item", workflowId, itemId] });
-      qc.invalidateQueries({ queryKey: ["workflow-items", workflowId] });
-    },
-  });
-}
-
-export function useRemoveBookmark(workflowId: string, itemId: string) {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: () =>
-      api.delete(`/workflows/${workflowId}/items/${itemId}/bookmark`),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["workflow-item", workflowId, itemId] });
-      qc.invalidateQueries({ queryKey: ["workflow-items", workflowId] });
-    },
-  });
-}
-
 export function useWorkflowTimeseries(workflowId: string) {
   return useQuery({
     queryKey: ["workflow-timeseries", workflowId],
     queryFn: () => api.get<TimeseriesResponse>(`/workflows/${workflowId}/timeseries`),
     enabled: !!workflowId,
-  });
-}
-
-export function useWorkerStatus(enabled = true) {
-  const live = useLive((s) => s.connected);
-  return useQuery({
-    queryKey: ["worker-status"],
-    queryFn: () => api.get<WorkerStatus>("/worker/status"),
-    enabled,
-    refetchInterval: live ? false : 5000,
   });
 }
 

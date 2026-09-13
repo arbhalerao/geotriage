@@ -1,5 +1,6 @@
 import logging
 import uuid
+from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
@@ -13,7 +14,7 @@ from api.deps import get_db
 from worker.queue import build_job
 from geotriage import check_compatibility
 from core.db.models.aoi import Aoi
-from core.db.models.enums import WorkflowItemStatus, WorkflowStatus
+from core.db.models.enums import TimeMode, WorkflowItemStatus, WorkflowStatus
 from core.db.models.results import WorkflowItem
 from core.db.models.thresholds import ThresholdConfig
 from core.db.models.workflow import (
@@ -276,9 +277,33 @@ async def create_workflow(
     return await _load_response(workflow, db)
 
 
+# the pipeline has the canonical set, but importing it would pull the raster stack into the API image
+_FAILED_ITEM_STATUSES = [
+    WorkflowItemStatus.failed,
+    WorkflowItemStatus.fetch_failed,
+    WorkflowItemStatus.upload_failed,
+    WorkflowItemStatus.score_failed,
+]
+
+
 @router.get("", response_model=list[WorkflowSummary])
 async def list_workflows(db: AsyncSession = Depends(get_db)):
+    """
+    each extra detail is one grouped query across every workflow, so the list costs the same three queries
+    however many workflows there are
+    """
     rows = (await db.execute(select(Workflow).order_by(Workflow.created_at.desc()))).scalars().all()
+
+    counts: dict[uuid.UUID, dict[str, int]] = defaultdict(lambda: {"total": 0, "processed": 0, "failed": 0})
+    for workflow_id, item_status, n in (await db.execute(select(WorkflowItem.workflow_id, WorkflowItem.status, func.count()).group_by(WorkflowItem.workflow_id, WorkflowItem.status))).all():
+        counts[workflow_id]["total"] += n
+        if item_status == WorkflowItemStatus.processed:
+            counts[workflow_id]["processed"] += n
+        elif item_status in _FAILED_ITEM_STATUSES:
+            counts[workflow_id]["failed"] += n
+
+    identified = dict((await db.execute(select(WorkflowItem.workflow_id, func.count()).where(WorkflowItem.overall_severity.in_(["yellow", "red"])).group_by(WorkflowItem.workflow_id))).all())
+
     return [
         WorkflowSummary(
             id=w.id,
@@ -290,6 +315,10 @@ async def list_workflows(db: AsyncSession = Depends(get_db)):
             status=w.status,
             created_at=w.created_at,
             updated_at=w.updated_at,
+            total_items=counts[w.id]["total"],
+            processed_items=counts[w.id]["processed"],
+            identified_items=identified.get(w.id, 0),
+            failed_items=counts[w.id]["failed"],
         )
         for w in rows
     ]
@@ -349,10 +378,10 @@ async def run_workflow(workflow_id: uuid.UUID, db: AsyncSession = Depends(get_db
 @router.post("/{workflow_id}/fetch-now", response_model=WorkflowResponse)
 async def fetch_now(workflow_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
     workflow = await _get_workflow(workflow_id, db)
-    if workflow.time_mode != "fixed_future" or not workflow.poll_interval_minutes:
+    if workflow.time_mode != TimeMode.recurring or not workflow.poll_interval_minutes:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="fetch-now is only available for fixed_future workflows with a monitor interval",
+            detail="fetch-now is only available for recurring workflows",
         )
     if workflow.status == WorkflowStatus.running:
         raise HTTPException(

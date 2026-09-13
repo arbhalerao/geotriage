@@ -10,11 +10,13 @@ import {
 } from "recharts";
 import { useWorkflowTimeseries } from "../api/queries";
 import type { ModelInfo } from "../api/types";
+import { formatDate } from "../time";
+import SeverityBadge from "./SeverityBadge";
 
 const SERIES_COLORS = ["#2563eb", "#059669", "#d97706", "#7c3aed", "#dc2626", "#ea580c"];
 const SEVERITY_FILL: Record<string, string> = {
   green: "#16a34a",
-  yellow: "#eab308",
+  yellow: "#f59e0b",
   red: "#dc2626",
 };
 
@@ -90,21 +92,9 @@ function CustomTooltip(props: {
           <div key={score} className="flex items-center gap-1.5 mb-1 last:mb-0">
             <span className="inline-block w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: entry.color }} />
             <span className="text-gray-500 shrink-0">{score}:</span>
-            <span className="text-gray-900 font-mono ml-auto pl-2">{entry.value.toFixed(4)}</span>
+            <span className="text-gray-900 tabular-nums ml-auto pl-2">{entry.value.toFixed(2)}</span>
             {unit && <span className="text-gray-400">{unit}</span>}
-            {severity && (
-              <span
-                className={`ml-1 px-1.5 py-0.5 rounded text-xs font-medium ${
-                  severity === "green"
-                    ? "bg-green-100 text-green-700"
-                    : severity === "yellow"
-                    ? "bg-yellow-100 text-yellow-700"
-                    : "bg-red-100 text-red-700"
-                }`}
-              >
-                {severity}
-              </span>
-            )}
+            {severity && <span className="ml-1"><SeverityBadge severity={severity} /></span>}
           </div>
         );
       })}
@@ -127,11 +117,7 @@ export default function ScoreChart({ workflowId, models }: Props) {
       if (!byItem[p.item_id]) {
         byItem[p.item_id] = {
           ts: new Date(p.scene_datetime).getTime(),
-          label: new Date(p.scene_datetime).toLocaleDateString(undefined, {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          }),
+          label: formatDate(p.scene_datetime),
           item_id: p.item_id,
           stac_item_id: p.stac_item_id,
         };
@@ -234,7 +220,7 @@ export default function ScoreChart({ workflowId, models }: Props) {
   if (!data || chartData.length === 0) {
     return (
       <div className="h-24 flex items-center justify-center text-gray-500 text-sm">
-        No scored scenes yet — run the workflow to populate the chart.
+        No scored scenes yet. Run the workflow to populate the chart.
       </div>
     );
   }

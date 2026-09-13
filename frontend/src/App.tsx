@@ -5,7 +5,7 @@ import WorkflowDetailPage from "./pages/WorkflowDetailPage";
 import ItemDetailPage from "./pages/ItemDetailPage";
 import ModelsPage from "./pages/ModelsPage";
 import ProvidersPage from "./pages/ProvidersPage";
-import WorkerPage from "./pages/WorkerPage";
+import InfrastructurePage from "./pages/InfrastructurePage";
 import Layout from "./components/Layout";
 
 export default function App() {
@@ -20,7 +20,9 @@ export default function App() {
           <Route path="/workflows/:wfId/items/:itemId" element={<ItemDetailPage />} />
           <Route path="/models" element={<ModelsPage />} />
           <Route path="/providers" element={<ProvidersPage />} />
-          <Route path="/worker" element={<WorkerPage />} />
+          <Route path="/infra" element={<InfrastructurePage />} />
+          <Route path="/infrastructure" element={<Navigate to="/infra" replace />} />
+          <Route path="/worker" element={<Navigate to="/infra" replace />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -100,7 +100,7 @@ def _explain(image: str, command: str, result: subprocess.CompletedProcess) -> s
         return f"image '{image}' could not be pulled. Is the name right, and is it built or pushed?"
 
     if result.returncode == 127 or "executable file not found" in stderr:
-        return f"image '{image}' has no geotriage entrypoint — running '{command}' found no such " "command. An image must be built FROM a geotriage-sdk base image, which provides it."
+        return f"image '{image}' has no geotriage entrypoint: running '{command}' found no such " "command. An image must be built FROM a geotriage-sdk base image, which provides it."
 
     if result.returncode == 137:
         return f"image '{image}' was killed running '{command}', most likely by the memory cap " f"({DEFAULT_MEMORY}). Reduce what it holds in memory or raise RUN_MEMORY."

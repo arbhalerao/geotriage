@@ -1,19 +1,13 @@
 import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
-import {
-  useAddBookmark,
-  useModels,
-  useRemoveBookmark,
-  useUpsertReview,
-  useWorkflow,
-  useWorkflowItem,
-} from "../api/queries";
+import { useCollections, useModels, useWorkflow, useWorkflowItem } from "../api/queries";
 import SeverityBadge from "../components/SeverityBadge";
 import StatusBadge from "../components/StatusBadge";
 import MapViewer from "../components/MapViewer";
-
-const REVIEW_STATUSES = ["new", "reviewed", "item_of_interest", "dismissed", "false_positive", "needs_follow_up"];
+import DotLine from "../components/DotLine";
+import Section from "../components/Section";
+import { formatDate, formatDateTime } from "../time";
 
 // per-band visualization parameters for TiTiler
 // falls back to the default for unknown bands
@@ -28,6 +22,14 @@ const BAND_STYLE: Record<string, { colormap: string; rescale: string; label: str
   blue:     { colormap: "gray",    rescale: "0,0.35",       label: "Blue" },
   thermal1: { colormap: "inferno", rescale: "250,320",      label: "Thermal (K)" },
 };
+// the colormaps above as CSS gradients, sampled from their matplotlib definitions, so the legend matches the tiles
+const COLORMAP_GRADIENT: Record<string, string> = {
+  inferno: "#000004, #420a68, #932667, #dd513a, #fca50a, #fcffa4",
+  viridis: "#440154, #3b528b, #21918c, #5ec962, #fde725",
+  gray: "#000000, #ffffff",
+  rdylbu: "#a50026, #f46d43, #fee090, #e0f3f8, #74add1, #313695",
+};
+
 const BAND_STYLE_DEFAULT = { colormap: "viridis", rescale: "0,1", label: "" };
 
 function bandStyle(name: string) {
@@ -45,66 +47,114 @@ function buildRasterUrl(workflowId: string, itemId: string, band: string): strin
   return `/titiler/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?${params.toString()}`;
 }
 
-function StacViewer({ stacItemId, stacItem }: { stacItemId: string; stacItem: object }) {
+// the clipboard API only exists on secure pages (https or localhost); opened over plain http on a network address,
+// fall back to selecting hidden text and copying it
+async function copyToClipboard(text: string): Promise<boolean> {
+  if (navigator.clipboard && window.isSecureContext) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+    }
+  }
+  const area = document.createElement("textarea");
+  area.value = text;
+  area.setAttribute("readonly", "");
+  area.style.position = "fixed";
+  area.style.opacity = "0";
+  document.body.appendChild(area);
+  area.select();
+  try {
+    return document.execCommand("copy");
+  } catch {
+    return false;
+  } finally {
+    document.body.removeChild(area);
+  }
+}
+
+function StacViewer({ stacItem }: { stacItem: object }) {
   const [query, setQuery] = useState("");
-  const lines = JSON.stringify(stacItem, null, 2).split("\n");
+  const [copy, setCopy] = useState<"idle" | "copied" | "failed">("idle");
+  const json = JSON.stringify(stacItem, null, 2);
+  const lines = json.split("\n");
+
+  // the whole item, whatever the search is filtering to
+  async function copyJson() {
+    const ok = await copyToClipboard(json);
+    setCopy(ok ? "copied" : "failed");
+    setTimeout(() => setCopy("idle"), 2000);
+  }
   const q = query.trim().toLowerCase();
   const filtered = q ? lines.filter((l) => l.toLowerCase().includes(q)) : lines;
 
   return (
-    <section className="mt-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
-      <details>
-        <summary className="px-5 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer select-none hover:bg-gray-100/70 dark:hover:bg-gray-800/50">
-          STAC item — {stacItemId}
-        </summary>
-        <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+    <Section title="STAC item" defaultOpen={false} bodyClassName="">
+      <div className="px-5 pb-3">
+        <div className="flex gap-2">
           <input
             type="text"
-            placeholder="Search keys or values…"
+            placeholder="Search keys or values"
+            aria-label="Search the STAC item"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onClick={(e) => e.stopPropagation()}
-            className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded px-3 py-1.5 text-xs text-gray-800 dark:text-gray-200 placeholder-gray-500 focus:outline-none focus:border-brand-500"
+            className="flex-1 min-w-0 bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-brand-500"
           />
-          {q && (
-            <p className="text-xs text-gray-500 mt-1">{filtered.length} line{filtered.length !== 1 ? "s" : ""} matched</p>
-          )}
+          <button
+            type="button"
+            onClick={copyJson}
+            className={`shrink-0 min-w-24 whitespace-nowrap px-3 py-2 rounded text-sm transition-colors ${
+              copy === "failed" ? "bg-red-50 text-red-700" : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+            }`}
+          >
+            <span aria-live="polite">{copy === "copied" ? "Copied" : copy === "failed" ? "Couldn't copy" : "Copy"}</span>
+          </button>
         </div>
-        <pre className="px-5 py-4 text-xs text-gray-700 dark:text-gray-300 overflow-auto max-h-[32rem] bg-gray-50 dark:bg-gray-950 leading-relaxed">
-          {filtered.map((line, i) => {
-            if (!q) return line + "\n";
-            const idx = line.toLowerCase().indexOf(q);
-            return (
-              <span key={i}>
-                {line.slice(0, idx)}
-                <mark className="bg-yellow-500/30 text-yellow-200 rounded-sm">{line.slice(idx, idx + q.length)}</mark>
-                {line.slice(idx + q.length)}
-                {"\n"}
-              </span>
-            );
-          })}
-        </pre>
-      </details>
-    </section>
+        {q && <p className="text-sm text-gray-500 mt-1">{filtered.length} line{filtered.length !== 1 ? "s" : ""} matched</p>}
+      </div>
+      <pre className="px-5 py-4 text-xs text-gray-700 overflow-auto max-h-[32rem] bg-gray-50 border-t border-gray-200 leading-relaxed">
+        {filtered.map((line, i) => {
+          if (!q) return line + "\n";
+          const idx = line.toLowerCase().indexOf(q);
+          return (
+            <span key={i}>
+              {line.slice(0, idx)}
+              <mark className="bg-amber-200 text-gray-900 rounded-sm">{line.slice(idx, idx + q.length)}</mark>
+              {line.slice(idx + q.length)}
+              {"\n"}
+            </span>
+          );
+        })}
+      </pre>
+    </Section>
   );
 }
 
-function ScoreBar({ value, severity }: { value: number; severity: string }) {
-  const pct = Math.max(0, Math.min(100, ((value + 1) / 2) * 100));
-  const colors: Record<string, string> = {
-    green: "bg-green-500",
-    yellow: "bg-yellow-500",
-    red: "bg-red-500",
-  };
+const SEVERITY_FILL: Record<string, string> = {
+  green: "bg-green-500",
+  yellow: "bg-amber-500",
+  red: "bg-red-500",
+};
+
+const UNITLESS = new Set(["", "fraction", "index", "ratio"]);
+
+function formatScore(value: number, unit: string | undefined): string {
+  const digits = Math.abs(value) >= 100 ? 1 : 2;
+  const text = value.toFixed(digits);
+  return unit && !UNITLESS.has(unit) ? `${text} ${unit}` : text;
+}
+
+// without a declared range there is nothing honest to draw
+function ScoreBar({ value, severity, range }: { value: number; severity: string; range?: [number, number] }) {
+  if (!range || range[1] <= range[0]) return null;
+  const pct = Math.max(0, Math.min(100, ((value - range[0]) / (range[1] - range[0])) * 100));
   return (
-    <div className="flex items-center gap-2">
-      <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-full h-2 overflow-hidden">
-        <div
-          className={`h-full rounded-full ${colors[severity] ?? "bg-gray-500"}`}
-          style={{ width: `${pct}%` }}
-        />
+    <div className="flex items-center gap-3">
+      <span className="w-12 shrink-0 text-right text-xs text-gray-500 tabular-nums">{range[0]}</span>
+      <div className="flex-1 bg-gray-100 rounded-full h-2 overflow-hidden">
+        <div className={`h-full rounded-full ${SEVERITY_FILL[severity] ?? "bg-gray-400"}`} style={{ width: `${pct}%` }} />
       </div>
-      <span className="text-xs text-gray-600 dark:text-gray-400 w-16 text-right">{value.toFixed(4)}</span>
+      <span className="w-12 shrink-0 text-xs text-gray-500 tabular-nums">{range[1]}</span>
     </div>
   );
 }
@@ -114,13 +164,8 @@ export default function ItemDetailPage() {
   const { data: item, isLoading } = useWorkflowItem(wfId!, itemId!);
   const { data: wf } = useWorkflow(wfId!);
   const { data: models } = useModels();
-  const addBookmark = useAddBookmark(wfId!, itemId!);
-  const removeBookmark = useRemoveBookmark(wfId!, itemId!);
-  const upsertReview = useUpsertReview(wfId!, itemId!);
+  const { data: collections } = useCollections();
 
-  const [reviewStatus, setReviewStatus] = useState("");
-  const [notes, setNotes] = useState("");
-  const [reviewSubmitted, setReviewSubmitted] = useState(false);
   const [activeBand, setActiveBand] = useState<string | null>(null);
 
   // bands available for this item = union of required_bands + derived_rasters across the model runs that actually succeeded
@@ -143,258 +188,165 @@ export default function ItemDetailPage() {
   const rasterUrl =
     activeBand && wfId && itemId ? buildRasterUrl(wfId, itemId, activeBand) : null;
 
-  if (isLoading) return <div className="p-6 text-gray-600 dark:text-gray-400">Loading…</div>;
-  if (!item) return <div className="p-6 text-red-400">Item not found.</div>;
+  if (isLoading) return <div className="p-6 max-w-7xl mx-auto text-sm text-gray-500">Loading…</div>;
+  if (!item) return <div className="p-6 max-w-7xl mx-auto text-sm text-red-700">Scene not found.</div>;
 
-  const currentReview = item.review;
-
-  async function submitReview() {
-    await upsertReview.mutateAsync({
-      review_status: reviewStatus || currentReview?.review_status || "new",
-      notes: notes || currentReview?.notes || undefined,
-    });
-    setReviewSubmitted(true);
-  }
+  const collectionName = collections?.find((c) => c.slug === item.collection_slug)?.display_name ?? item.collection_slug;
+  const rawCloud = item.stac_item.properties["eo:cloud_cover"];
+  const cloudCover = typeof rawCloud === "number" ? rawCloud : null;
+  const footprint = item.bbox && item.bbox.length === 4
+    ? [{ id: item.id, bbox: item.bbox as [number, number, number, number], severity: item.overall_severity, status: item.status }]
+    : [];
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <div className="text-xs text-gray-600 dark:text-gray-400 mb-4 flex items-center gap-1">
-        <Link to="/workflows" className="hover:text-gray-800 dark:hover:text-gray-200">Workflows</Link>
+    <div className="p-6 max-w-7xl mx-auto">
+      <div className="text-xs text-gray-600 mb-4 flex items-center gap-1 min-w-0">
+        <Link to="/workflows" className="shrink-0 hover:text-gray-800">Workflows</Link>
         <span>/</span>
-        <Link to={`/workflows/${wfId}`} className="hover:text-gray-800 dark:hover:text-gray-200">Detail</Link>
+        <Link to={`/workflows/${wfId}`} className="truncate hover:text-gray-800">{wf?.name ?? wfId}</Link>
         <span>/</span>
-        <span className="text-gray-700 dark:text-gray-300">Item</span>
+        <span className="truncate text-gray-700">{item.stac_item_id}</span>
       </div>
 
-      <div className="flex items-start justify-between mb-6">
-        <div>
-          <h1 className="text-lg font-semibold mb-1 flex items-center gap-2">
-            Scene {new Date(item.scene_datetime).toLocaleDateString()}
-            <SeverityBadge severity={item.overall_severity} status={item.status} />
-            <StatusBadge status={item.status} />
-          </h1>
-          <div className="text-sm text-gray-600 dark:text-gray-400">
-            {item.collection_slug}
-          </div>
-        </div>
-        <button
-          onClick={() =>
-            item.is_bookmarked
-              ? removeBookmark.mutate()
-              : addBookmark.mutate()
-          }
-          disabled={addBookmark.isPending || removeBookmark.isPending}
-          className={`text-sm px-3 py-1.5 rounded border transition-colors ${item.is_bookmarked
-              ? "border-yellow-600 text-yellow-400 bg-yellow-950/30 hover:bg-yellow-950/60"
-              : "border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500"
-            }`}
-        >
-          {item.is_bookmarked ? "★ Bookmarked" : "☆ Bookmark"}
-        </button>
+      <div className="mb-6">
+        <h1 className="text-xl font-semibold text-gray-900 mb-1 break-words">{item.stac_item_id}</h1>
+        <DotLine parts={[
+          formatDate(item.scene_datetime),
+          <StatusBadge status={item.status} />,
+          <SeverityBadge severity={item.overall_severity} status={item.status} />,
+          collectionName,
+          cloudCover != null ? `${Math.round(cloudCover)}% cloud` : null,
+        ]} />
       </div>
 
       {(wf?.aoi_geometry || item.stac_item.bbox) && (
-        <section className="mb-6">
+        <Section title="Map: AOI &amp; scene footprint" bodyClassName="">
           {availableBands.length > 0 && (
-            <div className="mb-2 flex items-center gap-2 flex-wrap text-xs">
-              <span className="text-gray-500 mr-1">Overlay:</span>
-              <button
-                type="button"
-                onClick={() => setActiveBand(null)}
-                className={`px-2 py-1 rounded border transition-colors ${
-                  activeBand === null
-                    ? "border-brand-500 text-brand-300 bg-brand-900/10 dark:bg-brand-900/30"
-                    : "border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500"
-                }`}
-              >
-                None
-              </button>
-              {availableBands.map((b) => {
-                const isActive = activeBand === b;
-                return (
-                  <div
-                    key={b}
-                    className={`flex items-stretch rounded border transition-colors overflow-hidden ${
-                      isActive
-                        ? "border-brand-500 bg-brand-900/10 dark:bg-brand-900/30"
-                        : "border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500"
-                    }`}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => setActiveBand(isActive ? null : b)}
-                      className={`px-2 py-1 transition-colors ${
-                        isActive ? "text-brand-300" : "text-gray-600 dark:text-gray-400"
-                      }`}
-                      title={`colormap: ${bandStyle(b).colormap}`}
-                    >
-                      {bandStyle(b).label || b}
-                    </button>
-                    {isActive && (
-                      <a
-                        href={`/api/workflows/${wfId}/items/${itemId}/assets/${b}`}
-                        download={`${b}.tif`}
-                        className="flex items-center px-1.5 border-l border-brand-500/50 text-brand-300 hover:bg-brand-900/20 dark:hover:bg-brand-900/60 transition-colors"
-                        title={`Download ${b}.tif`}
-                        aria-label={`Download ${b}.tif`}
-                      >
-                        <svg
-                          width="14"
-                          height="14"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
+            <div className="px-5 pb-4 space-y-3">
+              <div className="flex items-end justify-between gap-4 flex-wrap">
+                <fieldset>
+                  <legend className="block text-sm mb-1 text-gray-700">Overlay</legend>
+                  <div className="flex gap-2 flex-wrap">
+                    {[null, ...availableBands].map((b) => {
+                      const selected = activeBand === b;
+                      return (
+                        <label
+                          key={b ?? "none"}
+                          className={`px-2.5 py-1 rounded border text-xs cursor-pointer transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand-500 ${
+                            selected ? "border-brand-500 bg-brand-50 text-gray-900" : "border-gray-300 text-gray-600 hover:border-gray-400"
+                          }`}
                         >
-                          <path d="M8 2v8m0 0l-3-3m3 3l3-3M3 13h10" />
-                        </svg>
-                      </a>
-                    )}
+                          <input type="radio" name="overlay" checked={selected} onChange={() => setActiveBand(b)} className="sr-only" />
+                          {b === null ? "None" : bandStyle(b).label || b}
+                        </label>
+                      );
+                    })}
+                  </div>
+                </fieldset>
+
+                {activeBand && (
+                  <div className="flex items-center gap-4">
+                    <label className="flex items-center gap-2 text-xs">
+                      <span className="text-gray-500">Opacity</span>
+                      <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.05"
+                        value={rasterOpacity}
+                        onChange={(e) => setRasterOpacity(parseFloat(e.target.value))}
+                        className="w-24 accent-brand-500"
+                      />
+                      <span className="text-gray-600 w-10 tabular-nums">{Math.round(rasterOpacity * 100)}%</span>
+                    </label>
+                    <a
+                      href={`/api/workflows/${wfId}/items/${itemId}/assets/${activeBand}`}
+                      download={`${activeBand}.tif`}
+                      className="px-2.5 py-1 rounded text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
+                    >
+                      Download GeoTIFF
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              {activeBand && (() => {
+                const style = bandStyle(activeBand);
+                const [low, high] = style.rescale.split(",");
+                return (
+                  <div className="flex items-center gap-3 text-sm text-gray-600">
+                    <span className="tabular-nums">{low}</span>
+                    <div
+                      className="h-2.5 w-56 rounded-full border border-gray-200"
+                      style={{ background: `linear-gradient(to right, ${COLORMAP_GRADIENT[style.colormap] ?? COLORMAP_GRADIENT.viridis})` }}
+                      aria-hidden
+                    />
+                    <span className="tabular-nums">{high}</span>
+                    <span className="text-gray-500">{style.label || activeBand}</span>
                   </div>
                 );
-              })}
-              {activeBand && (
-                <div className="flex items-center gap-2 ml-2">
-                  <span className="text-gray-500">Opacity:</span>
-                  <input
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.05"
-                    value={rasterOpacity}
-                    onChange={(e) => setRasterOpacity(parseFloat(e.target.value))}
-                    className="w-24 accent-brand-500"
-                  />
-                  <span className="text-gray-600 dark:text-gray-400 w-8">{Math.round(rasterOpacity * 100)}%</span>
-                </div>
-              )}
+              })()}
             </div>
           )}
           <MapViewer
             aoi={wf?.aoi_geometry}
-            items={[]}
+            items={footprint}
             rasterUrl={rasterUrl}
             rasterOpacity={rasterOpacity}
-            fitToAoiOnly
-            className="h-72 w-full rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800"
+            className="h-80 w-full border-t border-gray-200"
           />
-        </section>
+        </Section>
       )}
 
-      <section className="mb-6">
-        <h2 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Model runs</h2>
-        {item.model_runs.length === 0 && (
-          <p className="text-gray-500 text-sm">No model runs yet.</p>
-        )}
-        <div className="space-y-4">
-          {item.model_runs.map((run) => (
-            <div key={run.id} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="font-medium text-sm">{run.model_slug}</span>
-                <StatusBadge status={run.status} />
-                {run.completed_at && (
-                  <span className="text-xs text-gray-500 ml-auto">
-                    {new Date(run.completed_at).toLocaleString()}
-                  </span>
-                )}
-              </div>
-              {run.error_message && (
-                <div className="mb-2 text-xs text-red-300 bg-red-950/40 border border-red-800 rounded px-3 py-2">
-                  {run.error_message}
+      <Section title="Model runs">
+        {item.model_runs.length === 0 && <p className="text-sm text-gray-500">No model runs yet.</p>}
+        <div className="divide-y divide-gray-200">
+          {item.model_runs.map((run) => {
+            const model = models?.find((m) => m.slug === run.model_slug);
+            return (
+              <div key={run.id} className="py-4 first:pt-0 last:pb-0">
+                <div className="flex items-baseline justify-between gap-4 mb-3">
+                  <DotLine parts={[
+                    <span className="font-medium text-gray-900">{model?.name ?? run.model_slug}</span>,
+                    <StatusBadge status={run.status} />,
+                  ]} />
+                  {run.completed_at && <span className="shrink-0 text-sm text-gray-500">{formatDateTime(run.completed_at)}</span>}
                 </div>
-              )}
-              {run.scores.length === 0 && !run.error_message && (
-                <p className="text-gray-500 text-xs">No scores.</p>
-              )}
-              <div className="space-y-3">
-                {run.scores.map((score) => (
-                  <div key={score.score_name}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
-                        {score.score_name}
-                        {score.is_primary && (
-                          <span className="text-xs bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-1.5 py-0.5 rounded">
-                            primary
+                {run.error_message && (
+                  <div className="mb-3 rounded border border-red-200 bg-red-50/60 px-3 py-2 text-sm text-red-800">{run.error_message}</div>
+                )}
+                {run.scores.length === 0 && !run.error_message && <p className="text-sm text-gray-500">No scores.</p>}
+                <div className="space-y-4">
+                  {run.scores.map((score) => {
+                    const output = model?.score_outputs[score.score_name];
+                    return (
+                      <div key={score.score_name}>
+                        <div className="flex items-baseline justify-between gap-4 mb-1.5 text-sm">
+                          <span className="text-gray-900">
+                            {score.score_name}
+                            {score.is_primary && <span className="ml-1.5 text-gray-500">(primary)</span>}
                           </span>
-                        )}
-                      </span>
-                      <SeverityBadge severity={score.severity} />
-                    </div>
-                    <ScoreBar value={score.score_value} severity={score.severity} />
-                  </div>
-                ))}
+                          <span className="flex items-baseline gap-3">
+                            <span className="text-gray-900 tabular-nums">{formatScore(score.score_value, output?.unit)}</span>
+                            <SeverityBadge severity={score.severity} />
+                          </span>
+                        </div>
+                        <ScoreBar value={score.score_value} severity={score.severity} range={output?.value_range} />
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
-      </section>
+      </Section>
 
-      <section className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-5">
-        <h2 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">Review</h2>
+      <StacViewer stacItem={item.stac_item} />
 
-        {currentReview && !reviewSubmitted && (
-          <div className="mb-4 p-3 bg-gray-100 dark:bg-gray-800 rounded text-sm text-gray-700 dark:text-gray-300">
-            <span className="font-medium">Current:</span>{" "}
-            <span className="capitalize">{currentReview.review_status.replace("_", " ")}</span>
-            {currentReview.notes && <p className="text-gray-600 dark:text-gray-400 text-xs mt-1">{currentReview.notes}</p>}
-          </div>
-        )}
-
-        {reviewSubmitted && (
-          <p className="text-green-400 text-sm mb-3">Review saved.</p>
-        )}
-
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Status</label>
-            <select
-              value={reviewStatus || currentReview?.review_status || ""}
-              onChange={(e) => setReviewStatus(e.target.value)}
-              className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-brand-500"
-            >
-              <option value="">— Select —</option>
-              {REVIEW_STATUSES.map((s) => (
-                <option key={s} value={s}>
-                  {s.replace("_", " ")}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Notes</label>
-          <textarea
-            rows={3}
-            value={notes !== "" ? notes : currentReview?.notes ?? ""}
-            onChange={(e) => setNotes(e.target.value)}
-            className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-brand-500 resize-none"
-            placeholder="Optional notes…"
-          />
-        </div>
-
-        <button
-          onClick={submitReview}
-          disabled={upsertReview.isPending}
-          className="px-4 py-2 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white rounded text-sm transition-colors"
-        >
-          {upsertReview.isPending ? "Saving…" : currentReview ? "Update review" : "Submit review"}
-        </button>
-
-        {upsertReview.error && (
-          <p className="text-red-400 text-xs mt-2">{(upsertReview.error as Error).message}</p>
-        )}
-      </section>
-
-      <StacViewer stacItemId={item.stac_item_id} stacItem={item.stac_item} />
-
-      <div className="mt-4 text-xs text-gray-500 dark:text-gray-600">
-        Discovered {new Date(item.discovered_at).toLocaleString()}
-        {item.processed_at
-          ? ` · Processed ${new Date(item.processed_at).toLocaleString()}`
-          : ""}
+      <div className="mt-4 text-sm text-gray-500">
+        Discovered {formatDateTime(item.discovered_at)}
+        {item.processed_at ? ` · Processed ${formatDateTime(item.processed_at)}` : ""}
       </div>
     </div>
   );

@@ -59,4 +59,4 @@ class CompatibilityLevel(str, enum.Enum):
 
 class TimeMode(str, enum.Enum):
     historical = "historical"
-    fixed_future = "fixed_future"
+    recurring = "recurring"

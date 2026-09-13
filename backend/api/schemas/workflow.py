@@ -1,8 +1,8 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class ThresholdInput(BaseModel):
@@ -23,20 +23,47 @@ class WorkflowCreate(BaseModel):
     name: str
     geometry: dict[str, Any]
     description: str | None = None
-    time_mode: str = Field(pattern="^(historical|fixed_future)$")
-    time_start: datetime
+    time_mode: str = Field(pattern="^(historical|recurring)$")
+    # historical only; a recurring workflow starts when it is created, so the server sets it
+    time_start: datetime | None = None
     time_end: datetime
     aoi_filter_mode: str = Field(default="intersects", pattern="^(intersects|enclosed)$")
     poll_interval_minutes: int | None = None
     collection_slugs: list[str] = Field(min_length=1)
     models: list[ModelConfigInput] = Field(min_length=1, max_length=1)
 
+    @field_validator("time_start", "time_end")
+    @classmethod
+    def in_utc(cls, value: datetime | None) -> datetime | None:
+        # the platform runs on UTC; a time without a zone is ambiguous, so it's refused rather than guessed at
+        if value is None:
+            return None
+        if value.tzinfo is None:
+            raise ValueError("must include a timezone, e.g. 2026-09-01T00:00:00Z")
+        return value.astimezone(timezone.utc)
+
     @model_validator(mode="after")
-    def check_poll_interval(self) -> "WorkflowCreate":
-        if self.poll_interval_minutes is not None and self.time_mode != "fixed_future":
-            raise ValueError("poll_interval_minutes is only valid for fixed_future workflows")
-        if self.poll_interval_minutes is not None and self.poll_interval_minutes < 1:
-            raise ValueError("poll_interval_minutes must be at least 1")
+    def check_mode(self) -> "WorkflowCreate":
+        now = datetime.now(timezone.utc)
+        if self.time_mode == "recurring":
+            if self.poll_interval_minutes is None:
+                raise ValueError("recurring workflows need a poll_interval_minutes")
+            if self.poll_interval_minutes < 1:
+                raise ValueError("poll_interval_minutes must be at least 1")
+            # it watches for new scenes from the moment it exists, so its start is always now and not the caller's to choose
+            if self.time_start is not None:
+                raise ValueError("recurring workflows start when they are created; send only time_end")
+            self.time_start = now
+            if self.time_end <= now:
+                raise ValueError("a recurring workflow has to end in the future")
+        else:
+            if self.time_start is None:
+                raise ValueError("historical workflows need a time_start")
+            if self.poll_interval_minutes is not None:
+                raise ValueError("poll_interval_minutes is only valid for recurring workflows")
+            # a historical workflow runs once over scenes that already exist
+            if self.time_end > now:
+                raise ValueError("historical workflows can't end in the future")
         return self
 
 
@@ -108,3 +135,8 @@ class WorkflowSummary(BaseModel):
     status: str
     created_at: datetime
     updated_at: datetime
+    # the numbers a list row shows; anything more comes from GET /workflows/{id} when a row is opened
+    total_items: int
+    processed_items: int
+    identified_items: int
+    failed_items: int
