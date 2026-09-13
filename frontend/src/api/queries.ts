@@ -1,5 +1,6 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "./client";
+import { useLive } from "./live";
 import type {
   Bookmark,
   CollectionInfo,
@@ -36,13 +37,14 @@ export function useWorkflows() {
 }
 
 export function useWorkflow(id: string) {
+  const live = useLive((s) => s.connected);
   return useQuery({
     queryKey: ["workflows", id],
     queryFn: () => api.get<Workflow>(`/workflows/${id}`),
     enabled: !!id,
     refetchInterval: (query) => {
       const wf = query.state.data;
-      if (!wf) return false;
+      if (live || !wf) return false;
       if (wf.status === "running") return 3000;
       return false;
     },
@@ -88,6 +90,7 @@ export function useWorkflowItems(
   severity?: string,
   isRunning = false,
 ) {
+  const live = useLive((s) => s.connected);
   return useInfiniteQuery({
     queryKey: ["workflow-items", workflowId, severity],
     queryFn: ({ pageParam = 1 }) => {
@@ -98,7 +101,7 @@ export function useWorkflowItems(
     initialPageParam: 1,
     getNextPageParam: (last) => last.page < last.pages ? last.page + 1 : undefined,
     enabled: !!workflowId,
-    refetchInterval: isRunning ? 3000 : false,
+    refetchInterval: isRunning && !live ? 3000 : false,
   });
 }
 
@@ -154,19 +157,21 @@ export function useWorkflowTimeseries(workflowId: string) {
 }
 
 export function useWorkerStatus(enabled = true) {
+  const live = useLive((s) => s.connected);
   return useQuery({
     queryKey: ["worker-status"],
     queryFn: () => api.get<WorkerStatus>("/worker/status"),
     enabled,
-    refetchInterval: 5000,
+    refetchInterval: live ? false : 5000,
   });
 }
 
 export function useRegistered(kind: "model" | "provider") {
+  const live = useLive((s) => s.connected);
   return useQuery({
     queryKey: ["registered", kind],
     queryFn: () => api.get<Registered[]>(`/${kind}s/registered`),
-    // a queued smoke test flips is_enabled from the worker, so keep this fresh
-    refetchInterval: 4000,
+    // a queued smoke test flips is_enabled from the worker, so keep this fresh when nothing announces it
+    refetchInterval: live ? false : 4000,
   });
 }

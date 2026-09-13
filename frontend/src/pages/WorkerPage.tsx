@@ -1,3 +1,4 @@
+import { useLive } from "../api/live";
 import { useWorkerStatus } from "../api/queries";
 
 function TaskName({ name, args }: { name: string; args: unknown[] }) {
@@ -13,6 +14,7 @@ function TaskName({ name, args }: { name: string; args: unknown[] }) {
 
 export default function WorkerPage() {
   const { data, isLoading } = useWorkerStatus();
+  const live = useLive((s) => s.connected);
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
@@ -20,7 +22,7 @@ export default function WorkerPage() {
         <h1 className="text-xl font-semibold">Worker</h1>
         <span className="flex items-center gap-1.5 text-xs text-gray-500">
           <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-          Polling every 5s
+          {live ? "Live" : "Polling every 5s"}
         </span>
       </div>
 

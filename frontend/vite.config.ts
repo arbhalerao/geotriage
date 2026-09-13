@@ -9,6 +9,7 @@ export default defineConfig({
       "/api": {
         target: "http://localhost:8000",
         rewrite: (path) => path.replace(/^\/api/, ""),
+        ws: true,
       },
       "/titiler": {
         target: "http://localhost:8080",

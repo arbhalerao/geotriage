@@ -1,8 +1,10 @@
 import { Link, NavLink, Outlet } from "react-router-dom";
+import { useLiveUpdates } from "../api/live";
 import { useTheme } from "../theme";
 
 export default function Layout() {
   const { theme, toggle } = useTheme();
+  useLiveUpdates();
   return (
     <div className="min-h-screen flex flex-col">
       <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-3 flex items-center gap-6">
