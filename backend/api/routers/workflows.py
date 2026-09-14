@@ -30,7 +30,6 @@ from api.schemas.workflow import (
     WorkflowCreate,
     WorkflowResponse,
     WorkflowSummary,
-    WorkflowUpdate,
 )
 from domain.catalogue import get_collection_async, get_model_async
 
@@ -327,28 +326,6 @@ async def list_workflows(db: AsyncSession = Depends(get_db)):
 @router.get("/{workflow_id}", response_model=WorkflowResponse)
 async def get_workflow(workflow_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
     workflow = await _get_workflow(workflow_id, db)
-    return await _load_response(workflow, db)
-
-
-@router.patch("/{workflow_id}", response_model=WorkflowResponse)
-async def update_workflow(
-    workflow_id: uuid.UUID,
-    body: WorkflowUpdate,
-    db: AsyncSession = Depends(get_db),
-):
-    workflow = await _get_workflow(workflow_id, db)
-    if workflow.status != WorkflowStatus.draft:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Only draft workflows can be updated",
-        )
-    if body.name is not None:
-        workflow.name = body.name
-    if body.description is not None:
-        workflow.description = body.description
-    workflow.updated_at = datetime.now(timezone.utc)
-    await db.commit()
-    await db.refresh(workflow)
     return await _load_response(workflow, db)
 
 

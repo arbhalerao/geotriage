@@ -3,8 +3,6 @@ from storage.client import (
     band_key,
     delete_workflow_prefix,
     get_bytes,
-    init_bucket,
-    put_bytes,
     s3,
     upload_file,
 )
@@ -14,8 +12,6 @@ __all__ = [
     "band_key",
     "delete_workflow_prefix",
     "get_bytes",
-    "init_bucket",
-    "put_bytes",
     "s3",
     "upload_file",
 ]

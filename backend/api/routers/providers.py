@@ -6,35 +6,20 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.deps import get_db
-from api.schemas.catalogue import BandResponse, CollectionResponse, ProviderResponse
+from api.schemas.catalogue import CollectionResponse
 from api.schemas.registry import AdmissionCheck, AdmissionResponse, ImageRegister, RegisteredResponse
 from core.db.models.registry import RegisteredProvider
-from domain.catalogue import ProviderSpec, all_providers_async, claim_collections_async
+from domain.catalogue import all_providers_async, claim_collections_async
 
 router = APIRouter(tags=["providers"])
 
 
-def _collection_response(provider: ProviderSpec, info: Collection) -> CollectionResponse:
+def _collection_response(info: Collection) -> CollectionResponse:
     return CollectionResponse(
         slug=info.slug,
         display_name=info.display_name,
-        description=info.description,
         processing_level=info.processing_level,
-        sensor_type=info.sensor_type,
         resolution_m=info.resolution_m,
-        cloud_cover_property=info.cloud_cover_property,
-        bands=[
-            BandResponse(
-                normalized_name=b.normalized_name,
-                asset_key=b.asset_key,
-                description=b.description,
-                scale=b.scale,
-                offset=b.offset,
-            )
-            for b in info.bands
-        ],
-        provider_slug=provider.slug,
-        provider_name=provider.name,
     )
 
 
@@ -49,19 +34,6 @@ def _registered_response(row: RegisteredProvider) -> RegisteredResponse:
         registered_at=row.registered_at,
         admission=row.admission,
     )
-
-
-@router.get("/providers", response_model=list[ProviderResponse])
-async def list_providers(db: AsyncSession = Depends(get_db)):
-    return [
-        ProviderResponse(
-            slug=p.slug,
-            name=p.name,
-            stac_api_url=p.stac_api_url,
-            collections=[_collection_response(p, info) for info in p.collections.values()],
-        )
-        for p in await all_providers_async(db)
-    ]
 
 
 @router.get("/providers/registered", response_model=list[RegisteredResponse])
@@ -124,12 +96,4 @@ async def remove_provider(provider_id: uuid.UUID, db: AsyncSession = Depends(get
 
 @router.get("/collections", response_model=list[CollectionResponse])
 async def list_collections(db: AsyncSession = Depends(get_db)):
-    return [_collection_response(provider, info) for provider in await all_providers_async(db) for info in provider.collections.values()]
-
-
-@router.get("/collections/{slug}", response_model=CollectionResponse)
-async def get_collection_by_slug(slug: str, db: AsyncSession = Depends(get_db)):
-    for provider in await all_providers_async(db):
-        if slug in provider.collections:
-            return _collection_response(provider, provider.collections[slug])
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Collection '{slug}' not found")
+    return [_collection_response(info) for provider in await all_providers_async(db) for info in provider.collections.values()]

@@ -34,7 +34,6 @@ def _model_response(model: ModelSpec, providers: list[ProviderSpec]) -> ModelRes
         slug=model.slug,
         name=model.name,
         description=model.description,
-        primary_score=model.primary_score,
         required_bands=list(model.requires.bands),
         derived_rasters=list(model.rasters),
         max_cloud_cover=model.requires.max_cloud_cover,
@@ -87,14 +86,6 @@ async def list_registered(db: AsyncSession = Depends(get_db)):
     """
     rows = (await db.execute(select(RegisteredModel).order_by(RegisteredModel.registered_at.desc()))).scalars().all()
     return [_registered_response(r) for r in rows]
-
-
-@router.get("/{slug}", response_model=ModelResponse)
-async def get_model_by_slug(slug: str, db: AsyncSession = Depends(get_db)):
-    model = next((m for m in await all_models_async(db) if m.slug == slug), None)
-    if model is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Model '{slug}' not found")
-    return _model_response(model, await all_providers_async(db))
 
 
 @router.post("", response_model=AdmissionResponse, status_code=status.HTTP_201_CREATED)

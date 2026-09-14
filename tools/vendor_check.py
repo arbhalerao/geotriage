@@ -28,7 +28,7 @@ def differences(a: pathlib.Path, b: pathlib.Path) -> list[str]:
     out = [f"only in the wheel: {n}" for n in cmp.left_only]
     out += [f"only in the source: {n}" for n in cmp.right_only]
     out += [f"differs: {n}" for n in cmp.diff_files]
-    for name, sub in cmp.subdirs.items():
+    for name in cmp.subdirs:
         out += [f"{name}/{d}" for d in differences(a / name, b / name)]
     return out
 

@@ -28,7 +28,3 @@ def get_task(name: str) -> Callable:
 
 def is_registered(name: str) -> bool:
     return name in _registry
-
-
-def all_tasks() -> dict[str, Callable]:
-    return dict(_registry)

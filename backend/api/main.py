@@ -5,7 +5,6 @@ from fastapi import FastAPI
 from api import live
 from api.routers import live as live_router
 from api.routers import models, providers, results, workflows
-from api.routers import worker as worker_router
 from core.db.session import AsyncSessionLocal
 from worker.queue import build_job
 
@@ -28,7 +27,6 @@ app.include_router(models.router)
 app.include_router(providers.router)
 app.include_router(workflows.router)
 app.include_router(results.router)
-app.include_router(worker_router.router)
 app.include_router(live_router.router)
 
 

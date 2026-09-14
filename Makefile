@@ -21,7 +21,7 @@ COMPOSE          ?= docker compose
 
 .DEFAULT_GOAL := help
 .PHONY: help venv install test fmt fmt-check check typecheck \
-        vendor-sdk vendor-check sdk-image builtins examples up down restart build logs ps migrate psql clean
+        vendor-sdk vendor-check sdk-image builtins examples up down down-v restart build logs ps migrate psql clean
 
 help:  ## print this help
 	@grep -hE '^[a-z][a-zA-Z0-9_-]*:.*?## ' $(MAKEFILE_LIST) \

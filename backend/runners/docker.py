@@ -155,7 +155,7 @@ class DockerRunner:
         out = docker_run(self.image, ["describe"], timeout_s=min(self.timeout_s, 120))
         return _json_out(out, self.image, "describe")
 
-    def run(self, bands: Bands, raster_dir: str | None = None) -> dict[str, Any]:
+    def run(self, bands: Bands) -> dict[str, Any]:
         with _staged(bands) as (in_dir, job_path):
             out_dir = _shared_dir("run-out-", writable=True)
             try:

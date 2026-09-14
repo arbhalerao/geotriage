@@ -67,11 +67,6 @@ class WorkflowCreate(BaseModel):
         return self
 
 
-class WorkflowUpdate(BaseModel):
-    name: str | None = None
-    description: str | None = None
-
-
 class ThresholdConfigResponse(BaseModel):
     score_name: str
     green_min: float

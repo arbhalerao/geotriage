@@ -68,7 +68,7 @@ class FakeRunner:
             raise ImageError(self._describe_error)
         return self._descriptor
 
-    def run(self, bands, raster_dir=None):
+    def run(self, bands):
         self.calls.append("run")
         if self._run_error:
             raise ImageError(self._run_error)

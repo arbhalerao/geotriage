@@ -6,6 +6,5 @@
 **/*.egg-info
 frontend/node_modules
 frontend/dist
-docs
 .env
 .run-scratch
