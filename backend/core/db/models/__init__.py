@@ -12,8 +12,6 @@ from core.db.models.results import (
     WorkflowItem,
     ModelRun,
     ModelScore,
-    Bookmark,
-    WorkflowItemReview,
 )
 
 __all__ = [
@@ -30,6 +28,4 @@ __all__ = [
     "WorkflowItem",
     "ModelRun",
     "ModelScore",
-    "Bookmark",
-    "WorkflowItemReview",
 ]

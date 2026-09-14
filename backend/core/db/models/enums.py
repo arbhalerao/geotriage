@@ -36,15 +36,6 @@ class ModelRunStatus(str, enum.Enum):
     skipped = "skipped"
 
 
-class ReviewStatus(str, enum.Enum):
-    new = "new"
-    reviewed = "reviewed"
-    item_of_interest = "item_of_interest"
-    dismissed = "dismissed"
-    false_positive = "false_positive"
-    needs_follow_up = "needs_follow_up"
-
-
 class Severity(str, enum.Enum):
     green = "green"
     yellow = "yellow"

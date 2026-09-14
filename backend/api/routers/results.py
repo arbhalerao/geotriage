@@ -2,7 +2,6 @@ import asyncio
 import math
 import re
 import uuid
-from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy import func, select
@@ -10,16 +9,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.deps import get_db
 from storage import client as store
-from core.db.models.enums import ReviewStatus
-from core.db.models.results import Bookmark, ModelRun, ModelScore, WorkflowItem, WorkflowItemReview
+from core.db.models.results import ModelRun, ModelScore, WorkflowItem
 from core.db.models.stac import StacItem
 from core.db.models.workflow import Workflow
 from api.schemas.results import (
-    BookmarkResponse,
     ModelRunResponse,
     ModelScoreResponse,
-    ReviewCreate,
-    ReviewResponse,
     StacItemResponse,
     TimeseriesPoint,
     TimeseriesResponse,
@@ -66,23 +61,6 @@ async def _load_model_runs(wi_id: uuid.UUID, db: AsyncSession) -> list[ModelRunR
     return result
 
 
-async def _get_review(wi_id: uuid.UUID, db: AsyncSession) -> ReviewResponse | None:
-    r = (await db.execute(select(WorkflowItemReview).where(WorkflowItemReview.workflow_item_id == wi_id))).scalar_one_or_none()
-    if r is None:
-        return None
-    return ReviewResponse(
-        id=r.id,
-        review_status=r.review_status,
-        notes=r.notes,
-        reviewed_at=r.reviewed_at,
-        updated_at=r.updated_at,
-    )
-
-
-async def _is_bookmarked(wi_id: uuid.UUID, db: AsyncSession) -> bool:
-    return (await db.execute(select(Bookmark.id).where(Bookmark.workflow_item_id == wi_id))).scalar_one_or_none() is not None
-
-
 @router.get("/workflows/{workflow_id}/items", response_model=WorkflowItemPage)
 async def list_items(
     workflow_id: uuid.UUID,
@@ -101,23 +79,6 @@ async def list_items(
 
     rows = (await db.execute(base.order_by(WorkflowItem.discovered_at.desc()).offset((page - 1) * page_size).limit(page_size))).all()
 
-    item_ids = [wi.id for wi, _ in rows]
-    bookmarked = (
-        set(
-            (
-                await db.execute(
-                    select(Bookmark.workflow_item_id).where(
-                        Bookmark.workflow_item_id.in_(item_ids),
-                    )
-                )
-            )
-            .scalars()
-            .all()
-        )
-        if item_ids
-        else set()
-    )
-
     return WorkflowItemPage(
         items=[
             WorkflowItemSummary(
@@ -129,7 +90,6 @@ async def list_items(
                 overall_severity=wi.overall_severity,
                 discovered_at=wi.discovered_at,
                 processed_at=wi.processed_at,
-                is_bookmarked=wi.id in bookmarked,
                 bbox=si.bbox,
             )
             for wi, si in rows
@@ -208,7 +168,6 @@ async def get_item(
         overall_severity=wi.overall_severity,
         discovered_at=wi.discovered_at,
         processed_at=wi.processed_at,
-        is_bookmarked=await _is_bookmarked(wi.id, db),
         stac_item=StacItemResponse(
             id=si.stac_item_id,
             collection=si.collection_slug,
@@ -218,116 +177,7 @@ async def get_item(
             assets={k: {kk: vv for kk, vv in v.items() if kk != "href"} for k, v in si.assets.items()},
         ),
         model_runs=await _load_model_runs(wi.id, db),
-        review=await _get_review(wi.id, db),
     )
-
-
-@router.put(
-    "/workflows/{workflow_id}/items/{item_id}/review",
-    response_model=ReviewResponse,
-)
-async def upsert_review(
-    workflow_id: uuid.UUID,
-    item_id: uuid.UUID,
-    body: ReviewCreate,
-    db: AsyncSession = Depends(get_db),
-):
-    await _get_workflow(workflow_id, db)
-
-    valid_statuses = {s.value for s in ReviewStatus}
-    if body.review_status not in valid_statuses:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=f"review_status must be one of: {sorted(valid_statuses)}",
-        )
-
-    wi = (await db.execute(select(WorkflowItem).where(WorkflowItem.id == item_id, WorkflowItem.workflow_id == workflow_id))).scalar_one_or_none()
-    if wi is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found")
-
-    review = (await db.execute(select(WorkflowItemReview).where(WorkflowItemReview.workflow_item_id == item_id))).scalar_one_or_none()
-
-    now = datetime.now(timezone.utc)
-    if review is None:
-        review = WorkflowItemReview(
-            workflow_item_id=item_id,
-            review_status=body.review_status,
-            notes=body.notes,
-            reviewed_at=now,
-            updated_at=now,
-        )
-        db.add(review)
-    else:
-        review.review_status = body.review_status
-        review.notes = body.notes
-        review.reviewed_at = now
-        review.updated_at = now
-
-    await db.commit()
-    await db.refresh(review)
-    return ReviewResponse(
-        id=review.id,
-        review_status=review.review_status,
-        notes=review.notes,
-        reviewed_at=review.reviewed_at,
-        updated_at=review.updated_at,
-    )
-
-
-@router.post(
-    "/workflows/{workflow_id}/items/{item_id}/bookmark",
-    response_model=BookmarkResponse,
-    status_code=status.HTTP_201_CREATED,
-)
-async def add_bookmark(
-    workflow_id: uuid.UUID,
-    item_id: uuid.UUID,
-    db: AsyncSession = Depends(get_db),
-):
-    await _get_workflow(workflow_id, db)
-
-    wi = (await db.execute(select(WorkflowItem).where(WorkflowItem.id == item_id, WorkflowItem.workflow_id == workflow_id))).scalar_one_or_none()
-    if wi is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found")
-
-    existing = (await db.execute(select(Bookmark).where(Bookmark.workflow_item_id == item_id))).scalar_one_or_none()
-    if existing:
-        return BookmarkResponse(
-            id=existing.id,
-            workflow_item_id=existing.workflow_item_id,
-            notes=existing.notes,
-            created_at=existing.created_at,
-        )
-
-    bm = Bookmark(workflow_item_id=item_id)
-    db.add(bm)
-    await db.commit()
-    await db.refresh(bm)
-    return BookmarkResponse(
-        id=bm.id,
-        workflow_item_id=bm.workflow_item_id,
-        notes=bm.notes,
-        created_at=bm.created_at,
-    )
-
-
-@router.delete(
-    "/workflows/{workflow_id}/items/{item_id}/bookmark",
-    status_code=status.HTTP_204_NO_CONTENT,
-)
-async def remove_bookmark(
-    workflow_id: uuid.UUID,
-    item_id: uuid.UUID,
-    db: AsyncSession = Depends(get_db),
-):
-    await _get_workflow(workflow_id, db)
-
-    bm = (await db.execute(select(Bookmark).where(Bookmark.workflow_item_id == item_id))).scalar_one_or_none()
-    if bm is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bookmark not found")
-
-    await db.delete(bm)
-    await db.commit()
 
 
 _ASSET_NAME_RE = re.compile(r"^[a-z0-9][a-z0-9_-]*$")

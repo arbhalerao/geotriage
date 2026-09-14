@@ -16,7 +16,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 
 from core.db.base import Base
-from core.db.models.enums import WorkflowItemStatus, ModelRunStatus, Severity, ReviewStatus
+from core.db.models.enums import WorkflowItemStatus, ModelRunStatus, Severity
 
 
 class WorkflowItem(Base):
@@ -81,32 +81,4 @@ class ModelScore(Base):
         UniqueConstraint("model_run_id", "score_name", name="uq_model_scores_run_name"),
         Index("ix_model_scores_run_primary", "model_run_id", "is_primary"),
         Index("ix_model_scores_run_severity", "model_run_id", "severity"),
-    )
-
-
-class Bookmark(Base):
-    __tablename__ = "bookmarks"
-
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    workflow_item_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("workflow_items.id", ondelete="CASCADE"), nullable=False)
-    notes: Mapped[str | None] = mapped_column(String, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-
-    __table_args__ = (Index("ix_bookmarks_workflow_item", "workflow_item_id"),)
-
-
-class WorkflowItemReview(Base):
-    __tablename__ = "workflow_item_reviews"
-
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    workflow_item_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("workflow_items.id", ondelete="CASCADE"), nullable=False)
-    review_status: Mapped[ReviewStatus] = mapped_column(SAEnum(ReviewStatus, native_enum=False, length=30), nullable=False, default=ReviewStatus.new)
-    notes: Mapped[str | None] = mapped_column(String, nullable=True)
-    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-
-    __table_args__ = (
-        UniqueConstraint("workflow_item_id", name="uq_workflow_item_reviews_item"),
-        Index("ix_workflow_item_reviews_item_status", "workflow_item_id", "review_status"),
     )

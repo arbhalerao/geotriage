@@ -21,14 +21,6 @@ class ModelRunResponse(BaseModel):
     scores: list[ModelScoreResponse]
 
 
-class ReviewResponse(BaseModel):
-    id: uuid.UUID
-    review_status: str
-    notes: str | None
-    reviewed_at: datetime | None
-    updated_at: datetime
-
-
 class StacItemResponse(BaseModel):
     id: str
     collection: str
@@ -47,7 +39,6 @@ class WorkflowItemSummary(BaseModel):
     overall_severity: str | None
     discovered_at: datetime
     processed_at: datetime | None
-    is_bookmarked: bool
     bbox: list[float] | None
 
 
@@ -68,22 +59,8 @@ class WorkflowItemDetail(BaseModel):
     overall_severity: str | None
     discovered_at: datetime
     processed_at: datetime | None
-    is_bookmarked: bool
     stac_item: StacItemResponse
     model_runs: list[ModelRunResponse]
-    review: ReviewResponse | None
-
-
-class ReviewCreate(BaseModel):
-    review_status: str
-    notes: str | None = None
-
-
-class BookmarkResponse(BaseModel):
-    id: uuid.UUID
-    workflow_item_id: uuid.UUID
-    notes: str | None
-    created_at: datetime
 
 
 class TimeseriesPoint(BaseModel):
