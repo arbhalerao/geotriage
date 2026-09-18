@@ -1,0 +1,12 @@
+{"id": "punjab-2024", "input": "Monitor vegetation in Punjab for 2024", "expected": {"mode": "historical"}, "tags": ["quick"]}
+{"id": "dhaka-monsoon", "input": "Watch for flooding around Dhaka every day this monsoon", "expected": {"mode": "recurring"}, "tags": ["quick"]}
+{"id": "pune-last-summer", "input": "How did the lake near Pune change last summer?", "expected": {"mode": "historical"}, "tags": ["quick"]}
+{"id": "kutch-new-water", "input": "Alert me when new water appears in the Rann of Kutch", "expected": {"mode": "recurring"}, "tags": ["quick"]}
+{"id": "amazon-q1-2025", "input": "Scan the Amazon basin from January to March 2025 for vegetation loss", "expected": {"mode": "historical"}}
+{"id": "california-until-year-end", "input": "Keep an eye on burn scars in California until the end of the year", "expected": {"mode": "recurring"}}
+{"id": "karnataka-weekly", "input": "Check every week whether reservoir levels in Karnataka are dropping", "expected": {"mode": "recurring"}}
+{"id": "delhi-may-2023", "input": "Compare land surface temperature over Delhi in May 2023", "expected": {"mode": "historical"}}
+{"id": "iowa-next-harvest", "input": "Track crop health in Iowa through next harvest", "expected": {"mode": "recurring"}}
+{"id": "assam-july-2022", "input": "What did the floods in Assam look like in July 2022?", "expected": {"mode": "historical"}}
+{"id": "victoria-last-three-months", "input": "Look at the last three months of water extent in Lake Victoria", "expected": {"mode": "historical"}, "tags": ["quick"]}
+{"id": "kerala-starting-now", "input": "Starting now, tell me about any flooding in Kerala", "expected": {"mode": "recurring"}, "tags": ["quick"]}

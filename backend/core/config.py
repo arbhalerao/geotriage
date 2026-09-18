@@ -19,6 +19,11 @@ class Settings(BaseSettings):
     MINIO_ROOT_PASSWORD: str
     MINIO_BUCKET: str
 
+    LLM_BASE_URL: str = "http://ollama:11434"
+    LLM_MODEL: str = "qwen3:4b-instruct-2507-q4_K_M"
+    LLM_TIMEOUT_SECONDS: float = 300.0
+    LLM_CONTEXT_TOKENS: int = 8192
+
     model_config = {"env_file": ".env", "extra": "ignore"}
 
     @property

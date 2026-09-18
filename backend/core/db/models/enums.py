@@ -51,3 +51,8 @@ class CompatibilityLevel(str, enum.Enum):
 class TimeMode(str, enum.Enum):
     historical = "historical"
     recurring = "recurring"
+
+
+class LlmCallOutcome(str, enum.Enum):
+    ok = "ok"
+    error = "error"

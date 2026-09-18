@@ -29,3 +29,6 @@ minio_data/
 .idea/
 .vscode/
 .run-scratch/
+
+# Eval replies replayed between runs
+evals/.cache/

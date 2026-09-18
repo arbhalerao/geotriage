@@ -2,7 +2,7 @@ BOOTSTRAP_PYTHON ?= python3
 VENV             := .venv
 PYTHON           := $(VENV)/bin/python
 DEPS             := $(VENV)/.installed
-PY_SOURCES       := backend tools
+PY_SOURCES       := backend tools evals
 
 REGISTRY         ?= localhost
 
@@ -19,9 +19,14 @@ SDK_DIR          ?= ../geotriage-sdk
 
 COMPOSE          ?= docker compose
 
+# The workflow builder's model; keep in step with LLM_MODEL in backend/core/config.py.
+LLM_MODEL        ?= qwen3:4b-instruct-2507-q4_K_M
+SUITE            ?= time_mode
+
 .DEFAULT_GOAL := help
 .PHONY: help venv install test fmt fmt-check check typecheck \
-        vendor-sdk vendor-check sdk-image builtins examples up down down-v restart build logs ps migrate psql clean
+        vendor-sdk vendor-check sdk-image builtins examples up down down-v restart build logs ps migrate psql clean \
+        llm-pull llm-check eval eval-compare
 
 help:  ## print this help
 	@grep -hE '^[a-z][a-zA-Z0-9_-]*:.*?## ' $(MAKEFILE_LIST) \
@@ -113,6 +118,18 @@ migrate:  ## apply database migrations
 
 psql:  ## open a database shell
 	$(COMPOSE) exec postgres psql -U geotriage -d geotriage
+
+llm-pull:  ## download the workflow builder's model into the ollama container
+	$(COMPOSE) exec ollama ollama pull $(LLM_MODEL)
+
+llm-check:  ## ask the model one question from the worker, and record the call
+	$(COMPOSE) exec worker python -m llm check
+
+eval: $(DEPS)  ## run an eval suite: make eval SUITE=time_mode [ARGS="--tag quick --no-cache"]
+	PYTHONPATH=backend LLM_BASE_URL=http://localhost:11434 $(PYTHON) -m evals run $(SUITE) $(ARGS)
+
+eval-compare: $(DEPS)  ## compare the last two runs of a suite, or two named runs: make eval-compare SUITE=time_mode [ARGS="a.json b.json"]
+	PYTHONPATH=backend $(PYTHON) -m evals compare $(SUITE) $(ARGS)
 
 clean:  ## remove the venv, caches and build artifacts (leaves docker alone)
 	find . -name __pycache__ -type d -prune -exec rm -rf {} + 2>/dev/null || true

@@ -58,6 +58,16 @@ services:
       minio: { condition: service_started }
     restart: unless-stopped
 
+  ollama:
+    image: ollama/ollama:latest
+    ports: ["11434:11434"]
+    environment:
+      # loading the model is most of a cold call on a CPU, so keep it in memory between drafts
+      OLLAMA_KEEP_ALIVE: 30m
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
   # Application services
   api:
     build:
@@ -104,6 +114,7 @@ services:
 volumes:
   postgres_data:
   minio_data:
+  ollama_data:
 
 configs:
   postgis_init:
