@@ -1,0 +1,26 @@
+{
+  "query": "Upper Lake, Bhopal, India",
+  "candidates": [
+    {
+      "place_id": 247882169,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 5414768,
+      "lat": "23.2399890",
+      "lon": "77.3546616",
+      "category": "water",
+      "type": "lake",
+      "place_rank": 20,
+      "importance": 0.13339666361486227,
+      "addresstype": "lake",
+      "name": "Upper Lake",
+      "display_name": "Upper Lake, Bhopal, Huzur Tahsil, Bhopal, Madhya Pradesh, 462001, India",
+      "boundingbox": [
+        "23.2083721",
+        "23.2716407",
+        "77.2657213",
+        "77.3981795"
+      ]
+    }
+  ]
+}

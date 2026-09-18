@@ -9,7 +9,7 @@ import json
 import sys
 from pathlib import Path
 
-from evals.runner import CACHE_DIR, compare, load_cases, run_suite, save_run, saved_runs
+from evals.runner import CACHE_DIR, compare, load_cases, meets, run_suite, save_run, saved_runs
 from evals.suites import SUITES
 
 
@@ -21,32 +21,41 @@ def _suite(name: str):
 
 def cmd_list(_args) -> int:
     for name, suite in sorted(SUITES.items()):
-        print(f"{name:<16}{suite.description}")
+        print(f"{name:<24}{suite.description}")
     return 0
 
 
 def cmd_run(args) -> int:
-    from llm import CachedClient, default_client
+    from llm import CachedClient, FakeClient, default_client
 
     suite = _suite(args.suite)
-    cases = load_cases(suite.name, tag=args.tag)
+    cases = load_cases(suite.dataset_name, tag=args.tag)
     if not cases:
         sys.exit(f"no cases in {suite.name} tagged {args.tag!r}")
 
-    client = default_client()
-    if not args.no_cache:
-        client = CachedClient(client, CACHE_DIR / suite.name)
+    if not suite.uses_model:
+        client = FakeClient([])
+    else:
+        client = default_client()
+        if not args.no_cache:
+            client = CachedClient(client, CACHE_DIR / suite.name)
 
-    print(f"{suite.name}: {len(cases)} case(s) against {client.identity['model']}")
+    print(f"{suite.name}: {len(cases)} case(s) against {client.identity.get('model', 'no model')}")
     run = run_suite(suite, cases, client)
     run["tag"] = args.tag
     path = save_run(run)
 
     print()
+    targets = suite.targets or {}
     for metric in suite.metrics:
-        print(f"{metric:<16}{run['summary'][metric]:.3f}")
-    print(f"{'errors':<16}{run['summary']['errors']}")
-    print(f"{'median':<16}{run['summary']['median_ms'] / 1000:.1f} s")
+        value = run["summary"][metric]
+        line = f"{metric:<20}{'n/a' if value is None else f'{value:.3f}':>8}"
+        if metric in targets:
+            op, bar = targets[metric]
+            line += f"   target {op} {bar:.2f}  {'met' if meets(value, targets[metric]) else 'missed'}"
+        print(line)
+    print(f"{'errors':<20}{run['summary']['errors']}")
+    print(f"{'median':<20}{run['summary']['median_ms'] / 1000:.1f} s")
     print(f"\nsaved {path}")
     return 0
 

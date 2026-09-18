@@ -1,0 +1,47 @@
+{
+  "query": "Lahore, Pakistan",
+  "candidates": [
+    {
+      "place_id": 246106025,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 1886594378,
+      "lat": "31.5656822",
+      "lon": "74.3141829",
+      "category": "place",
+      "type": "city",
+      "place_rank": 16,
+      "importance": 0.6560037220993477,
+      "addresstype": "city",
+      "name": "Lahore",
+      "display_name": "Lahore, Lahore City Tehsil, Lahore District, Lahore Division, Punjab, 54100, Pakistan",
+      "boundingbox": [
+        "31.4056822",
+        "31.7256822",
+        "74.1541829",
+        "74.4741829"
+      ]
+    },
+    {
+      "place_id": 243892545,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 16117666,
+      "lat": "31.4568448",
+      "lon": "74.4078357",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 12,
+      "importance": 0.4656832872370292,
+      "addresstype": "county",
+      "name": "Lahore District",
+      "display_name": "Lahore District, Lahore Division, Punjab, Pakistan",
+      "boundingbox": [
+        "31.2005939",
+        "31.7134238",
+        "74.0068490",
+        "74.6546712"
+      ]
+    }
+  ]
+}

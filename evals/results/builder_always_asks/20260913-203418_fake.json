@@ -1,0 +1,1373 @@
+{
+  "suite": "builder_always_asks",
+  "started_at": "2026-09-13T20:34:18.463604+00:00",
+  "finished_at": "2026-09-13T20:34:18.468535+00:00",
+  "git": "7086783-dirty",
+  "client": {
+    "provider": "fake"
+  },
+  "prompts": {},
+  "summary": {
+    "kind": 0.233,
+    "valid": 0.0,
+    "mode": 0.0,
+    "dates": 0.0,
+    "area": 0.0,
+    "model": 0.0,
+    "collections": 0.0,
+    "asks_needlessly": 1.0,
+    "interval": 0.0,
+    "asks_when_needed": 1.0,
+    "cases": 60,
+    "errors": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "median_ms": 0
+  },
+  "cases": [
+    {
+      "id": "dhaka-water-2024",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "dhaka-floods-daily",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0,
+        "interval": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "delhi-heat-may-2024",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "chilika-weekly",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0,
+        "interval": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "patna-floods-aug-2025",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "cairo-temperature-summer-2025",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "jakarta-floods-daily",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0,
+        "interval": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "lake-urmia-2023",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "phoenix-heat-daily",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0,
+        "interval": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "kerala-floods-aug-2018",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "mettur-reservoir-weekly",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0,
+        "interval": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "seville-heat-july-2025",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "lagos-floods-twice-daily",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0,
+        "interval": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "poyang-lake-2022",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "karachi-heat-6h",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0,
+        "interval": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "valencia-floods-nov-2024",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "pune-lake-last-summer",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "ahmedabad-heat-last-month",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "bangkok-water-last-year",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "hyderabad-lakes-past-90-days",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "kutch-alert-new-water",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0,
+        "interval": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "dubai-heat-next-3-months",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0,
+        "interval": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "manila-starting-now",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0,
+        "interval": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "lahore-heat-june-2025",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "brahmaputra-hourly",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0,
+        "interval": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "sylhet-floods-2022",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "athens-heat-through-next-summer",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0,
+        "interval": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "riyadh-heat-first-half-2026",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "kolkata-floods-till-diwali",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0,
+        "interval": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "bhopal-lake-spring",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "springfield-which",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_when_needed": 1.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "hyderabad-which",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_when_needed": 1.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "georgia-which",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_when_needed": 1.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "portland-which",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_when_needed": 1.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "victoria-which",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_when_needed": 1.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "chennai-what",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_when_needed": 1.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "nairobi-what",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_when_needed": 1.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "mumbai-when",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_when_needed": 1.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "cairo-heat-when",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_when_needed": 1.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "my-farm-where",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_when_needed": 1.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "the-city-where",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_when_needed": 1.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "somewhere-coastal",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_when_needed": 1.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "pune-heat-sentinel",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "assam-watch-past-end",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 1.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "delhi-heat-future",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 1.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "punjab-vegetation",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "mumbai-ships",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "delhi-air-quality",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "chennai-radar",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "alps-snow",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "tokyo-night-lights",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "dhaka-water-with-lst",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "africa-daily",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "india-heat-2024",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "amazon-basin-water",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "sahara-heat-weekly",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "whole-planet",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "australia-2023",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "canada-floods",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    },
+    {
+      "id": "usa-heat",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "draft": null,
+        "message": "Could you tell me more about what you want to watch?"
+      },
+      "scores": {
+        "kind": 0.0
+      },
+      "error": null,
+      "calls": 0,
+      "cached": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "duration_ms": 0
+    }
+  ],
+  "tag": null
+}

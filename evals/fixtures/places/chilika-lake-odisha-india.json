@@ -1,0 +1,26 @@
+{
+  "query": "Chilika Lake, Odisha, India",
+  "candidates": [
+    {
+      "place_id": 250108096,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 1917079,
+      "lat": "19.6853195",
+      "lon": "85.2503699",
+      "category": "water",
+      "type": "lagoon",
+      "place_rank": 22,
+      "importance": 0.42790132098722905,
+      "addresstype": "lagoon",
+      "name": "Chilika Lake",
+      "display_name": "Chilika Lake, Krushna Prasad, Puri, Odisha, India",
+      "boundingbox": [
+        "19.4673244",
+        "19.9033379",
+        "85.0934163",
+        "85.6574151"
+      ]
+    }
+  ]
+}

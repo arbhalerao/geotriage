@@ -1,0 +1,89 @@
+{
+  "query": "Hyderabad",
+  "candidates": [
+    {
+      "place_id": 249417905,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 7868535,
+      "lat": "17.3605890",
+      "lon": "78.4740613",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 16,
+      "importance": 0.6445777068319916,
+      "addresstype": "city",
+      "name": "Hyderabad",
+      "display_name": "Hyderabad, Bahadurpura mandal, Hyderabad, Telangana, India",
+      "boundingbox": [
+        "17.2916377",
+        "17.5608321",
+        "78.2387067",
+        "78.6223912"
+      ]
+    },
+    {
+      "place_id": 246476942,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 14480894,
+      "lat": "25.4075358",
+      "lon": "68.3613456",
+      "category": "place",
+      "type": "city",
+      "place_rank": 16,
+      "importance": 0.492575131998027,
+      "addresstype": "city",
+      "name": "حیدرآباد",
+      "display_name": "حیدرآباد, Hyderabad District, Hyderabad Division, Sindh, Pakistan",
+      "boundingbox": [
+        "25.3434571",
+        "25.4711398",
+        "68.3102290",
+        "68.4200933"
+      ]
+    },
+    {
+      "place_id": 246582272,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 16362308,
+      "lat": "25.3868287",
+      "lon": "68.3714971",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 14,
+      "importance": 0.492575131998027,
+      "addresstype": "city",
+      "name": "Hyderabad City Taluka",
+      "display_name": "Hyderabad City Taluka, Hyderabad District, Hyderabad Division, Sindh, 91000, Pakistan",
+      "boundingbox": [
+        "25.3607042",
+        "25.4411614",
+        "68.3305109",
+        "68.4277109"
+      ]
+    },
+    {
+      "place_id": 249620464,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 7255986,
+      "lat": "17.3887860",
+      "lon": "78.4610647",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 10,
+      "importance": 0.46901845031743994,
+      "addresstype": "state_district",
+      "name": "Hyderabad",
+      "display_name": "Hyderabad, Telangana, India",
+      "boundingbox": [
+        "17.2931295",
+        "17.4843058",
+        "78.3819883",
+        "78.5563157"
+      ]
+    }
+  ]
+}

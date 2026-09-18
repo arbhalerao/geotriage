@@ -1,0 +1,26 @@
+{
+  "query": "Stanley Reservoir, Tamil Nadu, India",
+  "candidates": [
+    {
+      "place_id": 254062416,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 7822700,
+      "lat": "11.9086250",
+      "lon": "77.8007315",
+      "category": "water",
+      "type": "reservoir",
+      "place_rank": 20,
+      "importance": 0.3015950553092256,
+      "addresstype": "reservoir",
+      "name": "Stanley Reservoir",
+      "display_name": "Stanley Reservoir, Mettur, Pennagaram, Dharmapuri, Tamil Nadu, India",
+      "boundingbox": [
+        "11.7989747",
+        "12.0181556",
+        "77.6592500",
+        "77.9090000"
+      ]
+    }
+  ]
+}

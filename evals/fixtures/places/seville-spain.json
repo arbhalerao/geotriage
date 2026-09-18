@@ -1,0 +1,47 @@
+{
+  "query": "Seville, Spain",
+  "candidates": [
+    {
+      "place_id": 296573990,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 342563,
+      "lat": "37.3886303",
+      "lon": "-5.9953403",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 16,
+      "importance": 0.7297329708417591,
+      "addresstype": "city",
+      "name": "Seville",
+      "display_name": "Seville, Sevilla, Andalusia, Spain",
+      "boundingbox": [
+        "37.3002036",
+        "37.4529579",
+        "-6.0329183",
+        "-5.8191571"
+      ]
+    },
+    {
+      "place_id": 296579643,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 349008,
+      "lat": "37.5192586",
+      "lon": "-5.6504755",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 10,
+      "importance": 0.5982611303074268,
+      "addresstype": "province",
+      "name": "Sevilla",
+      "display_name": "Sevilla, Andalusia, Spain",
+      "boundingbox": [
+        "36.8421915",
+        "38.1970901",
+        "-6.5385147",
+        "-4.6533503"
+      ]
+    }
+  ]
+}

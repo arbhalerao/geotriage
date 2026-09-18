@@ -1,0 +1,47 @@
+{
+  "query": "Delhi, India",
+  "candidates": [
+    {
+      "place_id": 423850235,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 21180767,
+      "lat": "28.6664535",
+      "lon": "77.2169781",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 16,
+      "importance": 0.6955612505047041,
+      "addresstype": "city",
+      "name": "Delhi",
+      "display_name": "Delhi, Old Delhi, Delhi, India",
+      "boundingbox": [
+        "28.4046285",
+        "28.8834464",
+        "76.8388351",
+        "77.3453379"
+      ]
+    },
+    {
+      "place_id": 245239503,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 1942586,
+      "lat": "28.6328027",
+      "lon": "77.2197713",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 8,
+      "importance": 0.6955612505047041,
+      "addresstype": "state",
+      "name": "Delhi",
+      "display_name": "Delhi, India",
+      "boundingbox": [
+        "28.4046285",
+        "28.8834464",
+        "76.8388351",
+        "77.3453379"
+      ]
+    }
+  ]
+}

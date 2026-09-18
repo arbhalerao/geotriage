@@ -1,0 +1,26 @@
+{
+  "query": "Bangkok, Thailand",
+  "candidates": [
+    {
+      "place_id": 420888240,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 92277,
+      "lat": "13.7524938",
+      "lon": "100.4935089",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 8,
+      "importance": 0.729044574018172,
+      "addresstype": "city",
+      "name": "Bangkok",
+      "display_name": "Bangkok, Thailand",
+      "boundingbox": [
+        "13.2191019",
+        "13.9551693",
+        "100.3278772",
+        "100.9386039"
+      ]
+    }
+  ]
+}

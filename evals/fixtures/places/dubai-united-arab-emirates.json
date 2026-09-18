@@ -1,0 +1,89 @@
+{
+  "query": "Dubai, United Arab Emirates",
+  "candidates": [
+    {
+      "place_id": 45835799,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 4479752,
+      "lat": "25.0742823",
+      "lon": "55.1885624",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 25,
+      "importance": 0.7025259019274822,
+      "addresstype": "administrative",
+      "name": "Dubai",
+      "display_name": "Dubai, Dubai Emirate, United Arab Emirates",
+      "boundingbox": [
+        "24.6230801",
+        "25.5250676",
+        "54.7153981",
+        "56.2052980"
+      ]
+    },
+    {
+      "place_id": 417695616,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 31248510,
+      "lat": "25.2647227",
+      "lon": "55.2924146",
+      "category": "place",
+      "type": "city",
+      "place_rank": 16,
+      "importance": 0.7025259019274822,
+      "addresstype": "city",
+      "name": "Dubai",
+      "display_name": "Dubai, Dubai Emirate, United Arab Emirates",
+      "boundingbox": [
+        "25.1047227",
+        "25.4247227",
+        "55.1324146",
+        "55.4524146"
+      ]
+    },
+    {
+      "place_id": 46208776,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 3766483,
+      "lat": "25.0790538",
+      "lon": "55.4796626",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 8,
+      "importance": 0.5949669080768216,
+      "addresstype": "state",
+      "name": "Dubai Emirate",
+      "display_name": "Dubai Emirate, United Arab Emirates",
+      "boundingbox": [
+        "24.6230801",
+        "25.5250676",
+        "54.4564551",
+        "56.2052980"
+      ]
+    },
+    {
+      "place_id": 46216006,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 13277432918,
+      "lat": "24.8047465",
+      "lon": "56.1460508",
+      "category": "place",
+      "type": "state",
+      "place_rank": 8,
+      "importance": 0.5949669080768216,
+      "addresstype": "state",
+      "name": "Dubai",
+      "display_name": "Dubai, United Arab Emirates",
+      "boundingbox": [
+        "22.2047465",
+        "27.4047465",
+        "53.5460508",
+        "58.7460508"
+      ]
+    }
+  ]
+}

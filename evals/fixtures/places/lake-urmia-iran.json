@@ -1,0 +1,26 @@
+{
+  "query": "Lake Urmia, Iran",
+  "candidates": [
+    {
+      "place_id": 207326601,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 8847642,
+      "lat": "37.6883967",
+      "lon": "45.4869072",
+      "category": "water",
+      "type": "lake",
+      "place_rank": 20,
+      "importance": 0.565822807959334,
+      "addresstype": "lake",
+      "name": "Lake Urmia",
+      "display_name": "Lake Urmia, East Azerbaijan Province, Iran",
+      "boundingbox": [
+        "37.1331558",
+        "38.2421070",
+        "45.0515120",
+        "45.8073663"
+      ]
+    }
+  ]
+}

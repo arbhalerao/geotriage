@@ -1,0 +1,110 @@
+{
+  "query": "Victoria",
+  "candidates": [
+    {
+      "place_id": 23081446,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 2316741,
+      "lat": "-36.5986096",
+      "lon": "144.6780052",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 8,
+      "importance": 0.6858710563331263,
+      "addresstype": "state",
+      "name": "Victoria",
+      "display_name": "Victoria, Australia",
+      "boundingbox": [
+        "-39.1984867",
+        "-33.9807974",
+        "140.9619017",
+        "150.0332821"
+      ]
+    },
+    {
+      "place_id": 378456095,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 2221062,
+      "lat": "48.4283182",
+      "lon": "-123.3649530",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 16,
+      "importance": 0.6351834588140912,
+      "addresstype": "city",
+      "name": "Victoria",
+      "display_name": "Victoria, Capital Regional District, British Columbia, Canada",
+      "boundingbox": [
+        "48.4028294",
+        "48.4504995",
+        "-123.3980750",
+        "-123.3224223"
+      ]
+    },
+    {
+      "place_id": 315576266,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 1828436,
+      "lat": "28.8026443",
+      "lon": "-96.9766308",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 12,
+      "importance": 0.5928464578483361,
+      "addresstype": "county",
+      "name": "Victoria County",
+      "display_name": "Victoria County, Texas, United States",
+      "boundingbox": [
+        "28.4857120",
+        "29.1038648",
+        "-97.3057636",
+        "-96.6475964"
+      ]
+    },
+    {
+      "place_id": 315573757,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 6587525,
+      "lat": "28.7997547",
+      "lon": "-97.0064246",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 16,
+      "importance": 0.5776529736238374,
+      "addresstype": "city",
+      "name": "Victoria",
+      "display_name": "Victoria, Victoria County, Texas, United States",
+      "boundingbox": [
+        "28.7633121",
+        "28.9057481",
+        "-97.0514347",
+        "-96.9002707"
+      ]
+    },
+    {
+      "place_id": 37581805,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 4547527878,
+      "lat": "-4.6232085",
+      "lon": "55.4523590",
+      "category": "place",
+      "type": "city",
+      "place_rank": 15,
+      "importance": 0.5453080347801467,
+      "addresstype": "city",
+      "name": "Victoria",
+      "display_name": "Victoria, Bel Air, Seychelles",
+      "boundingbox": [
+        "-4.7832085",
+        "-4.4632085",
+        "55.2923590",
+        "55.6123590"
+      ]
+    }
+  ]
+}

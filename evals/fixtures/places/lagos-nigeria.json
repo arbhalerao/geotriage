@@ -1,0 +1,47 @@
+{
+  "query": "Lagos, Nigeria",
+  "candidates": [
+    {
+      "place_id": 41132783,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 27565124,
+      "lat": "6.4550575",
+      "lon": "3.3941795",
+      "category": "place",
+      "type": "city",
+      "place_rank": 16,
+      "importance": 0.6540811438950576,
+      "addresstype": "city",
+      "name": "Lagos",
+      "display_name": "Lagos, Lagos Island, Lagos State, 100242, Nigeria",
+      "boundingbox": [
+        "6.2950575",
+        "6.6150575",
+        "3.2341795",
+        "3.5541795"
+      ]
+    },
+    {
+      "place_id": 41132562,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 3718182,
+      "lat": "6.5269033",
+      "lon": "3.5774005",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 8,
+      "importance": 0.5478113605430739,
+      "addresstype": "state",
+      "name": "Lagos State",
+      "display_name": "Lagos State, Nigeria",
+      "boundingbox": [
+        "6.3666840",
+        "6.6967964",
+        "2.7059846",
+        "4.3509056"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "query": "Patna, Bihar, India",
+  "candidates": [
+    {
+      "place_id": 381901577,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "way",
+      "osm_id": 383774533,
+      "lat": "25.6093239",
+      "lon": "85.1235252",
+      "category": "place",
+      "type": "city",
+      "place_rank": 16,
+      "importance": 0.6283141403317186,
+      "addresstype": "city",
+      "name": "Patna",
+      "display_name": "Patna, Patna Rural, Patna, Bihar, India",
+      "boundingbox": [
+        "25.5389546",
+        "25.6510479",
+        "85.0118412",
+        "85.2641902"
+      ]
+    },
+    {
+      "place_id": 242620416,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 1960296,
+      "lat": "25.4680538",
+      "lon": "85.1952852",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 10,
+      "importance": 0.5903928151504004,
+      "addresstype": "state_district",
+      "name": "Patna",
+      "display_name": "Patna, Bihar, India",
+      "boundingbox": [
+        "25.2032601",
+        "25.7328751",
+        "84.6869288",
+        "86.0689271"
+      ]
+    },
+    {
+      "place_id": 243178190,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 316417101,
+      "lat": "25.4166670",
+      "lon": "85.1666670",
+      "category": "place",
+      "type": "county",
+      "place_rank": 12,
+      "importance": 0.24000999999999997,
+      "addresstype": "county",
+      "name": "Patna",
+      "display_name": "Patna, Bihar, India",
+      "boundingbox": [
+        "24.7166670",
+        "26.1166670",
+        "84.4666670",
+        "85.8666670"
+      ]
+    }
+  ]
+}

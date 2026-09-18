@@ -1,0 +1,26 @@
+{
+  "query": "Poyang Lake, Jiangxi, China",
+  "candidates": [
+    {
+      "place_id": 225006008,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 406413,
+      "lat": "29.1859199",
+      "lon": "116.2046216",
+      "category": "water",
+      "type": "lake",
+      "place_rank": 20,
+      "importance": 0.4750799819476357,
+      "addresstype": "lake",
+      "name": "Poyang Lake",
+      "display_name": "Poyang Lake, Yongxiu County, Jiujiang, Jiangxi, China",
+      "boundingbox": [
+        "28.3940383",
+        "29.7555059",
+        "115.8453423",
+        "116.7639076"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "query": "Georgia",
+  "candidates": [
+    {
+      "place_id": 206781594,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 28699,
+      "lat": "41.6808672",
+      "lon": "44.0287806",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 4,
+      "importance": 0.8029981039781748,
+      "addresstype": "country",
+      "name": "Georgia",
+      "display_name": "Georgia",
+      "boundingbox": [
+        "41.0551284",
+        "43.5864294",
+        "39.8844803",
+        "46.7365373"
+      ]
+    },
+    {
+      "place_id": 343003582,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 161957,
+      "lat": "32.3293809",
+      "lon": "-83.1137366",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 8,
+      "importance": 0.7748242886610429,
+      "addresstype": "state",
+      "name": "Georgia",
+      "display_name": "Georgia, United States",
+      "boundingbox": [
+        "30.3556558",
+        "35.0006769",
+        "-85.6051650",
+        "-80.7514290"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "query": "Rann of Kutch, Gujarat, India",
+  "candidates": [
+    {
+      "place_id": 247915857,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 5448448,
+      "lat": "23.7905519",
+      "lon": "70.4966137",
+      "category": "natural",
+      "type": "wetland",
+      "place_rank": 22,
+      "importance": 0.4025263861160931,
+      "addresstype": "wetland",
+      "name": "Rann of Kutch",
+      "display_name": "Rann of Kutch, Gujarat, India",
+      "boundingbox": [
+        "23.0952310",
+        "24.4858576",
+        "69.0076436",
+        "71.3942410"
+      ]
+    }
+  ]
+}

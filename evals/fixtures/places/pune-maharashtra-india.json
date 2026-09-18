@@ -1,0 +1,47 @@
+{
+  "query": "Pune, Maharashtra, India",
+  "candidates": [
+    {
+      "place_id": 419116252,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 16174445,
+      "lat": "18.5213738",
+      "lon": "73.8545071",
+      "category": "place",
+      "type": "city",
+      "place_rank": 16,
+      "importance": 0.6399667627949028,
+      "addresstype": "city",
+      "name": "Pune",
+      "display_name": "Pune, Pune City Subdistrict, Pune District, Maharashtra, 411001, India",
+      "boundingbox": [
+        "18.3613738",
+        "18.6813738",
+        "73.6945071",
+        "74.0145071"
+      ]
+    },
+    {
+      "place_id": 247044037,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 1986140,
+      "lat": "18.6448627",
+      "lon": "73.9224157",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 10,
+      "importance": 0.5324033172117643,
+      "addresstype": "state_district",
+      "name": "Pune District",
+      "display_name": "Pune District, Maharashtra, India",
+      "boundingbox": [
+        "17.8950735",
+        "19.3947459",
+        "73.3227109",
+        "75.1636505"
+      ]
+    }
+  ]
+}

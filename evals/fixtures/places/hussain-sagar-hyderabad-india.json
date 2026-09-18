@@ -1,0 +1,26 @@
+{
+  "query": "Hussain Sagar, Hyderabad, India",
+  "candidates": [
+    {
+      "place_id": 258775698,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 2833155,
+      "lat": "17.4229113",
+      "lon": "78.4754210",
+      "category": "water",
+      "type": "lake",
+      "place_rank": 20,
+      "importance": 0.37244305375643855,
+      "addresstype": "lake",
+      "name": "Hussain Sagar",
+      "display_name": "Hussain Sagar, Greater Hyderabad Municipal Corporation Central Zone, Hyderabad, Khairatabad mandal, Hyderabad, Telangana, 500080, India",
+      "boundingbox": [
+        "17.4085927",
+        "17.4373612",
+        "78.4623422",
+        "78.4867613"
+      ]
+    }
+  ]
+}

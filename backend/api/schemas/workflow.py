@@ -5,6 +5,10 @@ from typing import Any
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
 class ThresholdInput(BaseModel):
     green_min: float
     green_max: float
@@ -44,7 +48,7 @@ class WorkflowCreate(BaseModel):
 
     @model_validator(mode="after")
     def check_mode(self) -> "WorkflowCreate":
-        now = datetime.now(timezone.utc)
+        now = utc_now()
         if self.time_mode == "recurring":
             if self.poll_interval_minutes is None:
                 raise ValueError("recurring workflows need a poll_interval_minutes")

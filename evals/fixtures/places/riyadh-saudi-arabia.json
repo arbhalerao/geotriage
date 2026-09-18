@@ -1,0 +1,47 @@
+{
+  "query": "Riyadh, Saudi Arabia",
+  "candidates": [
+    {
+      "place_id": 47497071,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 315358390,
+      "lat": "24.6389160",
+      "lon": "46.7160104",
+      "category": "place",
+      "type": "city",
+      "place_rank": 15,
+      "importance": 0.6771953344627474,
+      "addresstype": "city",
+      "name": "Riyadh",
+      "display_name": "Riyadh, Riyadh governorate, Riyadh Region, 12643, Saudi Arabia",
+      "boundingbox": [
+        "24.4789160",
+        "24.7989160",
+        "46.5560104",
+        "46.8760104"
+      ]
+    },
+    {
+      "place_id": 45226568,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 3678409,
+      "lat": "23.3333330",
+      "lon": "45.3333330",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 8,
+      "importance": 0.5610282379090329,
+      "addresstype": "state",
+      "name": "Riyadh Region",
+      "display_name": "Riyadh Region, Saudi Arabia",
+      "boundingbox": [
+        "19.2083336",
+        "27.7020999",
+        "41.6811300",
+        "48.2582000"
+      ]
+    }
+  ]
+}

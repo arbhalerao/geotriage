@@ -1,0 +1,47 @@
+{
+  "query": "Sylhet, Bangladesh",
+  "candidates": [
+    {
+      "place_id": 241867248,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 3921222,
+      "lat": "24.7358854",
+      "lon": "91.6852476",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 8,
+      "importance": 0.5232849667290126,
+      "addresstype": "state",
+      "name": "Sylhet Division",
+      "display_name": "Sylhet Division, Bangladesh",
+      "boundingbox": [
+        "23.9743765",
+        "25.2073482",
+        "90.9277778",
+        "92.4994356"
+      ]
+    },
+    {
+      "place_id": 241730733,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 264490438,
+      "lat": "24.8992200",
+      "lon": "91.8685271",
+      "category": "place",
+      "type": "city",
+      "place_rank": 16,
+      "importance": 0.5086545353931677,
+      "addresstype": "city",
+      "name": "Sylhet",
+      "display_name": "Sylhet, Sylhet Sadar Upazila, Sylhet District, Sylhet Division, 3100, Bangladesh",
+      "boundingbox": [
+        "24.7392200",
+        "25.0592200",
+        "91.7085271",
+        "92.0285271"
+      ]
+    }
+  ]
+}

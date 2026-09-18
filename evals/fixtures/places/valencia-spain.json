@@ -1,0 +1,68 @@
+{
+  "query": "Valencia, Spain",
+  "candidates": [
+    {
+      "place_id": 295418321,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 344953,
+      "lat": "39.4697065",
+      "lon": "-0.3763353",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 16,
+      "importance": 0.7306288056783602,
+      "addresstype": "city",
+      "name": "Valencia",
+      "display_name": "Valencia, Comarca de València, Valencia, Valencian Community, Spain",
+      "boundingbox": [
+        "39.2784496",
+        "39.5666090",
+        "-0.4325512",
+        "-0.2725205"
+      ]
+    },
+    {
+      "place_id": 294883257,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 349043,
+      "lat": "39.6819591",
+      "lon": "-0.7654406",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 8,
+      "importance": 0.6906579481640391,
+      "addresstype": "state",
+      "name": "Valencian Community",
+      "display_name": "Valencian Community, Spain",
+      "boundingbox": [
+        "37.8437887",
+        "40.7886312",
+        "-1.5289448",
+        "0.6903174"
+      ]
+    },
+    {
+      "place_id": 294356221,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 349000,
+      "lat": "39.3342058",
+      "lon": "-0.7973474",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 10,
+      "importance": 0.6197091957583227,
+      "addresstype": "state_district",
+      "name": "Valencia",
+      "display_name": "Valencia, Valencian Community, Spain",
+      "boundingbox": [
+        "38.6865536",
+        "40.2116832",
+        "-1.5289448",
+        "-0.0247220"
+      ]
+    }
+  ]
+}

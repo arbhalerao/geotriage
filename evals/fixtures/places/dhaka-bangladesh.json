@@ -1,0 +1,68 @@
+{
+  "query": "Dhaka, Bangladesh",
+  "candidates": [
+    {
+      "place_id": 251256912,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 3442474911,
+      "lat": "23.7643863",
+      "lon": "90.3890144",
+      "category": "place",
+      "type": "city",
+      "place_rank": 15,
+      "importance": 0.6557635293352552,
+      "addresstype": "city",
+      "name": "Dhaka",
+      "display_name": "Dhaka, Dhaka Metropolitan, Dhaka District, Dhaka Division, 1215, Bangladesh",
+      "boundingbox": [
+        "23.6043863",
+        "23.9243863",
+        "90.2290144",
+        "90.5490144"
+      ]
+    },
+    {
+      "place_id": 248019579,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 3921322,
+      "lat": "23.9456166",
+      "lon": "90.2526382",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 8,
+      "importance": 0.5356968839109955,
+      "addresstype": "state",
+      "name": "Dhaka Division",
+      "display_name": "Dhaka Division, Bangladesh",
+      "boundingbox": [
+        "22.8456525",
+        "24.7886924",
+        "89.3012313",
+        "91.2487769"
+      ]
+    },
+    {
+      "place_id": 251118906,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 4773565,
+      "lat": "23.7804927",
+      "lon": "90.3582974",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 10,
+      "importance": 0.5043260863789039,
+      "addresstype": "state_district",
+      "name": "Dhaka District",
+      "display_name": "Dhaka District, Dhaka Division, Bangladesh",
+      "boundingbox": [
+        "23.5165574",
+        "24.0436647",
+        "90.0099270",
+        "90.5125674"
+      ]
+    }
+  ]
+}

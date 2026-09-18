@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from evals.runner import Suite, compare, load_cases, run_suite, save_run, saved_runs
+from evals.runner import Suite, compare, load_cases, meets, run_suite, save_run, saved_runs
 from llm import FakeClient, LLMError, Prompt, Reply
 
 
@@ -111,3 +111,12 @@ def test_a_comparison_calls_out_a_changed_prompt():
     before = run_suite(suite, CASES[:1], FakeClient(["yes"]), progress=quiet)
     after = {**before, "prompts": {"echo": "echo@new"}}
     assert "prompt changed" in compare(before, after, suite.metrics)
+
+
+def test_a_target_can_be_a_floor_or_a_ceiling():
+    assert meets(0.9, (">=", 0.85)) and not meets(0.8, (">=", 0.85))
+    assert meets(0.05, ("<=", 0.10)) and not meets(0.2, ("<=", 0.10))
+
+
+def test_a_metric_with_no_cases_never_meets_its_target():
+    assert not meets(None, (">=", 0.0))

@@ -1,0 +1,26 @@
+{
+  "query": "Alappuzha, Kerala, India",
+  "candidates": [
+    {
+      "place_id": 254633906,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 3743889,
+      "lat": "9.5003416",
+      "lon": "76.4123364",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 10,
+      "importance": 0.5151204957670074,
+      "addresstype": "state_district",
+      "name": "Alappuzha",
+      "display_name": "Alappuzha, Kerala, India",
+      "boundingbox": [
+        "9.1101406",
+        "9.8910134",
+        "76.2794604",
+        "76.6911251"
+      ]
+    }
+  ]
+}

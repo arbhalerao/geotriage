@@ -24,6 +24,17 @@ class Suite:
     prompts: Sequence[Prompt]
     run: Callable[[dict, Client], dict]
     score: Callable[[dict, dict], dict[str, float]]
+    dataset: str = ""
+    metrics_for: Callable[[dict], Sequence[str]] | None = None
+    uses_model: bool = True
+    targets: dict[str, tuple[str, float]] | None = None
+
+    @property
+    def dataset_name(self) -> str:
+        return self.dataset or self.name
+
+    def applicable(self, case: dict) -> Sequence[str]:
+        return self.metrics_for(case) if self.metrics_for else self.metrics
 
 
 def load_cases(suite: str, tag: str | None = None, directory: Path = DATASETS_DIR) -> list[dict]:
@@ -77,7 +88,7 @@ def run_suite(suite: Suite, cases: list[dict], client: Client, progress: Callabl
             scores = suite.score(case, output)
         except Exception as exc:  # noqa: BLE001 — a case that fails scores zero, and the run carries on
             error = f"{type(exc).__name__}: {exc}"
-            scores = {metric: 0.0 for metric in suite.metrics}
+            scores = {metric: 0.0 for metric in suite.applicable(case)}
             if isinstance(exc, LLMError) and exc.reply is not None:
                 output = {"unusable_reply": exc.reply.content}
 
@@ -95,7 +106,7 @@ def run_suite(suite: Suite, cases: list[dict], client: Client, progress: Callabl
                 "duration_ms": meter.duration_ms,
             }
         )
-        marks = " ".join(f"{m}={scores.get(m, 0):.2f}" for m in suite.metrics)
+        marks = " ".join(f"{m}={scores[m]:.2f}" for m in suite.metrics if m in scores)
         source = "cached" if meter.calls and meter.cached == meter.calls else f"{meter.duration_ms / 1000:.1f} s"
         progress(f"[{index}/{len(cases)}] {case['id']}  {marks}  ({source}){'  ' + error if error else ''}")
 
@@ -113,7 +124,10 @@ def run_suite(suite: Suite, cases: list[dict], client: Client, progress: Callabl
 
 def summarise(suite: Suite, results: list[dict]) -> dict:
     count = len(results)
-    summary = {metric: round(sum(r["scores"].get(metric, 0.0) for r in results) / count, 3) if count else 0.0 for metric in suite.metrics}
+    summary = {}
+    for metric in suite.metrics:
+        values = [r["scores"][metric] for r in results if metric in r["scores"]]
+        summary[metric] = round(sum(values) / len(values), 3) if values else None
     summary.update(
         cases=count,
         errors=sum(1 for r in results if r["error"]),
@@ -122,6 +136,13 @@ def summarise(suite: Suite, results: list[dict]) -> dict:
         median_ms=int(statistics.median(r["duration_ms"] for r in results)) if count else 0,
     )
     return summary
+
+
+def meets(value: float | None, target: tuple[str, float]) -> bool:
+    op, bar = target
+    if value is None:
+        return False
+    return value >= bar if op == ">=" else value <= bar
 
 
 def save_run(run: dict, directory: Path = RESULTS_DIR) -> Path:
@@ -150,12 +171,13 @@ def compare(before: dict, after: dict, metrics: Sequence[str]) -> str:
         # scores over different case sets aren't like for like, only the cases both ran are
         lines.append(f"different cases: {_cases_label(before)} -> {_cases_label(after)}")
 
-    lines += ["", f"{'':<16}{'before':>10}{'after':>10}{'change':>10}"]
+    lines += ["", f"{'':<20}{'before':>10}{'after':>10}{'change':>10}"]
     for key in [*metrics, "errors", "median_ms", "output_tokens"]:
-        was, now = before["summary"].get(key, 0), after["summary"].get(key, 0)
-        change = now - was
+        was, now = before["summary"].get(key), after["summary"].get(key)
         fmt = "{:.3f}" if key in metrics else "{:.0f}"
-        lines.append(f"{key:<16}{fmt.format(was):>10}{fmt.format(now):>10}{('+' if change > 0 else '') + fmt.format(change) if change else '':>10}")
+        change = now - was if was is not None and now is not None else 0
+        shown = [fmt.format(v) if v is not None else "n/a" for v in (was, now)]
+        lines.append(f"{key:<20}{shown[0]:>10}{shown[1]:>10}{('+' if change > 0 else '') + fmt.format(change) if change else '':>10}")
 
     old_cases = {c["id"]: c for c in before["cases"]}
     new_cases = {c["id"]: c for c in after["cases"]}
@@ -164,7 +186,8 @@ def compare(before: dict, after: dict, metrics: Sequence[str]) -> str:
         if case_id not in old_cases:
             changed.append(f"  {case_id}  new case")
             continue
-        flips = [f"{m} {old_cases[case_id]['scores'].get(m, 0):.2f} -> {case['scores'].get(m, 0):.2f}" for m in metrics if old_cases[case_id]["scores"].get(m, 0) != case["scores"].get(m, 0)]
+        was, now = old_cases[case_id]["scores"], case["scores"]
+        flips = [f"{m} {was[m]:.2f} -> {now[m]:.2f}" for m in metrics if m in was and m in now and was[m] != now[m]]
         if flips:
             changed.append(f"  {case_id}  {', '.join(flips)}")
     changed += [f"  {case_id}  removed" for case_id in old_cases if case_id not in new_cases]
