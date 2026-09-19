@@ -1,0 +1,416 @@
+{
+  "suite": "builder",
+  "started_at": "2026-09-13T21:49:00.943113+00:00",
+  "finished_at": "2026-09-13T22:17:25.599627+00:00",
+  "git": "a0922ef-dirty",
+  "client": {
+    "provider": "ollama",
+    "model": "qwen3:4b-instruct-2507-q4_K_M",
+    "options": {
+      "temperature": 0,
+      "seed": 0,
+      "num_ctx": 8192
+    }
+  },
+  "prompts": {
+    "builder": "builder@168e50ac"
+  },
+  "summary": {
+    "kind": 0.071,
+    "valid": 0.0,
+    "mode": 0.0,
+    "dates": 0.0,
+    "area": 0.0,
+    "model": 0.0,
+    "collections": 0.0,
+    "asks_needlessly": 0.0,
+    "interval": 0.0,
+    "asks_when_needed": 0.0,
+    "cases": 14,
+    "errors": 0,
+    "input_tokens": 190537,
+    "output_tokens": 5456,
+    "median_ms": 120442
+  },
+  "cases": [
+    {
+      "id": "dhaka-water-2024",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "cannot",
+        "message": "I couldn't put together a workflow that the platform accepts: place_id None isn't one find_place returned; model_slug None isn't a detector from list_models; collection_slugs is empty; time_mode is empty; time_end None isn't a YYYY-MM-DD date",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 7,
+        "repairs": 2
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 0.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0
+      },
+      "error": null,
+      "calls": 13,
+      "cached": 0,
+      "input_tokens": 21574,
+      "output_tokens": 612,
+      "duration_ms": 220087
+    },
+    {
+      "id": "dhaka-floods-daily",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "cannot",
+        "message": "I couldn't put together a workflow that the platform accepts: place_id None isn't one find_place returned; model_slug None isn't a detector from list_models; collection_slugs is empty; time_mode is empty; time_end None isn't a YYYY-MM-DD date",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 7,
+        "repairs": 2
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 0.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0,
+        "interval": 0.0
+      },
+      "error": null,
+      "calls": 13,
+      "cached": 0,
+      "input_tokens": 21987,
+      "output_tokens": 662,
+      "duration_ms": 193730
+    },
+    {
+      "id": "delhi-heat-may-2024",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "cannot",
+        "message": "I couldn't put together a workflow that the platform accepts: place_id None isn't one find_place returned; model_slug None isn't a detector from list_models; collection_slugs is empty; time_mode is empty; time_end None isn't a YYYY-MM-DD date",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 5,
+        "repairs": 2
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 0.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0
+      },
+      "error": null,
+      "calls": 11,
+      "cached": 0,
+      "input_tokens": 14780,
+      "output_tokens": 369,
+      "duration_ms": 117148
+    },
+    {
+      "id": "jakarta-floods-daily",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "cannot",
+        "message": "I couldn't put together a workflow that the platform accepts: place_id None isn't one find_place returned; model_slug None isn't a detector from list_models; collection_slugs is empty; time_mode is empty; time_end None isn't a YYYY-MM-DD date",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 5,
+        "repairs": 2
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 0.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0,
+        "interval": 0.0
+      },
+      "error": null,
+      "calls": 11,
+      "cached": 0,
+      "input_tokens": 13922,
+      "output_tokens": 428,
+      "duration_ms": 118051
+    },
+    {
+      "id": "ahmedabad-heat-last-month",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "cannot",
+        "message": "I couldn't put together a workflow that the platform accepts: place_id None isn't one find_place returned; model_slug None isn't a detector from list_models; collection_slugs is empty; time_mode is empty; time_end None isn't a YYYY-MM-DD date",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 5,
+        "repairs": 2
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 0.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0
+      },
+      "error": null,
+      "calls": 11,
+      "cached": 0,
+      "input_tokens": 14751,
+      "output_tokens": 322,
+      "duration_ms": 110837
+    },
+    {
+      "id": "dubai-heat-next-3-months",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "cannot",
+        "message": "I couldn't put together a workflow that the platform accepts: place_id None isn't one find_place returned; model_slug None isn't a detector from list_models; collection_slugs is empty; time_mode is empty; time_end None isn't a YYYY-MM-DD date",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 5,
+        "repairs": 2
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 0.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0,
+        "interval": 0.0
+      },
+      "error": null,
+      "calls": 11,
+      "cached": 0,
+      "input_tokens": 16349,
+      "output_tokens": 410,
+      "duration_ms": 136933
+    },
+    {
+      "id": "brahmaputra-hourly",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "cannot",
+        "message": "I couldn't put together a workflow that the platform accepts: place_id None isn't one find_place returned; model_slug None isn't a detector from list_models; collection_slugs is empty; time_mode is empty; time_end None isn't a YYYY-MM-DD date",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 6,
+        "repairs": 2
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 0.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0,
+        "interval": 0.0
+      },
+      "error": null,
+      "calls": 12,
+      "cached": 0,
+      "input_tokens": 17667,
+      "output_tokens": 474,
+      "duration_ms": 141410
+    },
+    {
+      "id": "springfield-which",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "cannot",
+        "message": "I couldn't put together a workflow that the platform accepts: place_id None isn't one find_place returned; model_slug None isn't a detector from list_models; collection_slugs is empty; time_mode is empty; time_end None isn't a YYYY-MM-DD date",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 7,
+        "repairs": 2
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_when_needed": 0.0
+      },
+      "error": null,
+      "calls": 13,
+      "cached": 0,
+      "input_tokens": 23273,
+      "output_tokens": 619,
+      "duration_ms": 207782
+    },
+    {
+      "id": "chennai-what",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "cannot",
+        "message": "I couldn't put together a workflow that the platform accepts: place_id None isn't one find_place returned; model_slug None isn't a detector from list_models; collection_slugs is empty; time_mode is empty; time_end None isn't a YYYY-MM-DD date",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 5,
+        "repairs": 2
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_when_needed": 0.0
+      },
+      "error": null,
+      "calls": 11,
+      "cached": 0,
+      "input_tokens": 15454,
+      "output_tokens": 538,
+      "duration_ms": 159605
+    },
+    {
+      "id": "mumbai-when",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "cannot",
+        "message": "I couldn't put together a workflow that the platform accepts: place_id None isn't one find_place returned; model_slug None isn't a detector from list_models; collection_slugs is empty; time_mode is empty; time_end None isn't a YYYY-MM-DD date",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 5,
+        "repairs": 2
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_when_needed": 0.0
+      },
+      "error": null,
+      "calls": 11,
+      "cached": 0,
+      "input_tokens": 14270,
+      "output_tokens": 458,
+      "duration_ms": 122833
+    },
+    {
+      "id": "pune-heat-sentinel",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "question",
+        "message": "The detector for land surface temperature works with Landsat data, not Sentinel-2, so it cannot measure land surface temperature over Pune using Sentinel-2.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0
+      },
+      "scores": {
+        "kind": 0.0
+      },
+      "error": null,
+      "calls": 5,
+      "cached": 0,
+      "input_tokens": 4963,
+      "output_tokens": 138,
+      "duration_ms": 49831
+    },
+    {
+      "id": "punjab-vegetation",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "question",
+        "message": "The request is to monitor crop health, but neither the NDWI Water Body Detector nor the Land Surface Temperature Detector is designed to assess crop health. Could you clarify what specific crop health metric you'd like to monitor?",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0
+      },
+      "scores": {
+        "kind": 0.0
+      },
+      "error": null,
+      "calls": 5,
+      "cached": 0,
+      "input_tokens": 4794,
+      "output_tokens": 190,
+      "duration_ms": 53253
+    },
+    {
+      "id": "africa-daily",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "cannot",
+        "message": "the place 'Africa' is too_large for the detector to monitor.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 2,
+        "repairs": 0
+      },
+      "scores": {
+        "kind": 1.0
+      },
+      "error": null,
+      "calls": 4,
+      "cached": 0,
+      "input_tokens": 3249,
+      "output_tokens": 80,
+      "duration_ms": 24474
+    },
+    {
+      "id": "algeria-heat-weekly",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "question",
+        "message": "The place 'Algeria' matches multiple entries, including a country and a city district. The request asks to monitor across all of Algeria, which is too large for the platform to handle. Did you mean a specific city or district like Algiers?",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 2,
+        "repairs": 0
+      },
+      "scores": {
+        "kind": 0.0
+      },
+      "error": null,
+      "calls": 4,
+      "cached": 0,
+      "input_tokens": 3504,
+      "output_tokens": 156,
+      "duration_ms": 48481
+    }
+  ],
+  "tag": "quick"
+}

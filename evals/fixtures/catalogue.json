@@ -1,0 +1,332 @@
+{
+  "models": [
+    {
+      "descriptor_version": 1,
+      "kind": "model",
+      "slug": "ndwi-water-detector",
+      "name": "NDWI Water Body Detector",
+      "description": "Computes the Normalized Difference Water Index (NDWI = (Green \u2212 NIR) / (Green + NIR)) to detect surface water extent and flag changes relative to configured thresholds.",
+      "requires": {
+        "bands": [
+          "green",
+          "nir"
+        ],
+        "max_cloud_cover": 30.0,
+        "gsd_m": null,
+        "cost": "medium"
+      },
+      "prefilter": null,
+      "scores": {
+        "ndwi_mean": {
+          "description": "Mean NDWI across all valid pixels in the AOI",
+          "unit": "index",
+          "range": [
+            -1.0,
+            1.0
+          ],
+          "primary": true,
+          "thresholds": {
+            "green": [
+              0.3,
+              1.0
+            ],
+            "yellow": [
+              0.0,
+              0.3
+            ]
+          }
+        },
+        "water_fraction": {
+          "description": "Fraction of valid pixels classified as water (NDWI > 0.3)",
+          "unit": "fraction",
+          "range": [
+            0.0,
+            1.0
+          ],
+          "primary": false,
+          "thresholds": {
+            "green": [
+              0.5,
+              1.0
+            ],
+            "yellow": [
+              0.2,
+              0.5
+            ]
+          }
+        }
+      },
+      "rasters": [
+        "ndwi"
+      ]
+    },
+    {
+      "descriptor_version": 1,
+      "kind": "model",
+      "slug": "lst-detector",
+      "name": "Land Surface Temperature Detector",
+      "description": "Derives land surface temperature (LST) from Landsat thermal infrared imagery (Band 10 / LWIR11). Reports mean surface temperature and the fraction of pixels exceeding a configurable heat threshold.",
+      "requires": {
+        "bands": [
+          "thermal1"
+        ],
+        "max_cloud_cover": 20.0,
+        "gsd_m": null,
+        "cost": "medium"
+      },
+      "prefilter": null,
+      "scores": {
+        "lst_mean": {
+          "description": "Mean land surface temperature across valid pixels",
+          "unit": "\u00b0C",
+          "range": [
+            -20.0,
+            70.0
+          ],
+          "primary": true,
+          "thresholds": {
+            "green": [
+              -20.0,
+              30.0
+            ],
+            "yellow": [
+              30.0,
+              40.0
+            ]
+          }
+        },
+        "hot_fraction": {
+          "description": "Fraction of valid pixels above 35.0\u00b0C",
+          "unit": "fraction",
+          "range": [
+            0.0,
+            1.0
+          ],
+          "primary": false,
+          "thresholds": {
+            "green": [
+              0.0,
+              0.1
+            ],
+            "yellow": [
+              0.1,
+              0.3
+            ]
+          }
+        }
+      },
+      "rasters": [
+        "lst"
+      ]
+    }
+  ],
+  "providers": [
+    {
+      "descriptor_version": 1,
+      "kind": "provider",
+      "slug": "earth-search",
+      "name": "Earth Search (Element 84)",
+      "stac_api_url": "https://earth-search.aws.element84.com/v1",
+      "auth": "NoAuth",
+      "collections": {
+        "sentinel-2-l2a": {
+          "slug": "sentinel-2-l2a",
+          "display_name": "Sentinel-2 Level-2A",
+          "description": "ESA Copernicus Sentinel-2 surface reflectance (bottom-of-atmosphere), served as public cloud-optimized GeoTIFFs on AWS Open Data.",
+          "processing_level": "SR",
+          "sensor_type": "multispectral",
+          "resolution_m": 10.0,
+          "cloud_cover_property": "eo:cloud_cover",
+          "bands": [
+            {
+              "normalized_name": "coastal",
+              "asset_key": "coastal",
+              "description": "Coastal Aerosol (60m)",
+              "scale": 0.0001,
+              "offset": 0.0
+            },
+            {
+              "normalized_name": "blue",
+              "asset_key": "blue",
+              "description": "Blue (10m)",
+              "scale": 0.0001,
+              "offset": 0.0
+            },
+            {
+              "normalized_name": "green",
+              "asset_key": "green",
+              "description": "Green (10m)",
+              "scale": 0.0001,
+              "offset": 0.0
+            },
+            {
+              "normalized_name": "red",
+              "asset_key": "red",
+              "description": "Red (10m)",
+              "scale": 0.0001,
+              "offset": 0.0
+            },
+            {
+              "normalized_name": "rededge1",
+              "asset_key": "rededge1",
+              "description": "Red Edge 1 (20m)",
+              "scale": 0.0001,
+              "offset": 0.0
+            },
+            {
+              "normalized_name": "rededge2",
+              "asset_key": "rededge2",
+              "description": "Red Edge 2 (20m)",
+              "scale": 0.0001,
+              "offset": 0.0
+            },
+            {
+              "normalized_name": "rededge3",
+              "asset_key": "rededge3",
+              "description": "Red Edge 3 (20m)",
+              "scale": 0.0001,
+              "offset": 0.0
+            },
+            {
+              "normalized_name": "nir",
+              "asset_key": "nir",
+              "description": "Near Infrared (10m)",
+              "scale": 0.0001,
+              "offset": 0.0
+            },
+            {
+              "normalized_name": "nir08",
+              "asset_key": "nir08",
+              "description": "Narrow NIR (20m)",
+              "scale": 0.0001,
+              "offset": 0.0
+            },
+            {
+              "normalized_name": "swir1",
+              "asset_key": "swir16",
+              "description": "SWIR 1 (20m)",
+              "scale": 0.0001,
+              "offset": 0.0
+            },
+            {
+              "normalized_name": "swir2",
+              "asset_key": "swir22",
+              "description": "SWIR 2 (20m)",
+              "scale": 0.0001,
+              "offset": 0.0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "descriptor_version": 1,
+      "kind": "provider",
+      "slug": "planetary-computer",
+      "name": "Microsoft Planetary Computer",
+      "stac_api_url": "https://planetarycomputer.microsoft.com/api/stac/v1",
+      "auth": "PlanetaryComputerSAS",
+      "collections": {
+        "landsat-c2-l2": {
+          "slug": "landsat-c2-l2",
+          "display_name": "Landsat Collection 2 Level-2",
+          "description": "Landsat Collection 2 surface reflectance and surface temperature science products produced by USGS.",
+          "processing_level": "SR",
+          "sensor_type": "multispectral",
+          "resolution_m": 30.0,
+          "cloud_cover_property": "eo:cloud_cover",
+          "bands": [
+            {
+              "normalized_name": "coastal",
+              "asset_key": "coastal",
+              "description": "Coastal/Aerosol (Band 1)",
+              "scale": 2.75e-05,
+              "offset": -0.2
+            },
+            {
+              "normalized_name": "blue",
+              "asset_key": "blue",
+              "description": "Blue (Band 2)",
+              "scale": 2.75e-05,
+              "offset": -0.2
+            },
+            {
+              "normalized_name": "green",
+              "asset_key": "green",
+              "description": "Green (Band 3)",
+              "scale": 2.75e-05,
+              "offset": -0.2
+            },
+            {
+              "normalized_name": "red",
+              "asset_key": "red",
+              "description": "Red (Band 4)",
+              "scale": 2.75e-05,
+              "offset": -0.2
+            },
+            {
+              "normalized_name": "nir",
+              "asset_key": "nir08",
+              "description": "Near Infrared (Band 5)",
+              "scale": 2.75e-05,
+              "offset": -0.2
+            },
+            {
+              "normalized_name": "swir1",
+              "asset_key": "swir16",
+              "description": "Short-wave Infrared 1 (Band 6)",
+              "scale": 2.75e-05,
+              "offset": -0.2
+            },
+            {
+              "normalized_name": "swir2",
+              "asset_key": "swir22",
+              "description": "Short-wave Infrared 2 (Band 7)",
+              "scale": 2.75e-05,
+              "offset": -0.2
+            },
+            {
+              "normalized_name": "thermal1",
+              "asset_key": "lwir11",
+              "description": "Thermal Infrared 1 (Band 10), Kelvin",
+              "scale": 0.00341802,
+              "offset": 149.0
+            }
+          ]
+        },
+        "landsat-c2-l1": {
+          "slug": "landsat-c2-l1",
+          "display_name": "Landsat Collection 2 Level-1 (MSS)",
+          "description": "Landsat Collection 2 Level-1 Multispectral Scanner products from Landsat 1-5, produced by USGS.",
+          "processing_level": "TOA",
+          "sensor_type": "multispectral",
+          "resolution_m": 30.0,
+          "cloud_cover_property": "eo:cloud_cover",
+          "bands": [
+            {
+              "normalized_name": "green",
+              "asset_key": "green",
+              "description": "Green (MSS Band 4/1)",
+              "scale": 2.75e-05,
+              "offset": -0.2
+            },
+            {
+              "normalized_name": "red",
+              "asset_key": "red",
+              "description": "Red (MSS Band 5/2)",
+              "scale": 2.75e-05,
+              "offset": -0.2
+            },
+            {
+              "normalized_name": "nir",
+              "asset_key": "nir08",
+              "description": "Near Infrared (MSS Band 6/3)",
+              "scale": 2.75e-05,
+              "offset": -0.2
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

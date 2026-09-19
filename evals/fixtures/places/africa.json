@@ -1,0 +1,26 @@
+{
+  "query": "Africa",
+  "candidates": [
+    {
+      "place_id": 42715376,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 36966057,
+      "lat": "11.5024338",
+      "lon": "17.7578122",
+      "category": "place",
+      "type": "continent",
+      "place_rank": 2,
+      "importance": 0.8274840088192714,
+      "addresstype": "continent",
+      "name": "Africa",
+      "display_name": "Africa",
+      "boundingbox": [
+        "-13.4975662",
+        "36.5024338",
+        "-7.2421878",
+        "42.7578122"
+      ]
+    }
+  ]
+}

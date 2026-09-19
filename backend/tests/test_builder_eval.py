@@ -40,7 +40,7 @@ def draft(**changes) -> dict:
 
 def test_a_right_draft_scores_full_marks_on_everything_that_applies():
     scores = score(RECURRING, draft())
-    assert scores == {m: (0.0 if m == "asks_needlessly" else 1.0) for m in metrics_for(RECURRING)}
+    assert scores == {"valid": 1.0, **{m: (0.0 if m == "asks_needlessly" else 1.0) for m in metrics_for(RECURRING)}}
 
 
 def test_validity_is_judged_against_the_pinned_day_not_the_real_one():
@@ -68,7 +68,13 @@ def test_hourly_is_not_a_fair_reading_of_daily():
 def test_asking_on_a_clear_prompt_misses_every_draft_metric():
     scores = score(RECURRING, {"kind": "question", "message": "where?"})
     assert scores["asks_needlessly"] == 1.0
-    assert scores["kind"] == scores["valid"] == scores["area"] == 0.0
+    assert scores["kind"] == scores["area"] == 0.0
+    assert "valid" not in scores, "validity is about drafts that exist, not ones that should have"
+
+
+def test_a_draft_where_none_was_wanted_is_still_checked_for_validity():
+    scores = score(QUESTION, draft(time_end="2026-09-01T00:00:00Z"))
+    assert (scores["kind"], scores["valid"]) == (0.0, 0.0)
 
 
 def test_a_question_case_is_scored_only_on_asking():
@@ -94,3 +100,9 @@ def test_metrics_are_averaged_only_over_the_cases_they_apply_to():
     assert summary["area"] == 1.0, "the question case has no area, and must not count as a miss"
     assert summary["asks_when_needed"] == 0.0
     assert summary["kind"] == 0.5
+
+
+def test_giving_up_is_never_a_correct_refusal():
+    case = {"id": "ships", "expected": {"kind": "cannot"}}
+    assert score(case, {"kind": "cannot", "gave_up": True})["kind"] == 0.0
+    assert score(case, {"kind": "cannot", "gave_up": False})["kind"] == 1.0

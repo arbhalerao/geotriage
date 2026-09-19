@@ -1,0 +1,68 @@
+{
+  "query": "Algeria",
+  "candidates": [
+    {
+      "place_id": 382341204,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 192756,
+      "lat": "28.0000272",
+      "lon": "2.9999825",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 4,
+      "importance": 0.803055403611365,
+      "addresstype": "country",
+      "name": "Algeria",
+      "display_name": "Algeria",
+      "boundingbox": [
+        "18.9681470",
+        "37.2962055",
+        "-8.6689080",
+        "11.9973419"
+      ]
+    },
+    {
+      "place_id": 52091753,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "node",
+      "osm_id": 299617915,
+      "lat": "36.7729333",
+      "lon": "3.0588445",
+      "category": "place",
+      "type": "city",
+      "place_rank": 15,
+      "importance": 0.7039782435616084,
+      "addresstype": "city",
+      "name": "Algiers",
+      "display_name": "Algiers, Sidi M'Hamed District, Algiers, 16000, Algeria",
+      "boundingbox": [
+        "36.6129333",
+        "36.9329333",
+        "2.8988445",
+        "3.2188445"
+      ]
+    },
+    {
+      "place_id": 427387776,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 157062,
+      "lat": "36.7001535",
+      "lon": "3.0291661",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 7,
+      "importance": 0.5414228321364909,
+      "addresstype": "state",
+      "name": "Algiers",
+      "display_name": "Algiers, 16000, Algeria",
+      "boundingbox": [
+        "36.5795214",
+        "36.8208671",
+        "2.7995070",
+        "3.3826783"
+      ]
+    }
+  ]
+}

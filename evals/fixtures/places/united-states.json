@@ -1,0 +1,26 @@
+{
+  "query": "United States",
+  "candidates": [
+    {
+      "place_id": 52489199,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 148838,
+      "lat": "39.7837304",
+      "lon": "-100.4458820",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 4,
+      "importance": 1.0,
+      "addresstype": "country",
+      "name": "United States",
+      "display_name": "United States",
+      "boundingbox": [
+        "-14.7608358",
+        "71.5889534",
+        "-180.0000000",
+        "180.0000000"
+      ]
+    }
+  ]
+}

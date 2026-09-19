@@ -1,6 +1,7 @@
 import uuid
 
 import pipeline
+from builder.runs import run_build
 from core.db.sync import get_session
 from worker.queue import enqueue, new_group, task
 
@@ -76,6 +77,11 @@ def delete_workflow_artifacts(workflow_id: str) -> None:
 @task("smoke_test_model")
 def smoke_test_model(model_id: str) -> None:
     pipeline.smoke_test_model(uuid.UUID(model_id))
+
+
+@task("build_draft")
+def build_draft(builder_run_id: str) -> None:
+    run_build(uuid.UUID(builder_run_id))
 
 
 @task("seed_defaults")

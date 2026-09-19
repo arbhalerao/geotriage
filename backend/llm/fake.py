@@ -13,7 +13,8 @@ class FakeClient:
         return {"provider": "fake"}
 
     def chat(self, messages: list[dict], *, tools: Sequence[Tool] = (), schema: dict | None = None) -> Reply:
-        self.requests.append({"messages": messages, "tools": list(tools), "schema": schema})
+        # a copy, because callers keep appending to the same list and a test wants what was sent at the time
+        self.requests.append({"messages": list(messages), "tools": list(tools), "schema": schema})
         if not self._replies:
             raise AssertionError(f"the fake model has no reply scripted for request {len(self.requests)}")
         reply = self._replies.pop(0)

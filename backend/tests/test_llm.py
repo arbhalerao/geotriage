@@ -177,6 +177,19 @@ def test_a_structured_reply_is_parsed_into_its_model():
     assert fake.requests[0]["schema"]["properties"]["mode"]["type"] == "string"
 
 
+class Optional(BaseModel):
+    mode: str
+    note: str | None = None
+
+
+def test_every_field_can_be_required_of_the_model_while_the_reader_stays_lenient():
+    """a small model skips any field it isn't made to write"""
+    fake = FakeClient(['{"mode": "recurring"}'])
+    answer, _ = ask_structured(fake, USER, Optional, require_all=True)
+    assert fake.requests[0]["schema"]["required"] == ["mode", "note"]
+    assert answer.note is None
+
+
 def test_a_structured_reply_that_does_not_fit_keeps_the_reply_for_inspection():
     with pytest.raises(LLMError, match="Mode") as caught:
         ask_structured(FakeClient(['{"wrong": 1}']), USER, Mode)

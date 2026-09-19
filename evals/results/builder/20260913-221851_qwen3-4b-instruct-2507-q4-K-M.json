@@ -1,0 +1,745 @@
+{
+  "suite": "builder",
+  "started_at": "2026-09-13T22:18:51.332185+00:00",
+  "finished_at": "2026-09-13T22:27:43.326545+00:00",
+  "git": "141c4e9-dirty",
+  "client": {
+    "provider": "ollama",
+    "model": "qwen3:4b-instruct-2507-q4_K_M",
+    "options": {
+      "temperature": 0,
+      "seed": 0,
+      "num_ctx": 8192
+    }
+  },
+  "prompts": {
+    "builder": "builder@168e50ac"
+  },
+  "summary": {
+    "kind": 0.5,
+    "valid": 0.714,
+    "mode": 0.714,
+    "dates": 0.714,
+    "area": 0.571,
+    "model": 0.714,
+    "collections": 0.429,
+    "asks_needlessly": 0.286,
+    "interval": 1.0,
+    "asks_when_needed": 0.0,
+    "cases": 14,
+    "errors": 0,
+    "input_tokens": 79549,
+    "output_tokens": 4018,
+    "median_ms": 55422
+  },
+  "cases": [
+    {
+      "id": "dhaka-water-2024",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "draft",
+        "message": "Dhaka (place_1) is a city-sized area, and the NDWI Water Body Detector works with Sentinel-2, Landsat C2 L2, and Landsat C2 L1 collections. Monitoring for water from 2024-01-01 to 2024-12-31 is feasible with these data sources.",
+        "draft": {
+          "name": "NDWI Water Body Detector, Dhaka",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  90.2290144,
+                  23.6043863
+                ],
+                [
+                  90.5490144,
+                  23.6043863
+                ],
+                [
+                  90.5490144,
+                  23.9243863
+                ],
+                [
+                  90.2290144,
+                  23.9243863
+                ],
+                [
+                  90.2290144,
+                  23.6043863
+                ]
+              ]
+            ]
+          },
+          "time_mode": "historical",
+          "time_end": "2024-12-31T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2",
+            "landsat-c2-l1"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "time_start": "2024-01-01T00:00:00+00:00"
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_needlessly": 0.0,
+        "valid": 1.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 0.0
+      },
+      "error": null,
+      "calls": 5,
+      "cached": 4,
+      "input_tokens": 5032,
+      "output_tokens": 314,
+      "duration_ms": 84100
+    },
+    {
+      "id": "dhaka-floods-daily",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "draft",
+        "message": "Dhaka, Dhaka Metropolitan, Dhaka District, Dhaka Division, 1215, Bangladesh (city) with NDWI Water Body Detector from Sentinel-2 Level-2A and Landsat Collection 2 Level-2 until 2026-10-31, every 1440 minutes (daily).",
+        "draft": {
+          "name": "NDWI Water Body Detector, Dhaka",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  90.2290144,
+                  23.6043863
+                ],
+                [
+                  90.5490144,
+                  23.6043863
+                ],
+                [
+                  90.5490144,
+                  23.9243863
+                ],
+                [
+                  90.2290144,
+                  23.9243863
+                ],
+                [
+                  90.2290144,
+                  23.6043863
+                ]
+              ]
+            ]
+          },
+          "time_mode": "recurring",
+          "time_end": "2026-10-31T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "poll_interval_minutes": 1440
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_needlessly": 0.0,
+        "valid": 1.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0,
+        "interval": 1.0
+      },
+      "error": null,
+      "calls": 5,
+      "cached": 4,
+      "input_tokens": 5076,
+      "output_tokens": 299,
+      "duration_ms": 56717
+    },
+    {
+      "id": "delhi-heat-may-2024",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "question",
+        "message": "What is the specific start date for the historical data query (e.g., 2024-05-01)?",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 4,
+        "repairs": 1
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0
+      },
+      "error": null,
+      "calls": 8,
+      "cached": 4,
+      "input_tokens": 9607,
+      "output_tokens": 396,
+      "duration_ms": 106583
+    },
+    {
+      "id": "jakarta-floods-daily",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "draft",
+        "message": "place_1, detect flooding with NDWI Water Body Detector, recurring every 1440 minutes until 2026-12-31",
+        "draft": {
+          "name": "NDWI Water Body Detector, Special Capital Region of Jakarta",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  106.3146732,
+                  -6.3744575
+                ],
+                [
+                  106.973975,
+                  -6.3744575
+                ],
+                [
+                  106.973975,
+                  -4.9993635
+                ],
+                [
+                  106.3146732,
+                  -4.9993635
+                ],
+                [
+                  106.3146732,
+                  -6.3744575
+                ]
+              ]
+            ]
+          },
+          "time_mode": "recurring",
+          "time_end": "2026-12-31T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2",
+            "landsat-c2-l1"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "poll_interval_minutes": 1440
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_needlessly": 0.0,
+        "valid": 1.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 0.0,
+        "interval": 1.0
+      },
+      "error": null,
+      "calls": 5,
+      "cached": 4,
+      "input_tokens": 4709,
+      "output_tokens": 254,
+      "duration_ms": 45447
+    },
+    {
+      "id": "ahmedabad-heat-last-month",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "question",
+        "message": "The user asked about 'last month' but no time_start was provided. 'Last month' from today (2026-09-14) is 2026-08-14. Did you mean scenes from 2026-08-14 to 2026-09-14?",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 4,
+        "repairs": 1
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "valid": 0.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0
+      },
+      "error": null,
+      "calls": 8,
+      "cached": 4,
+      "input_tokens": 9373,
+      "output_tokens": 458,
+      "duration_ms": 114700
+    },
+    {
+      "id": "dubai-heat-next-3-months",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "draft",
+        "message": "Dubai, Dubai Emirate, United Arab Emirates (city) with the Land Surface Temperature Detector, every day for the next 3 months, using Landsat Collection 2 Level-2.",
+        "draft": {
+          "name": "Land Surface Temperature Detector, Dubai",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  55.1324146,
+                  25.1047227
+                ],
+                [
+                  55.4524146,
+                  25.1047227
+                ],
+                [
+                  55.4524146,
+                  25.4247227
+                ],
+                [
+                  55.1324146,
+                  25.4247227
+                ],
+                [
+                  55.1324146,
+                  25.1047227
+                ]
+              ]
+            ]
+          },
+          "time_mode": "recurring",
+          "time_end": "2026-12-14T23:59:59+00:00",
+          "collection_slugs": [
+            "landsat-c2-l2"
+          ],
+          "models": [
+            {
+              "model_slug": "lst-detector"
+            }
+          ],
+          "poll_interval_minutes": 1440
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_needlessly": 0.0,
+        "valid": 1.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 0.0,
+        "model": 1.0,
+        "collections": 1.0,
+        "interval": 1.0
+      },
+      "error": null,
+      "calls": 5,
+      "cached": 4,
+      "input_tokens": 5216,
+      "output_tokens": 227,
+      "duration_ms": 49275
+    },
+    {
+      "id": "brahmaputra-hourly",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "draft",
+        "message": "Guwahati, Kamrup Metropolitan, Assam, 781001, India (city) with NDWI Water Body Detector, every hour until the end of October 2026",
+        "draft": {
+          "name": "NDWI Water Body Detector, Guwahati",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  91.593943,
+                  26.0205978
+                ],
+                [
+                  91.913943,
+                  26.0205978
+                ],
+                [
+                  91.913943,
+                  26.3405978
+                ],
+                [
+                  91.593943,
+                  26.3405978
+                ],
+                [
+                  91.593943,
+                  26.0205978
+                ]
+              ]
+            ]
+          },
+          "time_mode": "recurring",
+          "time_end": "2026-10-31T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "poll_interval_minutes": 60
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_needlessly": 0.0,
+        "valid": 1.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0,
+        "interval": 1.0
+      },
+      "error": null,
+      "calls": 5,
+      "cached": 4,
+      "input_tokens": 4926,
+      "output_tokens": 242,
+      "duration_ms": 45484
+    },
+    {
+      "id": "springfield-which",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "draft",
+        "message": "Springfield, Sangamon County, Illinois, United States (place_id: place_1) with NDWI Water Body Detector for the period 2025-01-01 to 2025-12-31.",
+        "draft": {
+          "name": "NDWI Water Body Detector, Springfield",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  -89.773182,
+                  39.653656
+                ],
+                [
+                  -89.56851,
+                  39.653656
+                ],
+                [
+                  -89.56851,
+                  39.87417
+                ],
+                [
+                  -89.773182,
+                  39.87417
+                ],
+                [
+                  -89.773182,
+                  39.653656
+                ]
+              ]
+            ]
+          },
+          "time_mode": "historical",
+          "time_end": "2025-12-31T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "time_start": "2025-01-01T00:00:00+00:00"
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_when_needed": 0.0
+      },
+      "error": null,
+      "calls": 5,
+      "cached": 4,
+      "input_tokens": 5278,
+      "output_tokens": 268,
+      "duration_ms": 52489
+    },
+    {
+      "id": "chennai-what",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "draft",
+        "message": "Chennai, Tamil Nadu, India (place_1), detect water bodies, every day until 2026-12-31, with a poll_interval of 1440 minutes (daily).",
+        "draft": {
+          "name": "NDWI Water Body Detector, Chennai",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  80.1401875,
+                  12.8519771
+                ],
+                [
+                  80.3328982,
+                  12.8519771
+                ],
+                [
+                  80.3328982,
+                  13.235158
+                ],
+                [
+                  80.1401875,
+                  13.235158
+                ],
+                [
+                  80.1401875,
+                  12.8519771
+                ]
+              ]
+            ]
+          },
+          "time_mode": "recurring",
+          "time_end": "2026-12-31T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "poll_interval_minutes": 1440
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_when_needed": 0.0
+      },
+      "error": null,
+      "calls": 5,
+      "cached": 4,
+      "input_tokens": 4816,
+      "output_tokens": 245,
+      "duration_ms": 54128
+    },
+    {
+      "id": "mumbai-when",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "draft",
+        "message": "Mumbai, Mumbai Suburban District, Maharashtra, 400051, India, detect water bodies using the NDWI Water Body Detector with Sentinel-2 Level-2A and Landsat Collection 2 Level-2 collections.",
+        "draft": {
+          "name": "NDWI Water Body Detector, Mumbai",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  72.7092035,
+                  18.894999
+                ],
+                [
+                  73.0292035,
+                  18.894999
+                ],
+                [
+                  73.0292035,
+                  19.214999
+                ],
+                [
+                  72.7092035,
+                  19.214999
+                ],
+                [
+                  72.7092035,
+                  18.894999
+                ]
+              ]
+            ]
+          },
+          "time_mode": "recurring",
+          "time_end": "2026-10-14T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "poll_interval_minutes": 60
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_when_needed": 0.0
+      },
+      "error": null,
+      "calls": 5,
+      "cached": 4,
+      "input_tokens": 4722,
+      "output_tokens": 249,
+      "duration_ms": 45006
+    },
+    {
+      "id": "pune-heat-sentinel",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "question",
+        "message": "The detector for land surface temperature works with Landsat data, not Sentinel-2, so it cannot measure land surface temperature over Pune using Sentinel-2.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0
+      },
+      "scores": {
+        "kind": 0.0
+      },
+      "error": null,
+      "calls": 5,
+      "cached": 4,
+      "input_tokens": 4963,
+      "output_tokens": 203,
+      "duration_ms": 59807
+    },
+    {
+      "id": "punjab-vegetation",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "question",
+        "message": "The request is to monitor crop health, but neither the NDWI Water Body Detector nor the Land Surface Temperature Detector is designed to assess crop health. Could you clarify what specific crop health metric you'd like to monitor?",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0
+      },
+      "scores": {
+        "kind": 0.0
+      },
+      "error": null,
+      "calls": 5,
+      "cached": 4,
+      "input_tokens": 4794,
+      "output_tokens": 265,
+      "duration_ms": 63641
+    },
+    {
+      "id": "africa-daily",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "cannot",
+        "message": "Africa covers about 30,153,621 km\u00b2, above the largest area a workflow can cover (500,000 km\u00b2). Try a city, district or lake instead.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 2,
+        "repairs": 0
+      },
+      "scores": {
+        "kind": 1.0
+      },
+      "error": null,
+      "calls": 4,
+      "cached": 3,
+      "input_tokens": 3249,
+      "output_tokens": 168,
+      "duration_ms": 35424
+    },
+    {
+      "id": "algeria-heat-weekly",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "cannot",
+        "message": "The Land Surface Temperature detector requires thermal infrared bands, which are not available in any of the supported collections. No collection works with this detector for surface temperature monitoring.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 1
+      },
+      "scores": {
+        "kind": 1.0
+      },
+      "error": null,
+      "calls": 7,
+      "cached": 3,
+      "input_tokens": 7788,
+      "output_tokens": 430,
+      "duration_ms": 125961
+    }
+  ],
+  "tag": "quick"
+}

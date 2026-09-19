@@ -56,3 +56,10 @@ class TimeMode(str, enum.Enum):
 class LlmCallOutcome(str, enum.Enum):
     ok = "ok"
     error = "error"
+
+
+class BuilderRunStatus(str, enum.Enum):
+    queued = "queued"
+    running = "running"
+    done = "done"
+    failed = "failed"

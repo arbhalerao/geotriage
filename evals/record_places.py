@@ -1,33 +1,19 @@
 import argparse
 import json
-import re
 import time
-from pathlib import Path
 
 import httpx
 
+from builder.places import NOMINATIM, USER_AGENT, fixture_path, from_nominatim
 from evals.runner import DATASETS_DIR, EVALS_DIR
 
 PLACES_DIR = EVALS_DIR / "fixtures" / "places"
-NOMINATIM = "https://nominatim.openstreetmap.org/search"
-# Nominatim's usage policy asks every client to identify itself
-USER_AGENT = "geotriage-evals/0.1 (local development)"
-
-
-def fixture_path(query: str) -> Path:
-    return PLACES_DIR / f"{re.sub(r'[^a-z0-9]+', '-', query.lower()).strip('-')}.json"
 
 
 def lookup(http: httpx.Client, query: str) -> list[dict]:
     response = http.get(NOMINATIM, params={"q": query, "format": "jsonv2", "limit": 5, "accept-language": "en"})
     response.raise_for_status()
     return response.json()
-
-
-def bbox_of(candidate: dict) -> list[float]:
-    # Nominatim orders it south, north, west, east; the cases use west, south, east, north like GeoJSON
-    south, north, west, east = (float(v) for v in candidate["boundingbox"])
-    return [round(west, 4), round(south, 4), round(east, 4), round(north, 4)]
 
 
 def main() -> int:
@@ -44,7 +30,7 @@ def main() -> int:
             query = case["expected"].get("place")
             if not query:
                 continue
-            path = fixture_path(query)
+            path = fixture_path(PLACES_DIR, query)
             if args.refresh or not path.exists():
                 candidates = lookup(http, query)
                 path.write_text(json.dumps({"query": query, "candidates": candidates}, indent=2, ensure_ascii=False) + "\n")
@@ -54,7 +40,7 @@ def main() -> int:
                 print(f"{case['id']}: nothing found for {query!r}")
                 continue
             if case["expected"]["kind"] == "draft":
-                case["expected"]["bbox"] = bbox_of(candidates[0])
+                case["expected"]["bbox"] = [round(v, 4) for v in from_nominatim(candidates[:1])[0].bbox]
             print(f"{case['id']}: {candidates[0]['display_name'][:70]}")
 
     dataset.write_text("".join(json.dumps(case, ensure_ascii=False) + "\n" for case in cases))

@@ -64,6 +64,10 @@ services:
     environment:
       # loading the model is most of a cold call on a CPU, so keep it in memory between drafts
       OLLAMA_KEEP_ALIVE: 30m
+      OLLAMA_NUM_PARALLEL: 1
+      OLLAMA_MAX_LOADED_MODELS: 1
+      OLLAMA_FLASH_ATTENTION: 1
+      OLLAMA_KV_CACHE_TYPE: q8_0
     volumes:
       - ollama_data:/root/.ollama
     restart: unless-stopped

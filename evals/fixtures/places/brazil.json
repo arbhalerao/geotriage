@@ -1,0 +1,26 @@
+{
+  "query": "Brazil",
+  "candidates": [
+    {
+      "place_id": 12593719,
+      "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+      "osm_type": "relation",
+      "osm_id": 59470,
+      "lat": "-10.3333333",
+      "lon": "-53.2000000",
+      "category": "boundary",
+      "type": "administrative",
+      "place_rank": 4,
+      "importance": 0.9029823800375192,
+      "addresstype": "country",
+      "name": "Brazil",
+      "display_name": "Brazil",
+      "boundingbox": [
+        "-33.8694284",
+        "5.2695808",
+        "-73.9830625",
+        "-28.6289646"
+      ]
+    }
+  ]
+}
