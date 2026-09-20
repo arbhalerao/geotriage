@@ -16,6 +16,13 @@ NOMINATIM = "https://nominatim.openstreetmap.org/search"
 USER_AGENT = "geotriage/0.1 (workflow builder)"
 
 
+def bbox_area_km2(bbox: tuple[float, float, float, float]) -> float:
+    """west, south, east, north in degrees; close enough at the scale of a workflow's area"""
+    west, south, east, north = bbox
+    width = (east - west) * 111.32 * math.cos(math.radians((south + north) / 2))
+    return abs(width * (north - south) * 110.57)
+
+
 @dataclass(frozen=True)
 class Place:
     name: str
@@ -28,9 +35,7 @@ class Place:
     @property
     def area_km2(self) -> float:
         """of the bounding box, which is what a drafted workflow covers"""
-        west, south, east, north = self.bbox
-        width = (east - west) * 111.32 * math.cos(math.radians((south + north) / 2))
-        return abs(width * (north - south) * 110.57)
+        return bbox_area_km2(self.bbox)
 
     def overlaps(self, other: "Place") -> bool:
         west, south, east, north = self.bbox

@@ -3,6 +3,7 @@ import uuid
 
 from builder import agent
 from builder.catalogue import Catalogue
+from builder.estimate import ArchiveEstimator
 from builder.places import NominatimPlaces, PostgresPlaceCache
 from core.db.models.builder import BuilderRun
 from core.db.models.enums import BuilderRunStatus
@@ -22,7 +23,7 @@ def _shared_places() -> NominatimPlaces:
     return _places
 
 
-def run_build(run_id: uuid.UUID, session_factory=get_session, client=None, catalogue=None, places=None) -> None:
+def run_build(run_id: uuid.UUID, session_factory=get_session, client=None, catalogue=None, places=None, estimator=None) -> None:
     with session_factory() as db:
         run = db.get(BuilderRun, run_id)
         if run is None:
@@ -47,7 +48,7 @@ def run_build(run_id: uuid.UUID, session_factory=get_session, client=None, catal
 
     client = client or TracedClient(default_client(), purpose="builder", prompt_version=agent.PROMPT.version)
     try:
-        outcome = agent.build(conversation, client, catalogue, places or _shared_places(), on_step=on_step)
+        outcome = agent.build(conversation, client, catalogue, places or _shared_places(), on_step=on_step, estimator=estimator or ArchiveEstimator())
     except Exception as exc:
         record(status=BuilderRunStatus.failed, error=str(exc)[:1000])
         raise

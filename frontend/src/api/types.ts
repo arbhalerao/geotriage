@@ -184,11 +184,20 @@ export interface BuilderDraft {
   models: { model_slug: string }[];
 }
 
+export interface BuilderEstimate {
+  scenes: number;
+  staged_bytes: number;
+  free_bytes: number;
+  capped: boolean;
+  from_past_window: boolean;
+}
+
 export interface BuilderOutcome {
   kind: "draft" | "question" | "cannot";
   message: string;
   draft: BuilderDraft | null;
   warnings: string[];
+  estimate: BuilderEstimate | null;
 }
 
 export interface BuilderRun {

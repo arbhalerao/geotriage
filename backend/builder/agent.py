@@ -10,7 +10,8 @@ from pydantic import BaseModel, Field, ValidationError, field_validator
 from api.schemas import workflow as workflow_schema
 from builder import calendar
 from builder.catalogue import Catalogue
-from builder.guardrails import MAX_AREA_KM2, WARN_AREA_KM2, WARN_HISTORY_DAYS
+from builder.estimate import Estimator, format_bytes
+from builder.guardrails import MAX_AREA_KM2, MAX_SHARE_OF_FREE_DISK, WARN_AREA_KM2, WARN_HISTORY_DAYS, WARN_SHARE_OF_FREE_DISK
 from builder.places import Places
 from builder.tools import Toolbox
 from llm import Client, Tool, ToolCall, load_prompt
@@ -71,14 +72,21 @@ class Outcome:
     warnings: list[str] = field(default_factory=list)
     tool_calls: int = 0
     repairs: int = 0
-    # the builder stopped trying rather than decided, so a refusal like this is never a correct answer
     gave_up: bool = False
+    estimate: dict | None = None
 
     def as_dict(self) -> dict:
         return asdict(self)
 
 
-def build(conversation: list[dict], client: Client, catalogue: Catalogue, places: Places, on_step: Callable[[str], None] = lambda _step: None) -> Outcome:
+def build(
+    conversation: list[dict],
+    client: Client,
+    catalogue: Catalogue,
+    places: Places,
+    on_step: Callable[[str], None] = lambda _step: None,
+    estimator: Estimator | None = None,
+) -> Outcome:
     now = workflow_schema.utc_now()
     toolbox = Toolbox(catalogue, places)
     tools = (*toolbox.definitions, ANSWER)
@@ -106,7 +114,7 @@ def build(conversation: list[dict], client: Client, catalogue: Catalogue, places
                 result = toolbox.call(call.name, call.arguments)
             else:
                 on_step("Writing the draft" if repairs == 0 else "Fixing the draft")
-                outcome, problems = _check(call.arguments, toolbox, catalogue, now, conversation)
+                outcome, problems = _check(call.arguments, toolbox, catalogue, now, conversation, estimator, on_step)
                 if not problems:
                     outcome.tool_calls, outcome.repairs = tool_calls, repairs
                     return outcome
@@ -167,7 +175,15 @@ def _describe(tool: str, arguments: dict) -> str:
     return "Checking the detectors"
 
 
-def _check(arguments: dict, toolbox: Toolbox, catalogue: Catalogue, now: datetime, conversation: list[dict]) -> tuple[Outcome | None, list[str]]:
+def _check(
+    arguments: dict,
+    toolbox: Toolbox,
+    catalogue: Catalogue,
+    now: datetime,
+    conversation: list[dict],
+    estimator: Estimator | None = None,
+    on_step: Callable[[str], None] = lambda _step: None,
+) -> tuple[Outcome | None, list[str]]:
     try:
         answer = Answer.model_validate(arguments)
     except ValidationError as exc:
@@ -177,7 +193,7 @@ def _check(arguments: dict, toolbox: Toolbox, catalogue: Catalogue, now: datetim
     too_large = place is not None and place.area_km2 > MAX_AREA_KM2
     if answer.kind == "draft" and not too_large and (guess := unasked_place_guess(answer.place_id, toolbox, conversation) or unasked_time_guess(conversation)):
         return None, [guess]
-    return settle(answer, toolbox, catalogue, now)
+    return settle(answer, toolbox, catalogue, now, estimator, on_step)
 
 
 def unasked_place_guess(place_id: str | None, toolbox: Toolbox, conversation: list[dict]) -> str | None:
@@ -201,7 +217,14 @@ def unasked_time_guess(conversation: list[dict]) -> str | None:
     return "the user didn't say when or for how long, so answer with a question asking for the dates or how long to keep watching"
 
 
-def settle(answer: Answer, toolbox: Toolbox, catalogue: Catalogue, now: datetime) -> tuple[Outcome, list[str]]:
+def settle(
+    answer: Answer,
+    toolbox: Toolbox,
+    catalogue: Catalogue,
+    now: datetime,
+    estimator: Estimator | None = None,
+    on_step: Callable[[str], None] = lambda _step: None,
+) -> tuple[Outcome, list[str]]:
     message = answer.message.strip()
     if answer.kind != "draft":
         return Outcome(kind=answer.kind, message=message), ([] if message else [f"a {answer.kind} needs a message, the question to ask or the reason"])
@@ -267,7 +290,30 @@ def settle(answer: Answer, toolbox: Toolbox, catalogue: Catalogue, now: datetime
         warnings.append(f"{place.name.split(',')[0]} covers about {place.area_km2:,.0f} km², a large area that will take a long time to scan")
     if answer.time_mode == "historical" and (end - start).days > WARN_HISTORY_DAYS:
         warnings.append(f"{(end - start).days} days of history is a lot of scenes to scan")
-    return Outcome(kind="draft", message=message, draft=payload, warnings=warnings), []
+    if estimator is None:
+        return Outcome(kind="draft", message=message, draft=payload, warnings=warnings), []
+
+    on_step("Estimating the data to stage")
+    try:
+        estimate = estimator.estimate(payload, now)
+    except Exception:  # noqa: BLE001 — an archive that's down must not stop a draft, only its estimate
+        log.warning("couldn't estimate the data to stage for a draft", exc_info=True)
+        warnings.append("Couldn't estimate how much data this will stage, so check the area and dates before creating it")
+        return Outcome(kind="draft", message=message, draft=payload, warnings=warnings), []
+
+    size, free = format_bytes(estimate.staged_bytes), format_bytes(estimate.free_bytes)
+    if estimate.staged_bytes > MAX_SHARE_OF_FREE_DISK * estimate.free_bytes:
+        if estimate.capped:
+            amount = f"at least {size}, and counting stopped after {estimate.scenes} scenes because that is already"
+        else:
+            amount = f"about {size} from {estimate.scenes} scenes,"
+        return (
+            Outcome(kind="cannot", message=f"This would stage {amount} more than half of the {free} free on the platform's disk. Try a smaller area or a shorter period."),
+            [],
+        )
+    if estimate.staged_bytes > WARN_SHARE_OF_FREE_DISK * estimate.free_bytes:
+        warnings.append(f"About {size} to stage, a large share of the {free} free on the platform's disk")
+    return Outcome(kind="draft", message=message, draft=payload, warnings=warnings, estimate=asdict(estimate)), []
 
 
 def _day(value: str | None) -> date | None:

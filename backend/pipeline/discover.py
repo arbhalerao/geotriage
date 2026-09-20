@@ -35,11 +35,12 @@ MAX_SCENES = 2000
 Plan = dict[uuid.UUID, list[uuid.UUID]]
 
 
-def search_stac(spec, col_info, aoi_shape, time_start, time_end, max_cloud_cover):
+def search_stac(spec, col_info, aoi_shape, time_start, time_end, max_cloud_cover, max_items=MAX_SCENES):
     """
     the cheapest stage of the funnel: cloud cover and geometry are metadata the archive already indexes,
     so pushing them into the query means those scenes never travel
     the client-side pass below stays as a safety net for archives that ignore `query`
+    `max_items` below the cap is for callers that only need to know whether there are at least that many
     """
     dt_str = f"{time_start.strftime('%Y-%m-%dT%H:%M:%SZ')}/{time_end.strftime('%Y-%m-%dT%H:%M:%SZ')}"
 
@@ -52,7 +53,7 @@ def search_stac(spec, col_info, aoi_shape, time_start, time_end, max_cloud_cover
         collection_slug=col_info.slug,
         intersects=mapping(aoi_shape),
         datetime=dt_str,
-        max_items=MAX_SCENES,
+        max_items=max_items,
     )
 
     try:
