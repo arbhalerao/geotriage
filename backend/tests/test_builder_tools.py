@@ -28,8 +28,8 @@ def test_an_unknown_model_points_back_at_list_models():
     assert "list_models" in toolbox().list_collections("vegetation")["error"]
 
 
-def test_every_default_model_is_listed():
-    assert {m["slug"] for m in toolbox().list_models()["models"]} == {"ndwi-water-detector", "lst-detector"}
+def test_every_registered_model_is_listed():
+    assert {m["slug"] for m in toolbox().list_models()["models"]} == {"ndwi-water-detector", "lst-detector", "ship-counter"}
 
 
 def test_found_places_get_short_ids_that_stay_unique_across_lookups():

@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useCallback, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   useCollections,
@@ -7,7 +7,8 @@ import {
 } from "../api/queries";
 import Map from "../components/Map";
 import Chevron from "../components/Chevron";
-import type { ModelInfo, ThresholdBand } from "../api/types";
+import WorkflowBuilder from "../components/WorkflowBuilder";
+import type { BuilderDraft, ModelInfo, ThresholdBand } from "../api/types";
 import { dayAfter, startOfDayUtc, todayUtc } from "../time";
 
 interface ThresholdOverride {
@@ -97,6 +98,11 @@ const INTERVALS = [
 
 type Mode = "historical" | "recurring";
 
+// the builder may pick any interval; the form offers five, so it lands on the closest
+function nearestInterval(minutes: number): number {
+  return INTERVALS.reduce((best, { value }) => (Math.abs(value - minutes) < Math.abs(best - minutes) ? value : best), INTERVALS[0].value);
+}
+
 function FormSection({ title, children }: { title: string; children: ReactNode }) {
   return (
     // keep the title style in step with components/Section
@@ -112,6 +118,10 @@ export default function CreateWorkflowPage() {
   const { data: collections } = useCollections();
   const { data: models } = useModels();
   const createWorkflow = useCreateWorkflow();
+  const [drafting, setDrafting] = useState(false);
+  // two ways in, neither chosen for you; the form only appears once it has something to show
+  const [start, setStart] = useState<"describe" | "manual" | null>(null);
+  const [hasDraft, setHasDraft] = useState(false);
 
   const [name, setName] = useState("");
   const [mode, setMode] = useState<Mode>("historical");
@@ -171,6 +181,31 @@ export default function CreateWorkflowPage() {
     );
   }
 
+  // a draft fills the same fields a person would, so everything stays editable before Create
+  const applyDraft = useCallback(
+    (draft: BuilderDraft) => {
+      setHasDraft(true);
+      const model = (models ?? []).find((m) => m.slug === draft.models[0]?.model_slug);
+      setName(draft.name);
+      setMode(draft.time_mode);
+      setTimeStart(draft.time_mode === "historical" && draft.time_start ? draft.time_start.slice(0, 10) : "");
+      setTimeEnd(draft.time_end.slice(0, 10));
+      if (draft.poll_interval_minutes) setPollInterval(nearestInterval(draft.poll_interval_minutes));
+      setDrawnGeometry(draft.geometry);
+      setDrawnWithTool("rectangle");
+      setAoiFilterMode("intersects");
+      if (!model) {
+        clearModel();
+        return;
+      }
+      setSelectedModelSlug(model.slug);
+      setThresholdOverrides(defaultOverrides(model.default_thresholds));
+      setThresholdsOpen(false);
+      setSelectedCollections(draft.collection_slugs.filter((slug) => compatibility(model, slug).level !== "incompatible"));
+    },
+    [models],
+  );
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const wf = await createWorkflow.mutateAsync({
@@ -196,6 +231,8 @@ export default function CreateWorkflowPage() {
       ? !!timeEnd && timeEnd > today
       : !!timeStart && !!timeEnd && timeStart <= today && timeEnd > timeStart && timeEnd <= today;
 
+  const formVisible = start === "manual" || (start === "describe" && hasDraft);
+
   const canSubmit =
     !!name && !!drawnGeometry && datesValid &&
     !!selectedModelSlug && selectedCollections.length > 0;
@@ -205,6 +242,36 @@ export default function CreateWorkflowPage() {
       <h1 className="text-xl font-semibold mb-6">New workflow</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+
+        {/* 0 how to start, the choice on its own; whichever is picked opens its sections below, like the rest of the form */}
+        <fieldset disabled={drafting} aria-label="How to start" className="flex gap-2">
+          {([
+            { value: "describe", label: "Describe it", desc: "Type a sentence and review the form it fills in" },
+            { value: "manual", label: "Fill it in yourself", desc: "Choose each setting in the form" },
+          ] as const).map(({ value, label, desc }) => (
+            <label
+              key={value}
+              className={`flex-1 px-3 py-2 rounded border text-left cursor-pointer transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand-500 has-[:disabled]:cursor-not-allowed ${
+                start === value ? "border-brand-500 bg-brand-50 text-gray-900" : "border-gray-300 bg-white text-gray-600 hover:border-gray-400"
+              }`}
+            >
+              <input type="radio" name="start" value={value} checked={start === value} onChange={() => setStart(value)} className="sr-only" />
+              <div className="text-xs font-medium">{label}</div>
+              <div className="text-xs text-gray-500 mt-0.5">{desc}</div>
+            </label>
+          ))}
+        </fieldset>
+
+        {start === "describe" && (
+          <FormSection title="Describe">
+            <WorkflowBuilder onDraft={applyDraft} onWorkingChange={setDrafting} />
+          </FormSection>
+        )}
+
+        {formVisible && (
+        // while a new draft is worked on the form waits, since the draft would overwrite anything typed meanwhile;
+        // a disabled fieldset stops the inputs, and pointer-events stops the map, which isn't an input
+        <fieldset disabled={drafting} aria-busy={drafting} className={`min-w-0 space-y-6 transition-opacity ${drafting ? "opacity-50 pointer-events-none select-none" : ""}`}>
 
         {/* 1 details */}
         <FormSection title="Details">
@@ -395,31 +462,37 @@ export default function CreateWorkflowPage() {
           </div>
         </FormSection>
 
+        </fieldset>
+        )}
+
         {createWorkflow.error && (
           <p className="text-red-700 text-sm">{(createWorkflow.error as Error).message}</p>
         )}
 
-        <div className="flex gap-3">
-          <button type="submit" disabled={createWorkflow.isPending || !canSubmit}
-            className="px-6 py-2 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white rounded text-sm font-medium transition-colors">
-            {createWorkflow.isPending ? "Creating…" : "Create workflow"}
-          </button>
-          <button type="button" onClick={() => navigate("/workflows")}
-            className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded text-sm transition-colors">
-            Cancel
-          </button>
-          {!canSubmit && name && (
-            <span className="text-xs text-gray-500 self-center">
-              {!drawnGeometry
-                ? "Draw an area of interest on the map"
-                : !selectedModelSlug
-                  ? "Select a model"
-                  : selectedCollections.length === 0
-                    ? "Select at least one data source"
-                    : ""}
-            </span>
-          )}
-        </div>
+        {/* only with the form: before a way in is chosen there is nothing to create or cancel */}
+        {formVisible && (
+          <div className="flex gap-3">
+            <button type="submit" disabled={createWorkflow.isPending || !canSubmit || drafting}
+              className="px-6 py-2 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white rounded text-sm font-medium transition-colors">
+              {createWorkflow.isPending ? "Creating…" : "Create workflow"}
+            </button>
+            <button type="button" onClick={() => navigate("/workflows")}
+              className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded text-sm transition-colors">
+              Cancel
+            </button>
+            {!canSubmit && name && (
+              <span className="text-xs text-gray-500 self-center">
+                {!drawnGeometry
+                  ? "Draw an area of interest on the map"
+                  : !selectedModelSlug
+                    ? "Select a model"
+                    : selectedCollections.length === 0
+                      ? "Select at least one data source"
+                      : ""}
+              </span>
+            )}
+          </div>
+        )}
       </form>
     </div>
   );

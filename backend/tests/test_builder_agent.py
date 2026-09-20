@@ -245,3 +245,25 @@ def test_the_prompt_carries_the_worked_out_dates():
     fake = FakeClient([look_up(), answer()])
     build(ASK, fake, CATALOGUE, PLACES)
     assert "next summer: 2027-06-01 to 2027-08-31" in fake.requests[0]["messages"][0]["content"]
+
+
+def test_the_prompt_names_exactly_the_registered_detectors():
+    prompt = agent.system_prompt(CATALOGUE, agent.workflow_schema.utc_now())
+    for model in CATALOGUE.models.values():
+        assert f"- {model.slug} ({model.name})" in prompt
+
+
+def test_nothing_about_the_default_detectors_is_written_into_the_prompt():
+    ships = Catalogue(
+        [{"slug": "ship-counter", "name": "Ship Counter", "description": "Counts vessels.", "requires": {"bands": ["red", "green", "blue"]}}],
+        [],
+    )
+    prompt = agent.system_prompt(ships, agent.workflow_schema.utc_now())
+    assert "ship-counter" in prompt and "Ship Counter" in prompt
+    for default in ["ndwi", "lst-detector", "water", "temperature", "heat", "vegetation"]:
+        assert default not in prompt.lower(), default
+
+
+def test_a_platform_with_no_detectors_still_gets_a_usable_prompt():
+    prompt = agent.system_prompt(Catalogue([], []), agent.workflow_schema.utc_now())
+    assert "none yet" in prompt and "$" not in prompt

@@ -167,3 +167,34 @@ export interface AdmissionResponse {
   problems: string[];
   registered: Registered | null;
 }
+
+export interface BuilderMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export interface BuilderDraft {
+  name: string;
+  geometry: GeoJSON.Polygon;
+  time_mode: "historical" | "recurring";
+  time_start?: string;
+  time_end: string;
+  poll_interval_minutes?: number;
+  collection_slugs: string[];
+  models: { model_slug: string }[];
+}
+
+export interface BuilderOutcome {
+  kind: "draft" | "question" | "cannot";
+  message: string;
+  draft: BuilderDraft | null;
+  warnings: string[];
+}
+
+export interface BuilderRun {
+  id: string;
+  status: "queued" | "running" | "done" | "failed";
+  steps: string[];
+  outcome: BuilderOutcome | null;
+  error: string | null;
+}

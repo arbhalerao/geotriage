@@ -118,6 +118,37 @@
       "rasters": [
         "lst"
       ]
+    },
+    {
+      "descriptor_version": 1,
+      "kind": "model",
+      "slug": "ship-counter",
+      "name": "Ship Counter",
+      "description": "Counts ships and other vessels on open water, from true colour imagery.",
+      "requires": {
+        "bands": [
+          "red",
+          "green",
+          "blue"
+        ],
+        "max_cloud_cover": 20.0,
+        "gsd_m": null,
+        "cost": "medium"
+      },
+      "prefilter": null,
+      "scores": {
+        "ship_count": {
+          "description": "Number of vessels detected",
+          "unit": "count",
+          "range": [
+            0,
+            10000
+          ],
+          "primary": true,
+          "thresholds": null
+        }
+      },
+      "rasters": []
     }
   ],
   "providers": [

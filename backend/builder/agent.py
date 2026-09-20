@@ -82,7 +82,7 @@ def build(conversation: list[dict], client: Client, catalogue: Catalogue, places
     now = workflow_schema.utc_now()
     toolbox = Toolbox(catalogue, places)
     tools = (*toolbox.definitions, ANSWER)
-    messages = [{"role": "system", "content": PROMPT.render(today=now.date().isoformat(), next_year=now.year + 1, calendar=calendar.notes(now.date()))}, *conversation]
+    messages = [{"role": "system", "content": system_prompt(catalogue, now)}, *conversation]
     tool_calls = repairs = 0
     problems: list[str] = []
 
@@ -121,6 +121,22 @@ def build(conversation: list[dict], client: Client, catalogue: Catalogue, places
                 messages.append({"role": "tool", "tool_name": call.name, "content": json.dumps(result)})
 
     return _give_up(problems or ["it ran out of turns without answering"], tool_calls, repairs)
+
+
+def system_prompt(catalogue: Catalogue, now: datetime) -> str:
+    models = list(catalogue.models.values())
+    first, last = (models[0], models[-1]) if models else (None, None)
+    return PROMPT.render(
+        today=now.date().isoformat(),
+        next_year=now.year + 1,
+        calendar=calendar.notes(now.date()),
+        detectors="\n".join(f"- {m.slug} ({m.name}): {m.description}" for m in models) or "- none yet, so every request is a cannot",
+        first_name=first.name if first else "a detector",
+        first_slug=first.slug if first else "detector-slug",
+        last_name=last.name if last else "a detector",
+        last_slug=last.slug if last else "detector-slug",
+        names=", ".join(m.name for m in models) or "nothing yet",
+    )
 
 
 def _give_up(problems: list[str], tool_calls: int, repairs: int) -> Outcome:

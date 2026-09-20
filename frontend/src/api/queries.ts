@@ -2,6 +2,8 @@ import { keepPreviousData, useInfiniteQuery, useMutation, useQuery, useQueryClie
 import { api } from "./client";
 import { useLive } from "./live";
 import type {
+  BuilderMessage,
+  BuilderRun,
   CollectionInfo,
   ModelInfo,
   TimeseriesResponse,
@@ -129,5 +131,25 @@ export function useRegistered(kind: "model" | "provider") {
     queryFn: () => api.get<Registered[]>(`/${kind}s/registered`),
     // a queued smoke test flips is_enabled from the worker, so keep this fresh when nothing announces it
     refetchInterval: live ? false : 4000,
+  });
+}
+
+export function useStartBuilderRun() {
+  return useMutation({
+    mutationFn: (conversation: BuilderMessage[]) => api.post<BuilderRun>("/builder/runs", { conversation }),
+  });
+}
+
+export function useBuilderRun(id: string | null) {
+  const live = useLive((s) => s.connected);
+  return useQuery({
+    queryKey: ["builder-run", id],
+    queryFn: () => api.get<BuilderRun>(`/builder/runs/${id}`),
+    enabled: !!id,
+    // the worker's steps and answer arrive as live changes; poll only when nothing announces them
+    refetchInterval: (query) => {
+      const run = query.state.data;
+      return !live && (!run || run.status === "queued" || run.status === "running") ? 2000 : false;
+    },
   });
 }
