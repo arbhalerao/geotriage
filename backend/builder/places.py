@@ -1,6 +1,5 @@
 import json
 import logging
-import math
 import re
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -9,18 +8,13 @@ from typing import Protocol
 
 import httpx
 
+from domain.storage import bbox_area_km2
+
 log = logging.getLogger(__name__)
 
 NOMINATIM = "https://nominatim.openstreetmap.org/search"
 # Nominatim's usage policy asks every client to identify itself
 USER_AGENT = "geotriage/0.1 (workflow builder)"
-
-
-def bbox_area_km2(bbox: tuple[float, float, float, float]) -> float:
-    """west, south, east, north in degrees; close enough at the scale of a workflow's area"""
-    west, south, east, north = bbox
-    width = (east - west) * 111.32 * math.cos(math.radians((south + north) / 2))
-    return abs(width * (north - south) * 110.57)
 
 
 @dataclass(frozen=True)

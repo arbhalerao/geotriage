@@ -1,5 +1,5 @@
 from core.db.models.aoi import Aoi
-from core.db.models.builder import BuilderRun, PlaceLookup
+from core.db.models.builder import BuilderRun, PlaceLookup, StorageEstimate
 from core.db.models.llm import LlmCall
 from core.db.models.registry import ProviderCollection, RegisteredModel, RegisteredProvider
 from core.db.models.stac import StacItem
@@ -20,6 +20,7 @@ __all__ = [
     "Aoi",
     "BuilderRun",
     "PlaceLookup",
+    "StorageEstimate",
     "LlmCall",
     "ProviderCollection",
     "RegisteredModel",

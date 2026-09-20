@@ -9,6 +9,7 @@ type Change =
   | { topic: "model_run"; id: string; workflow_item_id: string; workflow_id: string | null }
   | { topic: "registry"; kind: "model" | "provider" }
   | { topic: "builder_run"; id: string }
+  | { topic: "storage_estimate"; id: string }
   | { topic: "queue" };
 
 type LiveMessage = { type: "changes"; changes: Change[] } | { type: "resync" };
@@ -40,6 +41,8 @@ function keysFor(change: Change): QueryKey[] {
         : [["registered", "provider"], ["collections"], ["models"]];
     case "builder_run":
       return [["builder-run", change.id]];
+    case "storage_estimate":
+      return [["estimate", change.id]];
     case "queue":
       // nothing on screen reads the queue yet; the Infra page will once its backend exists
       return [];

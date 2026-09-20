@@ -184,12 +184,31 @@ export interface BuilderDraft {
   models: { model_slug: string }[];
 }
 
-export interface BuilderEstimate {
+export interface StorageEstimateResult {
   scenes: number;
   staged_bytes: number;
   free_bytes: number;
   capped: boolean;
   from_past_window: boolean;
+  verdict: "fits" | "large" | "too_large";
+}
+
+export interface StorageEstimateRun {
+  id: string;
+  status: "queued" | "running" | "done" | "failed";
+  result: StorageEstimateResult | null;
+  error: string | null;
+}
+
+// what a workflow stages depends on these, and nothing else on the form
+export interface EstimateRequest {
+  geometry: GeoJSON.Polygon;
+  time_mode: "historical" | "recurring";
+  time_start: string | null;
+  time_end: string;
+  poll_interval_minutes: number | null;
+  collection_slugs: string[];
+  models: { model_slug: string }[];
 }
 
 export interface BuilderOutcome {
@@ -197,7 +216,7 @@ export interface BuilderOutcome {
   message: string;
   draft: BuilderDraft | null;
   warnings: string[];
-  estimate: BuilderEstimate | null;
+  estimate: StorageEstimateResult | null;
 }
 
 export interface BuilderRun {

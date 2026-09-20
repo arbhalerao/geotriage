@@ -10,8 +10,9 @@ from pydantic import BaseModel, Field, ValidationError, field_validator
 from api.schemas import workflow as workflow_schema
 from builder import calendar
 from builder.catalogue import Catalogue
-from builder.estimate import Estimator, format_bytes
-from builder.guardrails import MAX_AREA_KM2, MAX_SHARE_OF_FREE_DISK, WARN_AREA_KM2, WARN_HISTORY_DAYS, WARN_SHARE_OF_FREE_DISK
+from builder.estimate import Estimator
+from builder.guardrails import MAX_AREA_KM2, WARN_AREA_KM2, WARN_HISTORY_DAYS
+from domain.storage import format_bytes
 from builder.places import Places
 from builder.tools import Toolbox
 from llm import Client, Tool, ToolCall, load_prompt
@@ -301,8 +302,8 @@ def settle(
         warnings.append("Couldn't estimate how much data this will stage, so check the area and dates before creating it")
         return Outcome(kind="draft", message=message, draft=payload, warnings=warnings), []
 
-    size, free = format_bytes(estimate.staged_bytes), format_bytes(estimate.free_bytes)
-    if estimate.staged_bytes > MAX_SHARE_OF_FREE_DISK * estimate.free_bytes:
+    if estimate.verdict == "too_large":
+        size, free = format_bytes(estimate.staged_bytes), format_bytes(estimate.free_bytes)
         if estimate.capped:
             amount = f"at least {size}, and counting stopped after {estimate.scenes} scenes because that is already"
         else:
@@ -311,9 +312,7 @@ def settle(
             Outcome(kind="cannot", message=f"This would stage {amount} more than half of the {free} free on the platform's disk. Try a smaller area or a shorter period."),
             [],
         )
-    if estimate.staged_bytes > WARN_SHARE_OF_FREE_DISK * estimate.free_bytes:
-        warnings.append(f"About {size} to stage, a large share of the {free} free on the platform's disk")
-    return Outcome(kind="draft", message=message, draft=payload, warnings=warnings, estimate=asdict(estimate)), []
+    return Outcome(kind="draft", message=message, draft=payload, warnings=warnings, estimate=estimate.as_result()), []
 
 
 def _day(value: str | None) -> date | None:

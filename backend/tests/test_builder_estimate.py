@@ -6,8 +6,9 @@ import pytest
 
 from builder.agent import build
 from builder.catalogue import Catalogue
-from builder.estimate import ArchiveEstimator, Estimate, format_bytes, search_window, staged_bytes
-from builder.places import RecordedPlaces, bbox_area_km2
+from builder.estimate import ArchiveEstimator, Estimate, search_window
+from builder.places import RecordedPlaces
+from domain.storage import bbox_area_km2, format_bytes, staged_bytes
 from evals.runner import EVALS_DIR
 from evals.suites.builder import pinned_today
 from llm import FakeClient, Reply, ToolCall
@@ -69,14 +70,16 @@ def draft_for(estimator) -> "Outcome":
 def test_a_draft_that_fits_carries_its_estimate_and_no_warning():
     outcome = draft_for(Fixed(estimate(staged_gb=2)))
     assert outcome.kind == "draft"
-    assert outcome.estimate["scenes"] == 40
+    assert (outcome.estimate["scenes"], outcome.estimate["verdict"]) == (40, "fits")
     assert outcome.warnings == []
 
 
-def test_a_draft_taking_a_large_share_of_the_disk_is_drafted_with_a_warning():
+def test_a_draft_taking_a_large_share_of_the_disk_is_drafted_with_that_verdict():
+    """the form shows the verdict next to Create, so it isn't repeated as a warning"""
     outcome = draft_for(Fixed(estimate(staged_gb=20, free_gb=100)))
     assert outcome.kind == "draft"
-    assert outcome.warnings == ["About 20.0 GB to stage, a large share of the 100.0 GB free on the platform's disk"]
+    assert outcome.estimate["verdict"] == "large"
+    assert outcome.warnings == []
 
 
 def test_a_draft_that_would_fill_the_disk_is_refused_with_the_numbers():
@@ -154,6 +157,9 @@ def archive(monkeypatch, found_per_collection: dict[str, int], resolutions: dict
     monkeypatch.setattr(domain.catalogue, "get_collection", lambda db, slug: (None, collections[slug]))
     monkeypatch.setattr(discover, "search_stac", search)
     monkeypatch.setattr(shutil, "disk_usage", lambda path: SimpleNamespace(free=free_bytes))
+    import domain.storage
+
+    monkeypatch.setattr(domain.storage.shutil, "disk_usage", lambda path: SimpleNamespace(free=free_bytes))
 
     @contextmanager
     def no_database():
@@ -204,3 +210,27 @@ def test_the_count_never_asks_for_more_than_discovery_would_take(monkeypatch):
     estimator, searches, discover = archive(monkeypatch, {"fine": 3}, {"fine": 10.0}, free_bytes=10**15)
     estimator.estimate(a_draft(["fine"]), datetime.now(timezone.utc))
     assert searches[0][2] == discover.MAX_SCENES
+
+
+def test_scenes_that_only_overlap_part_of_the_area_are_counted_on_in_growing_batches(monkeypatch):
+    """small overlaps don't cross the limit in the first few scenes, so it counts further, a batch at a time"""
+    from shapely.geometry import box, mapping
+
+    estimator, searches, discover = archive(monkeypatch, {"fine": 5000}, {"fine": 10.0}, free_bytes=10 * GB)
+    sliver = mapping(box(0, 0, 0.01, 0.01))  # a hundredth of the square on each side
+
+    import importlib
+
+    module = importlib.import_module("pipeline.discover")
+    original = module.search_stac
+
+    def search(provider, collection, area, start, end, max_cloud, max_items=module.MAX_SCENES):
+        return [{"geometry": sliver} for _ in original(provider, collection, area, start, end, max_cloud, max_items=max_items)]
+
+    monkeypatch.setattr(module, "search_stac", search)
+    result = estimator.estimate(a_draft(["fine"]), datetime.now(timezone.utc))
+
+    limits = [limit for _, _, limit in searches]
+    assert limits[1:] == [min(discover.MAX_SCENES, limit * 8) for limit in limits[:-1]], "each recount is eight times larger"
+    assert limits[-1] == discover.MAX_SCENES and result.capped, "slivers never cross the limit, so it counts as far as discovery would"
+    assert result.verdict == "fits"

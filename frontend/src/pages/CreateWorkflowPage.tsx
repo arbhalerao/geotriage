@@ -1,4 +1,4 @@
-import { useCallback, useState, type ReactNode } from "react";
+import { useCallback, useMemo, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   useCollections,
@@ -7,8 +7,9 @@ import {
 } from "../api/queries";
 import Map from "../components/Map";
 import Chevron from "../components/Chevron";
+import { useStorageEstimate } from "../components/StorageEstimate";
 import WorkflowBuilder from "../components/WorkflowBuilder";
-import type { BuilderDraft, ModelInfo, ThresholdBand } from "../api/types";
+import type { BuilderDraft, EstimateRequest, ModelInfo, StorageEstimateResult, ThresholdBand } from "../api/types";
 import { dayAfter, startOfDayUtc, todayUtc } from "../time";
 
 interface ThresholdOverride {
@@ -122,6 +123,8 @@ export default function CreateWorkflowPage() {
   // two ways in, neither chosen for you; the form only appears once it has something to show
   const [start, setStart] = useState<"describe" | "manual" | null>(null);
   const [hasDraft, setHasDraft] = useState(false);
+  // a draft's estimate, handed to the storage section; the token tells a new draft from the last one
+  const [estimateSeed, setEstimateSeed] = useState<{ result: StorageEstimateResult; token: number } | null>(null);
 
   const [name, setName] = useState("");
   const [mode, setMode] = useState<Mode>("historical");
@@ -183,8 +186,9 @@ export default function CreateWorkflowPage() {
 
   // a draft fills the same fields a person would, so everything stays editable before Create
   const applyDraft = useCallback(
-    (draft: BuilderDraft) => {
+    (draft: BuilderDraft, estimate: StorageEstimateResult | null) => {
       setHasDraft(true);
+      setEstimateSeed(estimate ? { result: estimate, token: Date.now() } : null);
       const model = (models ?? []).find((m) => m.slug === draft.models[0]?.model_slug);
       setName(draft.name);
       setMode(draft.time_mode);
@@ -208,6 +212,8 @@ export default function CreateWorkflowPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    // Enter in a field submits a form even with the button disabled, so the same rule is checked here
+    if (!canSubmit || !storage.estimated || drafting) return;
     const wf = await createWorkflow.mutateAsync({
       name,
       geometry: drawnGeometry,
@@ -232,6 +238,23 @@ export default function CreateWorkflowPage() {
       : !!timeStart && !!timeEnd && timeStart <= today && timeEnd > timeStart && timeEnd <= today;
 
   const formVisible = start === "manual" || (start === "describe" && hasDraft);
+
+  // everything the data a workflow stages depends on, once all of it is set; sorted, so ticking collections in another order is no change
+  const estimateRequest = useMemo<EstimateRequest | null>(() => {
+    if (!drawnGeometry || !datesValid || !selectedModelSlug || selectedCollections.length === 0) return null;
+    return {
+      geometry: drawnGeometry,
+      time_mode: mode,
+      time_start: mode === "historical" ? startOfDayUtc(timeStart) : null,
+      time_end: startOfDayUtc(timeEnd),
+      poll_interval_minutes: mode === "recurring" ? pollInterval : null,
+      collection_slugs: [...selectedCollections].sort(),
+      models: [{ model_slug: selectedModelSlug }],
+    };
+  }, [drawnGeometry, datesValid, selectedModelSlug, selectedCollections, mode, timeStart, timeEnd, pollInterval]);
+
+  // creating waits for a current estimate, so nobody creates a workflow without seeing what it stages
+  const storage = useStorageEstimate(estimateRequest, estimateSeed);
 
   const canSubmit =
     !!name && !!drawnGeometry && datesValid &&
@@ -462,6 +485,11 @@ export default function CreateWorkflowPage() {
           </div>
         </FormSection>
 
+        {/* 5 storage: optional, on request, the same in both ways of starting */}
+        <FormSection title="Storage estimate">
+          {storage.body}
+        </FormSection>
+
         </fieldset>
         )}
 
@@ -472,7 +500,7 @@ export default function CreateWorkflowPage() {
         {/* only with the form: before a way in is chosen there is nothing to create or cancel */}
         {formVisible && (
           <div className="flex gap-3">
-            <button type="submit" disabled={createWorkflow.isPending || !canSubmit || drafting}
+            <button type="submit" disabled={createWorkflow.isPending || !canSubmit || !storage.estimated || drafting}
               className="px-6 py-2 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white rounded text-sm font-medium transition-colors">
               {createWorkflow.isPending ? "Creating…" : "Create workflow"}
             </button>
@@ -480,6 +508,7 @@ export default function CreateWorkflowPage() {
               className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded text-sm transition-colors">
               Cancel
             </button>
+            {canSubmit && !storage.estimated && <span className="text-xs text-gray-500 self-center">Estimate storage first</span>}
             {!canSubmit && name && (
               <span className="text-xs text-gray-500 self-center">
                 {!drawnGeometry

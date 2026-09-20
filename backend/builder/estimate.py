@@ -1,17 +1,16 @@
-import os
-import shutil
-import tempfile
-from dataclasses import dataclass
+import logging
+import uuid
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from typing import Protocol
 
 from shapely.geometry import shape
 
-from builder.guardrails import MAX_SHARE_OF_FREE_DISK
-from builder.places import bbox_area_km2
+from domain.storage import MAX_SHARE_OF_FREE_DISK, bbox_area_km2, clipped_area_km2, free_bytes, staged_bytes, staging_resolution, verdict
 
-# staging writes each band as float32
-BYTES_PER_PIXEL = 4
+log = logging.getLogger(__name__)
+
+GROWTH = 8
 
 
 @dataclass(frozen=True)
@@ -22,15 +21,16 @@ class Estimate:
     capped: bool
     from_past_window: bool
 
+    @property
+    def verdict(self) -> str:
+        return verdict(self.staged_bytes, self.free_bytes)
+
+    def as_result(self) -> dict:
+        return {**asdict(self), "verdict": self.verdict}
+
 
 class Estimator(Protocol):
     def estimate(self, draft: dict, now: datetime) -> Estimate: ...
-
-
-def staged_bytes(scenes: int, area_km2: float, resolution_m: float, rasters: int) -> int:
-
-    pixels = area_km2 * 1_000_000 / (resolution_m**2)
-    return int(scenes * rasters * pixels * BYTES_PER_PIXEL)
 
 
 def search_window(draft: dict, now: datetime) -> tuple[datetime, datetime, bool]:
@@ -40,19 +40,12 @@ def search_window(draft: dict, now: datetime) -> tuple[datetime, datetime, bool]
     return now - (end - now), now, True
 
 
-def format_bytes(count: int) -> str:
-    for unit, size in (("TB", 1024**4), ("GB", 1024**3), ("MB", 1024**2)):
-        if count >= size:
-            return f"{count / size:.1f} {unit}"
-    return "under 1 MB"
-
-
 class ArchiveEstimator:
 
 
     def __init__(self, session_factory=None, scratch: str | None = None):
         self._session_factory = session_factory
-        self._scratch = scratch or os.getenv("RUN_SCRATCH") or tempfile.gettempdir()
+        self._scratch = scratch
 
     def estimate(self, draft: dict, now: datetime) -> Estimate:
         from domain.catalogue import get_collection, get_model
@@ -67,7 +60,7 @@ class ArchiveEstimator:
         area_km2 = bbox_area_km2(area.bounds)
         start, end, from_past = search_window(draft, now)
 
-        free = shutil.disk_usage(self._scratch).free
+        free = free_bytes(self._scratch)
         limit_bytes = MAX_SHARE_OF_FREE_DISK * free
         scenes = total_bytes = 0
         capped = False
@@ -80,14 +73,55 @@ class ArchiveEstimator:
                     capped = True
                     break
                 provider, collection = get_collection(db, slug)
-                resolution = max(collection.resolution_m, model.requires.gsd_m or 0) or collection.resolution_m
-                per_scene = staged_bytes(1, area_km2, resolution, rasters)
-                # just enough scenes to cross the limit, and never more than discovery itself would take
-                enough = int((limit_bytes - total_bytes) // per_scene) + 1 if per_scene else MAX_SCENES
-                max_items = min(MAX_SCENES, max(enough, 1))
-                found = len(search_stac(provider, collection, area, start, end, model.requires.max_cloud_cover, max_items=max_items))
-                scenes += found
-                total_bytes += found * per_scene
-                capped = capped or found >= max_items
+                resolution = staging_resolution(collection.resolution_m, [model.requires.gsd_m])
+
+                def search(max_items: int) -> tuple[list[dict], int]:
+                    items = search_stac(provider, collection, area, start, end, model.requires.max_cloud_cover, max_items=max_items)
+                    return items, sum(staged_bytes(1, clipped_area_km2(item.get("geometry"), area), resolution, rasters) for item in items)
+
+                whole = staged_bytes(1, area_km2, resolution, rasters)
+                max_items = min(MAX_SCENES, max(int((limit_bytes - total_bytes) // whole) + 1, 1)) if whole else MAX_SCENES
+                while True:
+                    items, found_bytes = search(max_items)
+                    settled = len(items) < max_items or max_items >= MAX_SCENES or total_bytes + found_bytes > limit_bytes
+                    if settled:
+                        break
+                    max_items = min(MAX_SCENES, max_items * GROWTH)
+                scenes += len(items)
+                total_bytes += found_bytes
+                capped = capped or len(items) >= max_items
 
         return Estimate(scenes=scenes, staged_bytes=total_bytes, free_bytes=free, capped=capped, from_past_window=from_past)
+
+
+def run_estimate(estimate_id: uuid.UUID, session_factory=None, estimator: Estimator | None = None, now: datetime | None = None) -> None:
+    from api.schemas.workflow import utc_now
+    from core.db.models.builder import StorageEstimate
+    from core.db.models.enums import BuilderRunStatus
+
+    if session_factory is None:
+        from core.db.sync import get_session
+
+        session_factory = get_session
+
+    with session_factory() as db:
+        row = db.get(StorageEstimate, estimate_id)
+        if row is None:
+            return
+        draft = dict(row.draft)
+        row.status = BuilderRunStatus.running
+        db.commit()
+
+    def record(**changes) -> None:
+        with session_factory() as db:
+            row = db.get(StorageEstimate, estimate_id)
+            for name, value in changes.items():
+                setattr(row, name, value)
+            db.commit()
+
+    try:
+        result = (estimator or ArchiveEstimator()).estimate(draft, now or utc_now())
+    except Exception as exc:
+        record(status=BuilderRunStatus.failed, error=str(exc)[:1000])
+        raise
+    record(status=BuilderRunStatus.done, result=result.as_result())

@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useBuilderRun, useModels, useStartBuilderRun } from "../api/queries";
 import Chevron from "./Chevron";
-import type { BuilderDraft, BuilderEstimate, BuilderMessage } from "../api/types";
+import type { BuilderDraft, BuilderMessage, StorageEstimateResult } from "../api/types";
 
 // a failure is dismissible like any form error; a refusal is something to rephrase
 type Notice = { kind: "error" | "cannot"; text: string };
 
 // what the landed draft came from, and what the builder assumed or wants reconsidered
-type Drafted = { request: string; message: string; warnings: string[]; estimate: BuilderEstimate | null };
+type Drafted = { request: string; message: string; warnings: string[] };
 
 // said in different ways on purpose: a question, a plain request, a named satellite, relative dates;
 // each is shown only while the detector it needs is registered, since models come and go without a release
@@ -19,19 +19,6 @@ const EXAMPLES: { text: string; needs: string }[] = [
   { text: "Check Chilika Lake's water every week through next June", needs: "ndwi-water-detector" },
 ];
 
-function formatBytes(count: number): string {
-  for (const [unit, size] of [["TB", 1024 ** 4], ["GB", 1024 ** 3], ["MB", 1024 ** 2]] as const) {
-    if (count >= size) return `${(count / size).toFixed(1)} ${unit}`;
-  }
-  return "under 1 MB";
-}
-
-function describeEstimate(e: BuilderEstimate): string {
-  const scenes = `${e.scenes}${e.capped ? " or more" : ""} ${e.scenes === 1 ? "scene" : "scenes"}`;
-  const when = e.from_past_window ? " in a past period as long as this one" : "";
-  return `About ${scenes}${when}, roughly ${formatBytes(e.staged_bytes)} to stage.`;
-}
-
 const DISMISS =
   "shrink-0 w-6 h-6 flex items-center justify-center rounded text-gray-500 hover:text-gray-800 hover:bg-white/70 transition-colors";
 
@@ -39,7 +26,8 @@ export default function WorkflowBuilder({
   onDraft,
   onWorkingChange,
 }: {
-  onDraft: (draft: BuilderDraft) => void;
+  // the estimate, when the builder could make one, goes with the draft to the form's storage section
+  onDraft: (draft: BuilderDraft, estimate: StorageEstimateResult | null) => void;
   onWorkingChange?: (working: boolean) => void;
 }) {
   const [text, setText] = useState("");
@@ -87,8 +75,8 @@ export default function WorkflowBuilder({
       setConversation([]);
       return;
     }
-    if (outcome.draft) onDraft(outcome.draft);
-    setDrafted({ request: request[0] ?? "", message: outcome.message, warnings: outcome.warnings, estimate: outcome.estimate ?? null });
+    if (outcome.draft) onDraft(outcome.draft, outcome.estimate ?? null);
+    setDrafted({ request: request[0] ?? "", message: outcome.message, warnings: outcome.warnings });
     setConversation([]);
   }, [run, runId, onDraft, conversation]);
 
@@ -137,7 +125,6 @@ export default function WorkflowBuilder({
           </button>
         </div>
         {drafted.message && <p className="text-gray-600">{drafted.message}</p>}
-        {drafted.estimate && <p className="text-gray-600">{describeEstimate(drafted.estimate)}</p>}
         {drafted.warnings.map((w) => (
           <p key={w} className="text-amber-700">
             {w}

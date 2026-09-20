@@ -5,6 +5,8 @@ import type {
   BuilderMessage,
   BuilderRun,
   CollectionInfo,
+  EstimateRequest,
+  StorageEstimateRun,
   ModelInfo,
   TimeseriesResponse,
   Workflow,
@@ -147,6 +149,25 @@ export function useBuilderRun(id: string | null) {
     queryFn: () => api.get<BuilderRun>(`/builder/runs/${id}`),
     enabled: !!id,
     // the worker's steps and answer arrive as live changes; poll only when nothing announces them
+    refetchInterval: (query) => {
+      const run = query.state.data;
+      return !live && (!run || run.status === "queued" || run.status === "running") ? 2000 : false;
+    },
+  });
+}
+
+export function useStartEstimate() {
+  return useMutation({
+    mutationFn: (request: EstimateRequest) => api.post<StorageEstimateRun>("/estimates", request),
+  });
+}
+
+export function useEstimate(id: string | null) {
+  const live = useLive((s) => s.connected);
+  return useQuery({
+    queryKey: ["estimate", id],
+    queryFn: () => api.get<StorageEstimateRun>(`/estimates/${id}`),
+    enabled: !!id,
     refetchInterval: (query) => {
       const run = query.state.data;
       return !live && (!run || run.status === "queued" || run.status === "running") ? 2000 : false;

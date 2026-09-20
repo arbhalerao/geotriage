@@ -1,6 +1,7 @@
 import uuid
 
 import pipeline
+from builder.estimate import run_estimate
 from builder.runs import run_build
 from core.db.sync import get_session
 from worker.queue import enqueue, new_group, task
@@ -16,6 +17,8 @@ def run_workflow(workflow_id: str) -> None:
     try:
         with get_session() as db:
             plan = pipeline.discover(db, workflow_uuid)
+            # before any staging job exists: a run too large for the disk fails here, and discovery's inserts roll back with it
+            pipeline.check_storage(db, workflow_uuid, list(plan))
 
             if plan:
                 # one fan-in barrier across every score job,
@@ -82,6 +85,11 @@ def smoke_test_model(model_id: str) -> None:
 @task("build_draft")
 def build_draft(builder_run_id: str) -> None:
     run_build(uuid.UUID(builder_run_id))
+
+
+@task("estimate_storage")
+def estimate_storage(estimate_id: str) -> None:
+    run_estimate(uuid.UUID(estimate_id))
 
 
 @task("seed_defaults")
