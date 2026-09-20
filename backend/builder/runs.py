@@ -3,7 +3,7 @@ import uuid
 
 from builder import agent
 from builder.catalogue import Catalogue
-from builder.places import NominatimPlaces
+from builder.places import NominatimPlaces, PostgresPlaceCache
 from core.db.models.builder import BuilderRun
 from core.db.models.enums import BuilderRunStatus
 from core.db.sync import get_session
@@ -11,14 +11,14 @@ from llm import TracedClient, default_client
 
 log = logging.getLogger(__name__)
 
-# one per worker process, so a place looked up once isn't asked of OpenStreetMap again
+# one per worker process, in front of the Postgres cache every worker shares
 _places = None
 
 
 def _shared_places() -> NominatimPlaces:
     global _places
     if _places is None:
-        _places = NominatimPlaces()
+        _places = NominatimPlaces(cache=PostgresPlaceCache())
     return _places
 
 

@@ -1,11 +1,15 @@
 import json
+import logging
 import math
 import re
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Protocol
 
 import httpx
+
+log = logging.getLogger(__name__)
 
 NOMINATIM = "https://nominatim.openstreetmap.org/search"
 # Nominatim's usage policy asks every client to identify itself
@@ -67,19 +71,89 @@ def fixture_path(directory: Path, query: str) -> Path:
     return directory / f"{re.sub(r'[^a-z0-9]+', '-', query.lower()).strip('-')}.json"
 
 
-class NominatimPlaces:
+def lookup_key(query: str) -> str:
+    return re.sub(r"\s+", " ", query.strip().lower())
 
-    def __init__(self, transport: httpx.BaseTransport | None = None):
+
+class PlaceCache(Protocol):
+    def get(self, key: str) -> tuple[list[dict], datetime] | None: ...
+
+    def put(self, key: str, query: str, candidates: list[dict]) -> None: ...
+
+
+class PostgresPlaceCache:
+
+    def __init__(self, session_factory=None):
+        self._session_factory = session_factory
+
+    def _session(self):
+        # imported late, so a places client can be built without a database
+        if self._session_factory is None:
+            from core.db.sync import get_session
+
+            self._session_factory = get_session
+        return self._session_factory()
+
+    def get(self, key: str) -> tuple[list[dict], datetime] | None:
+        from core.db.models.builder import PlaceLookup
+
+        with self._session() as db:
+            row = db.get(PlaceLookup, key)
+            return (row.candidates, row.looked_up_at) if row else None
+
+    def put(self, key: str, query: str, candidates: list[dict]) -> None:
+        from sqlalchemy.dialects.postgresql import insert
+
+        from core.db.models.builder import PlaceLookup
+
+        values = {"query_key": key, "query": query, "candidates": candidates, "looked_up_at": datetime.now(timezone.utc)}
+        with self._session() as db:
+            # two workers looking up the same new place both write it; the later answer is as good as the earlier
+            db.execute(insert(PlaceLookup).values(**values).on_conflict_do_update(index_elements=["query_key"], set_=values))
+            db.commit()
+
+
+class NominatimPlaces:
+    def __init__(self, cache: PlaceCache | None = None, max_age: timedelta = timedelta(days=30), transport: httpx.BaseTransport | None = None):
         self._http = httpx.Client(headers={"User-Agent": USER_AGENT}, timeout=20, transport=transport)
+        self._cache = cache
+        self._max_age = max_age
         self._seen: dict[str, list[Place]] = {}
 
     def search(self, query: str) -> list[Place]:
-        key = query.strip().lower()
-        if key not in self._seen:
+        key = lookup_key(query)
+        if key in self._seen:
+            return self._seen[key]
+
+        candidates = self._cached(key)
+        if candidates is None:
             response = self._http.get(NOMINATIM, params={"q": query, "format": "jsonv2", "limit": 5, "accept-language": "en"})
             response.raise_for_status()
-            self._seen[key] = from_nominatim(response.json())
+            candidates = response.json()
+            self._store(key, query, candidates)
+
+        self._seen[key] = from_nominatim(candidates)
         return self._seen[key]
+
+    def _cached(self, key: str) -> list[dict] | None:
+        if self._cache is None:
+            return None
+        try:
+            hit = self._cache.get(key)
+        except Exception:  # noqa: BLE001 — the cache is an optimisation, the geocoder is still there
+            log.warning("place cache unreadable, asking OpenStreetMap", exc_info=True)
+            return None
+        if hit is None or datetime.now(timezone.utc) - hit[1] > self._max_age:
+            return None
+        return hit[0]
+
+    def _store(self, key: str, query: str, candidates: list[dict]) -> None:
+        if self._cache is None:
+            return
+        try:
+            self._cache.put(key, query, candidates)
+        except Exception:  # noqa: BLE001 — failing to remember an answer doesn't make the answer wrong
+            log.warning("place cache unwritable, the answer is used but not kept", exc_info=True)
 
 
 class RecordedPlaces:

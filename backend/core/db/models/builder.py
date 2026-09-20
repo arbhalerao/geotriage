@@ -22,3 +22,15 @@ class BuilderRun(Base):
     error: Mapped[str | None] = mapped_column(String, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
+class PlaceLookup(Base):
+
+    __tablename__ = "place_lookups"
+
+    # the query as typed, lowercased with runs of spaces collapsed
+    query_key: Mapped[str] = mapped_column(String, primary_key=True)
+    query: Mapped[str] = mapped_column(String, nullable=False)
+    # Nominatim's results as returned, so parsing stays in one place
+    candidates: Mapped[list] = mapped_column(JSONB, nullable=False)
+    looked_up_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
