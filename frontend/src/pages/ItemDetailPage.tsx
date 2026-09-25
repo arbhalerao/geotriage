@@ -7,6 +7,7 @@ import StatusBadge from "../components/StatusBadge";
 import MapViewer from "../components/MapViewer";
 import DotLine from "../components/DotLine";
 import Section from "../components/Section";
+import { layersKept } from "../storagePolicy";
 import { formatDate, formatDateTime } from "../time";
 
 // per-band visualization parameters for TiTiler
@@ -171,14 +172,15 @@ export default function ItemDetailPage() {
   // bands available for this item = union of required_bands + derived_rasters across the model runs that actually succeeded
   const availableBands = useMemo(() => {
     if (!item || !models) return [] as string[];
+    const kept = layersKept(item.imagery_kept);
     const successfulSlugs = new Set(
       item.model_runs.filter((r) => r.status === "success").map((r) => r.model_slug),
     );
     const out = new Set<string>();
     for (const m of models) {
       if (!successfulSlugs.has(m.slug)) continue;
-      (m.required_bands ?? []).forEach((b) => out.add(b));
-      (m.derived_rasters ?? []).forEach((d) => out.add(d));
+      if (kept.inputs) (m.required_bands ?? []).forEach((b) => out.add(b));
+      if (kept.results) (m.derived_rasters ?? []).forEach((d) => out.add(d));
     }
     return Array.from(out);
   }, [item, models]);
@@ -221,6 +223,9 @@ export default function ItemDetailPage() {
 
       {(wf?.aoi_geometry || item.stac_item.bbox) && (
         <Section title="Map: AOI &amp; scene footprint" bodyClassName="">
+          {availableBands.length === 0 && item.imagery_kept === "none" && (
+            <p className="px-5 pb-4 text-sm text-gray-500">Imagery not kept</p>
+          )}
           {availableBands.length > 0 && (
             <div className="px-5 pb-4 space-y-3">
               <div className="flex items-end justify-between gap-4 flex-wrap">

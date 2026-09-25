@@ -11,6 +11,23 @@ WARN_SHARE_OF_FREE_DISK = 0.1
 Verdict = Literal["fits", "large", "too_large"]
 
 
+_INPUTS_KEPT_FOR = {
+    "everything": {"red", "yellow", "green"},
+    "alert_and_caution_in_full": {"red", "yellow"},
+    "alert_in_full": {"red"},
+    "results_only": set(),
+    "scores_only": set(),
+}
+
+
+def imagery_to_keep(policy: str, severity: str | None, scored: bool) -> Literal["inputs_and_results", "results", "none"]:
+    if policy == "everything":
+        return "inputs_and_results"
+    if not scored or policy == "scores_only":
+        return "none"
+    return "inputs_and_results" if severity in _INPUTS_KEPT_FOR[policy] else "results"
+
+
 def bbox_area_km2(bbox: tuple[float, float, float, float]) -> float:
     west, south, east, north = bbox
     width = (east - west) * 111.32 * math.cos(math.radians((south + north) / 2))

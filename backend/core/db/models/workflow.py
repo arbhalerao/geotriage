@@ -17,7 +17,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 
 from core.db.base import Base
-from core.db.models.enums import WorkflowStatus, TimeMode, CompatibilityLevel
+from core.db.models.enums import StoragePolicy, WorkflowStatus, TimeMode, CompatibilityLevel
 
 
 class Workflow(Base):
@@ -37,6 +37,12 @@ class Workflow(Base):
         SAEnum(WorkflowStatus, native_enum=False, length=30),
         nullable=False,
         default=WorkflowStatus.draft,
+    )
+    storage_policy: Mapped[StoragePolicy] = mapped_column(
+        SAEnum(StoragePolicy, native_enum=False, length=30),
+        nullable=False,
+        default=StoragePolicy.everything,
+        server_default=StoragePolicy.everything.value,
     )
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

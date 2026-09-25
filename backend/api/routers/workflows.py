@@ -142,6 +142,7 @@ async def _load_response(workflow: Workflow, db: AsyncSession) -> WorkflowRespon
         time_start=workflow.time_start,
         time_end=workflow.time_end,
         aoi_filter_mode=workflow.aoi_filter_mode,
+        storage_policy=workflow.storage_policy,
         poll_interval_minutes=workflow.poll_interval_minutes,
         last_checked_at=workflow.last_checked_at,
         next_run_at=next_run_at,
@@ -223,6 +224,7 @@ async def create_workflow(
         time_mode=body.time_mode,
         time_start=body.time_start,
         time_end=body.time_end,
+        storage_policy=body.storage_policy,
         status=WorkflowStatus.draft,
     )
     db.add(workflow)

@@ -8,6 +8,7 @@ import {
 import Map from "../components/Map";
 import Chevron from "../components/Chevron";
 import { useStorageEstimate } from "../components/StorageEstimate";
+import { DEFAULT_POLICY, type StoragePolicy } from "../storagePolicy";
 import WorkflowBuilder from "../components/WorkflowBuilder";
 import type { BuilderDraft, EstimateRequest, ModelInfo, StorageEstimateResult, ThresholdBand } from "../api/types";
 import { dayAfter, startOfDayUtc, todayUtc } from "../time";
@@ -131,6 +132,7 @@ export default function CreateWorkflowPage() {
   const [timeStart, setTimeStart] = useState("");
   const [timeEnd, setTimeEnd] = useState("");
   const [pollInterval, setPollInterval] = useState(1440);
+  const [storagePolicy, setStoragePolicy] = useState<StoragePolicy>(DEFAULT_POLICY);
 
   const today = todayUtc();
   const endMax = mode === "historical" ? today : undefined;
@@ -228,6 +230,7 @@ export default function CreateWorkflowPage() {
         model_slug: selectedModelSlug!,
         thresholds: thresholdOverrides,
       }],
+      storage_policy: storagePolicy,
     });
     navigate(`/workflows/${wf.id}`);
   }
@@ -254,7 +257,7 @@ export default function CreateWorkflowPage() {
   }, [drawnGeometry, datesValid, selectedModelSlug, selectedCollections, mode, timeStart, timeEnd, pollInterval]);
 
   // creating waits for a current estimate, so nobody creates a workflow without seeing what it stages
-  const storage = useStorageEstimate(estimateRequest, estimateSeed);
+  const storage = useStorageEstimate(estimateRequest, estimateSeed, storagePolicy, setStoragePolicy);
 
   const canSubmit =
     !!name && !!drawnGeometry && datesValid &&
@@ -485,7 +488,7 @@ export default function CreateWorkflowPage() {
           </div>
         </FormSection>
 
-        {/* 5 storage: optional, on request, the same in both ways of starting */}
+        {/* 5 storage: what the workflow keeps, and an estimate of it, the same in both ways of starting */}
         <FormSection title="Storage estimate">
           {storage.body}
         </FormSection>

@@ -77,6 +77,15 @@ def delete_workflow_prefix(workflow_id) -> None:
         )
 
 
+def delete_keys(keys: list[str]) -> None:
+    if not keys:
+        return
+    s3().delete_objects(
+        Bucket=settings.MINIO_BUCKET,
+        Delete={"Objects": [{"Key": key} for key in keys], "Quiet": True},
+    )
+
+
 def init_bucket() -> None:
     """idempotent"""
     try:

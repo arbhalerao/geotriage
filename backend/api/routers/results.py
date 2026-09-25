@@ -90,6 +90,7 @@ async def list_items(
                 overall_severity=wi.overall_severity,
                 discovered_at=wi.discovered_at,
                 processed_at=wi.processed_at,
+                imagery_kept=wi.imagery_kept,
                 bbox=si.bbox,
             )
             for wi, si in rows
@@ -168,6 +169,7 @@ async def get_item(
         overall_severity=wi.overall_severity,
         discovered_at=wi.discovered_at,
         processed_at=wi.processed_at,
+        imagery_kept=wi.imagery_kept,
         stac_item=StacItemResponse(
             id=si.stac_item_id,
             collection=si.collection_slug,

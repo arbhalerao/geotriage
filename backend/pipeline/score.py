@@ -16,6 +16,7 @@ from storage import client as store
 from storage import cog
 from geotriage.bands import Bands
 from domain.catalogue import get_model
+from pipeline.cleanup import apply_storage_policy_quietly
 
 log = logging.getLogger(__name__)
 
@@ -165,6 +166,7 @@ def finalize_item(db: Session, item_id: uuid.UUID) -> None:
             item.status = WorkflowItemStatus.failed
         item.processed_at = now
         db.commit()
+        apply_storage_policy_quietly(db, item)
         return
 
     primaries = (
@@ -182,3 +184,4 @@ def finalize_item(db: Session, item_id: uuid.UUID) -> None:
     item.status = WorkflowItemStatus.processed
     item.processed_at = now
     db.commit()
+    apply_storage_policy_quietly(db, item)

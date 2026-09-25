@@ -39,6 +39,7 @@ class WorkflowItemSummary(BaseModel):
     overall_severity: str | None
     discovered_at: datetime
     processed_at: datetime | None
+    imagery_kept: str | None
     bbox: list[float] | None
 
 
@@ -59,6 +60,7 @@ class WorkflowItemDetail(BaseModel):
     overall_severity: str | None
     discovered_at: datetime
     processed_at: datetime | None
+    imagery_kept: str | None
     stac_item: StacItemResponse
     model_runs: list[ModelRunResponse]
 

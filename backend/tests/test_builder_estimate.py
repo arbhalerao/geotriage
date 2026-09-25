@@ -190,6 +190,8 @@ def test_a_draft_under_the_limit_is_counted_exactly_with_discovery_s_search(monk
     assert result.scenes == 12
     assert result.staged_bytes == 5 * staged_bytes(1, area, 10.0, 3) + 7 * staged_bytes(1, area, 30.0, 3)
     assert result.capped is False
+    assert result.input_bytes + result.result_bytes == result.staged_bytes
+    assert result.input_bytes == 2 * result.result_bytes, "two bands for every derived raster, on the same grid"
     assert [cloud for _, cloud, _ in searches] == [30.0, 30.0], "searched with the model's cloud limit, as discovery would"
 
 

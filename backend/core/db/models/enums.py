@@ -63,3 +63,17 @@ class BuilderRunStatus(str, enum.Enum):
     running = "running"
     done = "done"
     failed = "failed"
+
+
+class StoragePolicy(str, enum.Enum):
+    everything = "everything"
+    alert_and_caution_in_full = "alert_and_caution_in_full"
+    alert_in_full = "alert_in_full"
+    results_only = "results_only"
+    scores_only = "scores_only"
+
+
+class ImageryKept(str, enum.Enum):
+    inputs_and_results = "inputs_and_results"
+    results = "results"
+    none = "none"

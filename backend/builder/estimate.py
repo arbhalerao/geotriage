@@ -20,6 +20,8 @@ class Estimate:
     free_bytes: int
     capped: bool
     from_past_window: bool
+    input_bytes: int = 0
+    result_bytes: int = 0
 
     @property
     def verdict(self) -> str:
@@ -66,7 +68,9 @@ class ArchiveEstimator:
         capped = False
         with self._session_factory() as db:
             model = get_model(db, draft["models"][0]["model_slug"])
-            rasters = len(model.requires.bands) + len(model.rasters)
+            bands, derived = len(model.requires.bands), len(model.rasters)
+            rasters = bands + derived
+            input_total = result_total = 0
             for slug in draft["collection_slugs"]:
                 if total_bytes > limit_bytes:
                     # already over, so the remaining collections can only make it more so
@@ -75,23 +79,35 @@ class ArchiveEstimator:
                 provider, collection = get_collection(db, slug)
                 resolution = staging_resolution(collection.resolution_m, [model.requires.gsd_m])
 
-                def search(max_items: int) -> tuple[list[dict], int]:
+                def search(max_items: int) -> tuple[list[dict], int, int]:
                     items = search_stac(provider, collection, area, start, end, model.requires.max_cloud_cover, max_items=max_items)
-                    return items, sum(staged_bytes(1, clipped_area_km2(item.get("geometry"), area), resolution, rasters) for item in items)
+                    overlaps = [clipped_area_km2(item.get("geometry"), area) for item in items]
+                    return items, sum(staged_bytes(1, km2, resolution, bands) for km2 in overlaps), sum(staged_bytes(1, km2, resolution, derived) for km2 in overlaps)
 
                 whole = staged_bytes(1, area_km2, resolution, rasters)
                 max_items = min(MAX_SCENES, max(int((limit_bytes - total_bytes) // whole) + 1, 1)) if whole else MAX_SCENES
                 while True:
-                    items, found_bytes = search(max_items)
+                    items, found_inputs, found_results = search(max_items)
+                    found_bytes = found_inputs + found_results
                     settled = len(items) < max_items or max_items >= MAX_SCENES or total_bytes + found_bytes > limit_bytes
                     if settled:
                         break
                     max_items = min(MAX_SCENES, max_items * GROWTH)
                 scenes += len(items)
                 total_bytes += found_bytes
+                input_total += found_inputs
+                result_total += found_results
                 capped = capped or len(items) >= max_items
 
-        return Estimate(scenes=scenes, staged_bytes=total_bytes, free_bytes=free, capped=capped, from_past_window=from_past)
+        return Estimate(
+            scenes=scenes,
+            staged_bytes=total_bytes,
+            free_bytes=free,
+            capped=capped,
+            from_past_window=from_past,
+            input_bytes=input_total,
+            result_bytes=result_total,
+        )
 
 
 def run_estimate(estimate_id: uuid.UUID, session_factory=None, estimator: Estimator | None = None, now: datetime | None = None) -> None:

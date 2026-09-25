@@ -16,7 +16,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 
 from core.db.base import Base
-from core.db.models.enums import WorkflowItemStatus, ModelRunStatus, Severity
+from core.db.models.enums import ImageryKept, WorkflowItemStatus, ModelRunStatus, Severity
 
 
 class WorkflowItem(Base):
@@ -34,6 +34,7 @@ class WorkflowItem(Base):
     discovered_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     processed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     error_message: Mapped[str | None] = mapped_column(String, nullable=True)
+    imagery_kept: Mapped[ImageryKept | None] = mapped_column(SAEnum(ImageryKept, native_enum=False, length=20), nullable=True)
 
     __table_args__ = (
         UniqueConstraint("workflow_id", "stac_item_id", name="uq_workflow_items_workflow_stac"),

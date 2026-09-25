@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { useCollections, useModels, useWorkflow } from "../api/queries";
 import type { Workflow } from "../api/types";
+import { policyLabel } from "../storagePolicy";
 import { formatDate, formatDateTime, formatInterval } from "../time";
 import { Rows } from "./Panel";
 
@@ -15,6 +16,7 @@ export default function WorkflowDetails({ workflow: wf }: { workflow: Workflow }
     ["Model", wf.model_configs.map((m) => models?.find((x) => x.slug === m.model_slug)?.name ?? m.model_slug).join(", ")],
     ["Data sources", wf.collection_slugs.map((slug) => collections?.find((c) => c.slug === slug)?.display_name ?? slug).join(", ")],
     ["Scene filter", wf.aoi_filter_mode === "enclosed" ? "At least 80% inside the area" : "Any overlap with the area"],
+    ["Storage policy", policyLabel(wf.storage_policy)],
   ];
   if (recurring) {
     rows.push(["Interval", wf.poll_interval_minutes ? formatInterval(wf.poll_interval_minutes) : "none"]);

@@ -4,6 +4,8 @@ from typing import Any
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
+from core.db.models.enums import StoragePolicy
+
 
 def utc_now() -> datetime:
     return datetime.now(timezone.utc)
@@ -35,6 +37,7 @@ class WorkflowCreate(BaseModel):
     poll_interval_minutes: int | None = None
     collection_slugs: list[str] = Field(min_length=1)
     models: list[ModelConfigInput] = Field(min_length=1, max_length=1)
+    storage_policy: StoragePolicy = StoragePolicy.everything
 
     @field_validator("time_start", "time_end")
     @classmethod
@@ -105,6 +108,7 @@ class WorkflowResponse(BaseModel):
     time_end: datetime
     aoi_filter_mode: str
     poll_interval_minutes: int | None
+    storage_policy: str
     last_checked_at: datetime | None
     next_run_at: datetime | None
     status: str

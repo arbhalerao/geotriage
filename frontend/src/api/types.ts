@@ -1,3 +1,5 @@
+import type { ImageryKept, StoragePolicy } from "../storagePolicy";
+
 export interface CollectionInfo {
   slug: string;
   display_name: string;
@@ -59,6 +61,7 @@ export interface Workflow extends WorkflowBase {
   aoi_geometry: GeoJSON.Geometry;
   aoi_filter_mode: string;
   poll_interval_minutes: number | null;
+  storage_policy: StoragePolicy;
   last_checked_at: string | null;
   next_run_at: string | null;
   started_at: string | null;
@@ -86,6 +89,7 @@ export interface StacItem {
 
 export interface WorkflowItemSummary {
   id: string;
+  imagery_kept: ImageryKept;
   collection_slug: string;
   stac_item_id: string;
   scene_datetime: string;
@@ -191,6 +195,8 @@ export interface StorageEstimateResult {
   capped: boolean;
   from_past_window: boolean;
   verdict: "fits" | "large" | "too_large";
+  input_bytes: number;
+  result_bytes: number;
 }
 
 export interface StorageEstimateRun {
