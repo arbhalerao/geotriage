@@ -7,6 +7,7 @@ import {
 } from "../api/queries";
 import Map from "../components/Map";
 import Chevron from "../components/Chevron";
+import DateField from "../components/DateField";
 import { useStorageEstimate } from "../components/StorageEstimate";
 import { DEFAULT_POLICY, type StoragePolicy } from "../storagePolicy";
 import WorkflowBuilder from "../components/WorkflowBuilder";
@@ -330,14 +331,11 @@ export default function CreateWorkflowPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm mb-1 text-gray-700">Time start (UTC)</label>
-              <input type="date" required value={mode === "recurring" ? today : timeStart} max={today} disabled={mode === "recurring"}
-                onChange={(e) => changeStart(e.target.value)}
-                className="w-full bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-brand-500 disabled:text-gray-500 disabled:cursor-not-allowed" />
+              <DateField label="Time start (UTC)" value={mode === "recurring" ? today : timeStart} max={today} disabled={mode === "recurring"} onChange={changeStart} />
             </div>
             <div>
               <label className="block text-sm mb-1 text-gray-700">Time end (UTC)</label>
-              <input type="date" required value={timeEnd} min={endMin} max={endMax} onChange={(e) => setTimeEnd(e.target.value)}
-                className="w-full bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-brand-500" />
+              <DateField label="Time end (UTC)" value={timeEnd} min={endMin} max={endMax} onChange={setTimeEnd} />
             </div>
           </div>
 

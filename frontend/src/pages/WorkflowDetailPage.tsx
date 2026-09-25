@@ -5,6 +5,7 @@ import SeverityBadge from "../components/SeverityBadge";
 import WorkflowDetails from "../components/WorkflowDetails";
 import Tile from "../components/Tile";
 import StatusBadge from "../components/StatusBadge";
+import DotLine from "../components/DotLine";
 import MapViewer from "../components/MapViewer";
 import type { MapViewerItem } from "../components/MapViewer";
 import ScoreChart from "../components/ScoreChart";
@@ -89,9 +90,10 @@ export default function WorkflowDetailPage() {
       </div>
 
       <div className="flex items-start justify-between gap-4 mb-6">
-        <div className="min-w-0 flex items-center gap-3 flex-wrap">
-          <h1 className="text-xl font-semibold text-gray-900">{wf.name}</h1>
-          <StatusBadge status={wf.status} />
+        {/* the status sits on its own line under the name, the same as on a scene's page */}
+        <div className="min-w-0">
+          <h1 className="text-xl font-semibold text-gray-900 mb-1 break-words">{wf.name}</h1>
+          <DotLine parts={[<StatusBadge status={wf.status} />]} />
         </div>
         <div className="shrink-0">
           {(wf.status === "draft" || wf.status === "failed") && (

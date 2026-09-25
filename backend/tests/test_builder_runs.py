@@ -59,9 +59,9 @@ def test_a_turn_ends_done_with_the_outcome_and_every_step_along_the_way():
 
     assert run.status == BuilderRunStatus.done
     assert run.outcome["kind"] == "question"
-    assert run.steps == ["Looking up Springfield", "Writing the draft"]
+    assert run.steps == ["Locating Springfield", "Drafting your workflow"]
     assert rows.commits[0]["status"] == BuilderRunStatus.running
-    assert [c["steps"] for c in rows.commits[1:3]] == [["Looking up Springfield"], ["Looking up Springfield", "Writing the draft"]], "each step is its own commit, so it's announced as it happens"
+    assert [c["steps"] for c in rows.commits[1:3]] == [["Locating Springfield"], ["Locating Springfield", "Drafting your workflow"]], "each step is its own commit, so it's announced as it happens"
 
 
 def test_a_turn_that_fails_says_why_and_the_job_fails_too():

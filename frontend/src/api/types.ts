@@ -223,6 +223,7 @@ export interface BuilderOutcome {
   draft: BuilderDraft | null;
   warnings: string[];
   estimate: StorageEstimateResult | null;
+  stopped_at?: "models" | "area" | "collections" | "draft" | "storage" | null;
 }
 
 export interface BuilderRun {

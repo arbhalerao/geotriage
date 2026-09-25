@@ -21,7 +21,7 @@ There are three kinds of answer:
 - question: you would have to guess. Ask when find_place lists different_places_with_this_name, when the request names no specific place, when it doesn't say what to look for, or when it gives no time at all. A request says what to look for when it names something one of the detectors measures; "watch" or "monitor" alone doesn't.
 - cannot: the platform can't do what was asked, even if you could suggest something else. That is when none of the detectors above measures it, when the user asks for a satellite or data that list_collections doesn't list, when the user names a collection that doesn't work with the detector, when the place is too_large, or when the dates can't work for the mode.
 
-Reply with only the answer as JSON, every field present. Dates are YYYY-MM-DD; use the worked-out dates above for phrases like last month or next summer. A recurring answer has a time_end and no time_start. collection_slugs stays empty unless the user named a collection. message is one or two sentences: the question, the reason, or what you assumed.
+Reply with only the answer as JSON, every field present. Dates are YYYY-MM-DD; use the worked-out dates above for phrases like last month or next summer. A recurring answer has a time_end and no time_start. collection_slugs stays empty unless the user named a collection. message is one short sentence, speaking to the user as "you": the question, the reason, or what you assumed.
 
 Examples, with places found as place_1:
 

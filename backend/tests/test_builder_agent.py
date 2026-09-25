@@ -100,19 +100,21 @@ def test_a_draft_that_is_never_fixed_becomes_an_honest_refusal():
     broken = answer(model_slug="vegetation")
     outcome = build(ASK, FakeClient([look_up(), *[broken] * (MAX_REPAIRS + 1)]), CATALOGUE, PLACES)
     assert (outcome.kind, outcome.draft, outcome.repairs) == ("cannot", None, MAX_REPAIRS)
-    assert "vegetation" in outcome.message
+    assert any("vegetation" in problem for problem in outcome.problems), "what stayed wrong is kept for evals and logs"
+    assert outcome.stopped_at == "draft"
 
 
 def test_a_place_over_the_limit_is_refused_whatever_the_model_drafts():
     outcome = build([{"role": "user", "content": "Watch Africa"}], FakeClient([look_up("Africa"), answer()]), CATALOGUE, PLACES)
     assert (outcome.kind, outcome.draft) == ("cannot", None)
-    assert "largest area" in outcome.message
+    assert "over the 500,000 km² limit" in outcome.message
+    assert outcome.stopped_at == "area"
 
 
 def test_a_question_passes_through_with_its_message():
     fake = FakeClient([calls(("find_place", {"query": "Springfield"})), calls(("answer", {"kind": "question", "message": "Which Springfield?"}))])
     outcome = build([{"role": "user", "content": "Water in Springfield"}], fake, CATALOGUE, PLACES)
-    assert (outcome.kind, outcome.message) == ("question", "Which Springfield?")
+    assert (outcome.kind, outcome.message, outcome.stopped_at) == ("question", "Which Springfield?", None)
 
 
 def test_a_question_with_nothing_to_ask_is_sent_back():
@@ -154,7 +156,7 @@ def test_text_that_merely_contains_braces_is_not_an_answer():
 def test_arguments_that_are_not_an_answer_are_sent_back():
     fake = FakeClient([calls(("answer", {"kind": "maybe"})), calls(("answer", {"kind": "cannot", "message": "No detector for that."}))])
     outcome = build(ASK, fake, CATALOGUE, PLACES)
-    assert (outcome.kind, outcome.repairs) == ("cannot", 1)
+    assert (outcome.kind, outcome.repairs, outcome.stopped_at) == ("cannot", 1, "models")
     assert "kind" in feedback(fake, 1)
 
 
@@ -188,13 +190,14 @@ def test_a_large_area_or_long_history_is_drafted_with_a_warning():
 def test_a_model_that_never_answers_runs_out_of_rounds_and_says_so():
     outcome = build(ASK, FakeClient([calls(("list_models", {}))] * MAX_ROUNDS), CATALOGUE, PLACES)
     assert (outcome.kind, outcome.gave_up) == ("cannot", True)
-    assert "ran out of turns" in outcome.message
+    assert any("ran out of turns" in problem for problem in outcome.problems)
+    assert "ran out of turns" not in outcome.message, "what went wrong inside is for evals and logs, not the person asking"
 
 
 def test_progress_is_reported_step_by_step():
     steps = []
     build(ASK, FakeClient([look_up(), answer(time_start=""), answer()]), CATALOGUE, PLACES, on_step=steps.append)
-    assert steps == ["Checking the detectors", "Looking up Dhaka, Bangladesh", "Writing the draft", "Fixing the draft"]
+    assert steps == ["Evaluating available models", "Locating Dhaka, Bangladesh", "Drafting your workflow", "Refining your workflow"]
 
 
 def test_the_prompt_is_versioned():

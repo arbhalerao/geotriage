@@ -75,6 +75,8 @@ class Outcome:
     repairs: int = 0
     gave_up: bool = False
     estimate: dict | None = None
+    problems: list[str] = field(default_factory=list)
+    stopped_at: str | None = None
 
     def as_dict(self) -> dict:
         return asdict(self)
@@ -114,7 +116,7 @@ def build(
                 on_step(_describe(call.name, call.arguments))
                 result = toolbox.call(call.name, call.arguments)
             else:
-                on_step("Writing the draft" if repairs == 0 else "Fixing the draft")
+                on_step("Drafting your workflow" if repairs == 0 else "Refining your workflow")
                 outcome, problems = _check(call.arguments, toolbox, catalogue, now, conversation, estimator, on_step)
                 if not problems:
                     outcome.tool_calls, outcome.repairs = tool_calls, repairs
@@ -149,7 +151,16 @@ def system_prompt(catalogue: Catalogue, now: datetime) -> str:
 
 
 def _give_up(problems: list[str], tool_calls: int, repairs: int) -> Outcome:
-    return Outcome(kind="cannot", message="I couldn't put together a workflow that the platform accepts: " + "; ".join(problems), tool_calls=tool_calls, repairs=repairs, gave_up=True)
+    log.info("builder gave up: %s", "; ".join(problems))
+    return Outcome(
+        kind="cannot",
+        message="Couldn't turn this into a workflow. Try rephrasing it, or fill it in yourself.",
+        tool_calls=tool_calls,
+        repairs=repairs,
+        gave_up=True,
+        problems=problems,
+        stopped_at="draft",
+    )
 
 
 def answer_in_text(content: str) -> dict | None:
@@ -170,10 +181,10 @@ def answer_in_text(content: str) -> dict | None:
 
 def _describe(tool: str, arguments: dict) -> str:
     if tool == "find_place":
-        return f"Looking up {arguments.get('query', 'the place')}"
+        return f"Locating {arguments.get('query', 'the area')}"
     if tool == "list_collections":
-        return "Checking which collections work"
-    return "Checking the detectors"
+        return "Identifying compatible collections"
+    return "Evaluating available models"
 
 
 def _check(
@@ -228,7 +239,8 @@ def settle(
 ) -> tuple[Outcome, list[str]]:
     message = answer.message.strip()
     if answer.kind != "draft":
-        return Outcome(kind=answer.kind, message=message), ([] if message else [f"a {answer.kind} needs a message, the question to ask or the reason"])
+        stopped_at = "models" if answer.kind == "cannot" else None
+        return Outcome(kind=answer.kind, message=message, stopped_at=stopped_at), ([] if message else [f"a {answer.kind} needs a message, the question to ask or the reason"])
 
     problems = []
     place = toolbox.found.get(answer.place_id or "")
@@ -238,7 +250,9 @@ def settle(
         # a guardrail, not a mistake to fix: no draft, whatever the model makes of it
         return (
             Outcome(
-                kind="cannot", message=f"{place.name} covers about {place.area_km2:,.0f} km², above the largest area a workflow can cover ({MAX_AREA_KM2:,} km²). Try a city, district or lake instead."
+                kind="cannot",
+                message=f"{place.name.split(',')[0]} is about {place.area_km2:,.0f} km², over the {MAX_AREA_KM2:,} km² limit. Try a city, district or lake.",
+                stopped_at="area",
             ),
             [],
         )
@@ -288,28 +302,25 @@ def settle(
 
     warnings = []
     if place.area_km2 > WARN_AREA_KM2:
-        warnings.append(f"{place.name.split(',')[0]} covers about {place.area_km2:,.0f} km², a large area that will take a long time to scan")
+        warnings.append(f"{place.name.split(',')[0]} is a large area, about {place.area_km2:,.0f} km², so runs will be slow")
     if answer.time_mode == "historical" and (end - start).days > WARN_HISTORY_DAYS:
-        warnings.append(f"{(end - start).days} days of history is a lot of scenes to scan")
+        warnings.append(f"{(end - start).days} days is a long period, so runs will be slow")
     if estimator is None:
         return Outcome(kind="draft", message=message, draft=payload, warnings=warnings), []
 
-    on_step("Estimating the data to stage")
+    on_step("Estimating storage needs")
     try:
         estimate = estimator.estimate(payload, now)
     except Exception:  # noqa: BLE001 — an archive that's down must not stop a draft, only its estimate
         log.warning("couldn't estimate the data to stage for a draft", exc_info=True)
-        warnings.append("Couldn't estimate how much data this will stage, so check the area and dates before creating it")
+        warnings.append("Couldn't estimate storage, so run Estimate below")
         return Outcome(kind="draft", message=message, draft=payload, warnings=warnings), []
 
     if estimate.verdict == "too_large":
         size, free = format_bytes(estimate.staged_bytes), format_bytes(estimate.free_bytes)
-        if estimate.capped:
-            amount = f"at least {size}, and counting stopped after {estimate.scenes} scenes because that is already"
-        else:
-            amount = f"about {size} from {estimate.scenes} scenes,"
+        amount = f"at least {size}" if estimate.capped else f"about {size}"
         return (
-            Outcome(kind="cannot", message=f"This would stage {amount} more than half of the {free} free on the platform's disk. Try a smaller area or a shorter period."),
+            Outcome(kind="cannot", message=f"This needs {amount} of storage, more than half of the {free} free. Try a smaller area or a shorter period.", stopped_at="storage"),
             [],
         )
     return Outcome(kind="draft", message=message, draft=payload, warnings=warnings, estimate=estimate.as_result()), []

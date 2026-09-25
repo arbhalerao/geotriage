@@ -3,11 +3,9 @@ import { useBuilderRun, useModels, useStartBuilderRun } from "../api/queries";
 import Chevron from "./Chevron";
 import type { BuilderDraft, BuilderMessage, StorageEstimateResult } from "../api/types";
 
-// a failure is dismissible like any form error; a refusal is something to rephrase
-type Notice = { kind: "error" | "cannot"; text: string };
+type Stopped = { request: string | null; steps: string[]; at: number; reason: string };
 
-// what the landed draft came from, and what the builder assumed or wants reconsidered
-type Drafted = { request: string; message: string; warnings: string[] };
+type Drafted = { request: string; warnings: string[] };
 
 // said in different ways on purpose: a question, a plain request, a named satellite, relative dates;
 // each is shown only while the detector it needs is registered, since models come and go without a release
@@ -19,8 +17,61 @@ const EXAMPLES: { text: string; needs: string }[] = [
   { text: "Check Chilika Lake's water every week through next June", needs: "ndwi-water-detector" },
 ];
 
-const DISMISS =
-  "shrink-0 w-6 h-6 flex items-center justify-center rounded text-gray-500 hover:text-gray-800 hover:bg-white/70 transition-colors";
+const CHECKPOINTS: { key: string; label: string; matches: (step: string) => boolean }[] = [
+  { key: "request", label: "Understanding your request", matches: () => false },
+  { key: "models", label: "Evaluating available models", matches: (s) => s === "Evaluating available models" },
+  { key: "area", label: "Locating the area", matches: (s) => s.startsWith("Locating ") },
+  { key: "collections", label: "Identifying compatible collections", matches: (s) => s === "Identifying compatible collections" },
+  { key: "draft", label: "Drafting your workflow", matches: (s) => s === "Drafting your workflow" || s === "Refining your workflow" },
+  { key: "storage", label: "Estimating storage needs", matches: (s) => s === "Estimating storage needs" },
+];
+
+function reachedCheckpoint(steps: string[]): number {
+  return Math.max(0, ...steps.map((step) => CHECKPOINTS.findIndex((c) => c.matches(step))));
+}
+
+function stoppedCheckpoint(steps: string[], stoppedAt: string | null | undefined): number {
+  const named = CHECKPOINTS.findIndex((c) => c.key === stoppedAt);
+  return named >= 0 ? named : reachedCheckpoint(steps);
+}
+
+function Checkpoints({ steps, stop }: { steps: string[]; stop?: { at: number; reason: string } }) {
+  const current = stop ? stop.at : reachedCheckpoint(steps);
+  return (
+    <ol role="status" aria-live="polite" className="space-y-1.5 text-sm">
+      {CHECKPOINTS.map((checkpoint, i) => {
+        const label = checkpoint.key === "draft" && steps.includes("Refining your workflow") ? "Refining your workflow" : checkpoint.label;
+        const state = i < current ? "done" : i > current ? "pending" : stop ? "failed" : "active";
+        return (
+          <li key={checkpoint.key}>
+            <div className="flex items-center gap-2">
+              <span className="w-4 h-4 shrink-0 flex items-center justify-center" aria-hidden>
+                {state === "done" && (
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-brand-600">
+                    <path d="m3.5 8.5 3 3 6-7" />
+                  </svg>
+                )}
+                {state === "failed" && (
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" className="w-4 h-4 text-red-600">
+                    <path d="m4.5 4.5 7 7m0-7-7 7" />
+                  </svg>
+                )}
+                {state === "active" && <span className="w-4 h-4 rounded-full border-2 border-gray-300 border-t-brand-600 animate-spin" />}
+                {state === "pending" && <span className="w-3 h-3 rounded-full border border-gray-300" />}
+              </span>
+              <span className={state === "done" ? "text-gray-500" : state === "pending" ? "text-gray-400" : "text-gray-900"}>
+                {label}
+                <span className="sr-only">{{ done: ", done", active: ", in progress", failed: ", stopped here", pending: "" }[state]}</span>
+              </span>
+            </div>
+            {/* the reason sits under the checkpoint it stopped at, lined up with the label past the icon */}
+            {state === "failed" && <p className="pl-6 mt-0.5 text-gray-600">{stop!.reason}</p>}
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
 
 export default function WorkflowBuilder({
   onDraft,
@@ -34,7 +85,7 @@ export default function WorkflowBuilder({
   // the conversation lives only here; every turn sends all of it
   const [conversation, setConversation] = useState<BuilderMessage[]>([]);
   const [runId, setRunId] = useState<string | null>(null);
-  const [notice, setNotice] = useState<Notice | null>(null);
+  const [stopped, setStopped] = useState<Stopped | null>(null);
   const [drafted, setDrafted] = useState<Drafted | null>(null);
   // closed until asked for: most people know what they want to type, the examples are there for those who don't
   const [examplesOpen, setExamplesOpen] = useState(false);
@@ -59,7 +110,7 @@ export default function WorkflowBuilder({
     const outcome = run.outcome;
     const request = conversation.filter((m) => m.role === "user").map((m) => m.content);
     if (run.status === "failed" || !outcome) {
-      setNotice({ kind: "error", text: `The builder stopped: ${run.error ?? "no answer"}` });
+      setStopped({ request: request.join(" "), steps: run.steps, at: reachedCheckpoint(run.steps), reason: run.error || "Something went wrong" });
       setText(request.join(" "));
       setConversation([]);
       return;
@@ -69,14 +120,14 @@ export default function WorkflowBuilder({
       return;
     }
     if (outcome.kind === "cannot") {
-      setNotice({ kind: "cannot", text: outcome.message });
+      setStopped({ request: request.join(" "), steps: run.steps, at: stoppedCheckpoint(run.steps, outcome.stopped_at), reason: outcome.message || "Something went wrong" });
       // the request comes back into the box, so rephrasing it doesn't mean typing it again
       setText(request.join(" "));
       setConversation([]);
       return;
     }
     if (outcome.draft) onDraft(outcome.draft, outcome.estimate ?? null);
-    setDrafted({ request: request[0] ?? "", message: outcome.message, warnings: outcome.warnings });
+    setDrafted({ request: request[0] ?? "", warnings: outcome.warnings });
     setConversation([]);
   }, [run, runId, onDraft, conversation]);
 
@@ -86,7 +137,7 @@ export default function WorkflowBuilder({
     const next: BuilderMessage[] = [...conversation, { role: "user", content: said }];
     setConversation(next);
     setText("");
-    setNotice(null);
+    setStopped(null);
     setExamplesOpen(false);
     try {
       setRunId((await start.mutateAsync(next)).id);
@@ -94,14 +145,14 @@ export default function WorkflowBuilder({
       // put things back as they were, so nothing typed is lost
       setConversation(conversation);
       setText(said);
-      setNotice({ kind: "error", text: `The request failed: ${(err as Error).message}` });
+      setStopped({ request: null, steps: [], at: 0, reason: (err as Error).message || "Something went wrong" });
     }
   }
 
   function startOver() {
     setConversation([]);
     setText("");
-    setNotice(null);
+    setStopped(null);
   }
 
   // a landed draft is summed up in a line; the filled form below is what's left to review
@@ -124,7 +175,6 @@ export default function WorkflowBuilder({
             Change
           </button>
         </div>
-        {drafted.message && <p className="text-gray-600">{drafted.message}</p>}
         {drafted.warnings.map((w) => (
           <p key={w} className="text-amber-700">
             {w}
@@ -147,6 +197,19 @@ export default function WorkflowBuilder({
         </ul>
       )}
 
+      {/* a run that stopped short keeps its list, with the request it was for, above the box to rephrase it in */}
+      {!working && stopped && (
+        <>
+          {stopped.request && (
+            <p className="flex gap-3 text-sm">
+              <span className="w-16 shrink-0 text-gray-500">You</span>
+              <span className="text-gray-900">{stopped.request}</span>
+            </p>
+          )}
+          <Checkpoints steps={stopped.steps} stop={{ at: stopped.at, reason: stopped.reason }} />
+        </>
+      )}
+
       {/* gone while the builder works: what was sent is shown above, and there's nothing to type until it answers */}
       {!working && (
         <div className="flex gap-2 items-stretch">
@@ -156,10 +219,7 @@ export default function WorkflowBuilder({
             autoFocus
             onChange={(e) => {
               setText(e.target.value);
-              setNotice(null);
             }}
-            // going back to the input means a failure has been read
-            onFocus={() => setNotice(null)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
@@ -185,27 +245,9 @@ export default function WorkflowBuilder({
         </div>
       )}
 
-      {working && (
-        <p role="status" aria-live="polite" className="min-h-5 flex items-center gap-2 text-sm">
-          <span className="w-4 h-4 rounded-full border-2 border-gray-300 border-t-brand-600 animate-spin" aria-hidden />
-          <span className="text-blue-700">{steps[steps.length - 1] ?? "Waiting for the model"}</span>
-        </p>
-      )}
+      {working && <Checkpoints steps={steps} />}
 
-      {!working && notice && (
-        // a refusal needs attention, a failure is a failure: the one palette, amber and red
-        <div
-          role="alert"
-          className={`flex items-start gap-3 rounded border px-3 py-2 text-sm ${notice.kind === "error" ? "border-red-200 bg-red-50/60" : "border-amber-200 bg-amber-50/60"}`}
-        >
-          <p className={`flex-1 ${notice.kind === "error" ? "text-red-800" : "text-amber-800"}`}>{notice.text}</p>
-          <button type="button" onClick={() => setNotice(null)} aria-label="Dismiss" className={DISMISS}>
-            ×
-          </button>
-        </div>
-      )}
-
-      {!working && !notice && conversation.length === 0 && examples.length > 0 && (
+      {!working && !stopped && conversation.length === 0 && examples.length > 0 && (
         <div className="text-xs">
           <button
             type="button"

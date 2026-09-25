@@ -85,12 +85,13 @@ def test_a_draft_taking_a_large_share_of_the_disk_is_drafted_with_that_verdict()
 def test_a_draft_that_would_fill_the_disk_is_refused_with_the_numbers():
     outcome = draft_for(Fixed(estimate(staged_gb=60, free_gb=100, scenes=900, capped=True)))
     assert (outcome.kind, outcome.draft, outcome.repairs) == ("cannot", None, 0)
-    assert "at least 60.0 GB, and counting stopped after 900 scenes because that is already more than half of the 100.0 GB free" in outcome.message
+    assert "at least 60.0 GB of storage, more than half of the 100.0 GB free" in outcome.message
+    assert outcome.stopped_at == "storage"
 
 
 def test_a_refusal_counted_in_full_gives_the_exact_figures():
     outcome = draft_for(Fixed(estimate(staged_gb=60, free_gb=100, scenes=900)))
-    assert "about 60.0 GB from 900 scenes, more than half of the 100.0 GB free" in outcome.message
+    assert "about 60.0 GB of storage, more than half of the 100.0 GB free" in outcome.message
 
 
 def test_an_archive_that_is_down_costs_the_estimate_not_the_draft():
