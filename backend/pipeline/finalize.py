@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from core.db.models.enums import TimeMode, WorkflowItemStatus, WorkflowStatus
 from core.db.models.results import WorkflowItem
 from core.db.models.workflow import Workflow
-from pipeline.cleanup import apply_storage_policy
+from pipeline.cleanup import finish_scene
 from pipeline.stage import fail_runs_for_item
 
 log = logging.getLogger(__name__)
@@ -66,11 +66,14 @@ def finalize_workflow(db: Session, workflow_id: uuid.UUID) -> None:
             item.processed_at = now
             fail_runs_for_item(db, item.id, message)
 
+    db.commit()
+
     for item in items:
         if item.imagery_kept is None:
             try:
-                apply_storage_policy(db, item)
-            except Exception:  # noqa: BLE001 — leftover imagery is wasted space, not a reason to leave the run unfinished
+                finish_scene(db, item)
+            except Exception:  # noqa: BLE001 — a scene left in its work folder is wasted space, not a reason to leave the run unfinished
+                db.rollback()
                 log.warning("couldn't apply the storage policy to scene %s", item.id, exc_info=True)
 
     total = len(items)

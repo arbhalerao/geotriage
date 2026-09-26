@@ -79,10 +79,10 @@ services:
       dockerfile: backend/Dockerfile.api
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${RUN_SCRATCH_HOST:-./.run-scratch}:/run-scratch
+      - run_scratch:/run-scratch
     environment:
       RUN_SCRATCH: /run-scratch
-      RUN_SCRATCH_HOST: ${RUN_SCRATCH_HOST:-./.run-scratch}
+      RUN_SCRATCH_VOLUME: geotriage-run-scratch
     ports: ["8000:8000"]
     env_file: .env
     depends_on:
@@ -96,12 +96,12 @@ services:
       dockerfile: backend/Dockerfile.worker
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${RUN_SCRATCH_HOST:-./.run-scratch}:/run-scratch
+      - run_scratch:/run-scratch
     env_file: .env
     environment:
       SKIP_MIGRATIONS: "true"
       RUN_SCRATCH: /run-scratch
-      RUN_SCRATCH_HOST: ${RUN_SCRATCH_HOST:-./.run-scratch}
+      RUN_SCRATCH_VOLUME: geotriage-run-scratch
     depends_on:
       postgres: { condition: service_healthy }
       minio: { condition: service_started }
@@ -119,6 +119,8 @@ volumes:
   postgres_data:
   minio_data:
   ollama_data:
+  run_scratch:
+    name: geotriage-run-scratch
 
 configs:
   postgis_init:

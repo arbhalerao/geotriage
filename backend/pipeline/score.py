@@ -1,8 +1,8 @@
 import logging
+import os
 import uuid
 from datetime import datetime, timezone
 
-import numpy as np
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -12,11 +12,11 @@ from core.db.models.stac import StacItem
 from core.db.models.thresholds import ThresholdConfig
 from core.db.models.workflow import WorkflowModelConfig
 from core.db.sync import get_session
-from storage import client as store
 from storage import cog
-from geotriage.bands import Bands
 from domain.catalogue import get_model
+from pipeline import scratch
 from pipeline.cleanup import apply_storage_policy_quietly
+from pipeline.stage import stage_bands
 
 log = logging.getLogger(__name__)
 
@@ -52,19 +52,10 @@ def worst_severity(severities) -> str | None:
     return worst
 
 
-def load_bands(db: Session, item: WorkflowItem, model) -> tuple[Bands, object, object]:
-    """bands were calibrated at staging time, so what comes back is already in physical units"""
-    arrays: dict[str, np.ndarray] = {}
-    transform = crs = None
-    for name in model.requires.bands:
-        array, t, c = cog.get_array(store.band_key(item.workflow_id, item.id, name))
-        arrays[name] = array
-        if transform is None:
-            transform, crs = t, c
-
-    stac = db.get(StacItem, item.stac_item_id)
-    bands = Bands(arrays, collection_slug=stac.collection_slug, transform=transform, crs=crs)
-    return bands, transform, crs
+def staged_grid(item: WorkflowItem, model, session_factory) -> tuple[object, object]:
+    if any(not os.path.exists(scratch.band_path(item.id, name)) for name in model.requires.bands):
+        stage_bands(item.id, session_factory=session_factory)
+    return cog.read_grid(scratch.band_path(item.id, model.requires.bands[0]))
 
 
 def score_run(model_run_id: uuid.UUID, session_factory=get_session) -> uuid.UUID:
@@ -94,11 +85,10 @@ def score_run(model_run_id: uuid.UUID, session_factory=get_session) -> uuid.UUID
             thresholds = {tc.score_name: tc for tc in db.execute(select(ThresholdConfig).where(ThresholdConfig.workflow_model_config_id == wmc.id)).scalars().all()}
 
             model = get_model(db, wmc.model_slug)
-            bands, transform, crs = load_bands(db, item, model)
+            transform, crs = staged_grid(item, model, session_factory)
+            stac = db.get(StacItem, item.stac_item_id)
 
-            # the runner validates the output against the model's declarations,
-            # so a score the model promised and didn't return raises rather than vanishing
-            output = model.run(bands)
+            output = model.run_scene(scratch.scene_dir(item.id), list(model.requires.bands), stac.collection_slug, str(run.id))
             scores = output["scores"]
             metadata = output.get("metadata", {})
 
@@ -122,13 +112,12 @@ def score_run(model_run_id: uuid.UUID, session_factory=get_session) -> uuid.UUID
             run.completed_at = datetime.now(timezone.utc)
             db.commit()
 
-            # the scores are already persisted, so failing to write a derived raster must not fail the run
             try:
+                scratch.ensure_dirs(item.id)
                 for name, array in output.get("rasters", {}).items():
-                    key = store.band_key(item.workflow_id, item.id, name)
-                    if store.band_exists(key):
-                        continue
-                    cog.put(key, array, transform, crs)
+                    path = scratch.map_path(item.id, name)
+                    cog.write_to_disk(f"{path}.part", array, transform, crs)
+                    os.replace(f"{path}.part", path)
             except Exception as exc:
                 log.warning("derived raster write failed for model_run %s: %s", run.id, exc)
 

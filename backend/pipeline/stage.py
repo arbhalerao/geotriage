@@ -1,6 +1,4 @@
 import os
-import shutil
-import tempfile
 import uuid
 from datetime import datetime, timezone
 
@@ -16,7 +14,7 @@ from core.db.models.results import ModelRun, WorkflowItem
 from core.db.models.stac import StacItem
 from core.db.models.workflow import Workflow, WorkflowModelCollectionConfig, WorkflowModelConfig
 from core.db.sync import get_session
-from storage import client as store
+from pipeline import scratch
 from storage import cog
 from geotriage import build_normalized_assets
 from domain.catalogue import get_collection, get_model
@@ -140,86 +138,64 @@ def _mark_item_failed(session_factory, item_id: uuid.UUID, status: WorkflowItemS
 
 
 def stage_bands(workflow_item_id: uuid.UUID, session_factory=get_session) -> uuid.UUID:
-    """
-    on failure the item flips to fetch_failed or upload_failed,
-    its model runs are marked failed, and the exception re-raises so dependent scoring is skipped
-    """
-    tmpdir = tempfile.mkdtemp(prefix=f"bands-{workflow_item_id}-")
-    try:
-        with session_factory() as db:
-            item = db.get(WorkflowItem, workflow_item_id)
-            if item is None:
-                return workflow_item_id
-            if item.status == WorkflowItemStatus.screened_out:
-                return workflow_item_id  # the cheap gate already rejected this scene
+    with session_factory() as db:
+        item = db.get(WorkflowItem, workflow_item_id)
+        if item is None:
+            return workflow_item_id
+        if item.status == WorkflowItemStatus.screened_out:
+            return workflow_item_id  # the cheap gate already rejected this scene
 
-            stac = db.get(StacItem, item.stac_item_id)
-            workflow = db.get(Workflow, item.workflow_id)
-            aoi = db.get(Aoi, workflow.aoi_id)
-            provider, col_info = get_collection(db, stac.collection_slug)
+        stac = db.get(StacItem, item.stac_item_id)
+        workflow = db.get(Workflow, item.workflow_id)
+        aoi = db.get(Aoi, workflow.aoi_id)
+        provider, col_info = get_collection(db, stac.collection_slug)
 
-            wanted = required_bands(db, item, stac)
-            if not wanted:
-                return workflow_item_id  # no enabled models on this collection
-            gsd = target_gsd(db, item, stac)
+        wanted = [name for name in required_bands(db, item, stac) if not os.path.exists(scratch.band_path(item.id, name))]
+        if not wanted:
+            return workflow_item_id
+        gsd = target_gsd(db, item, stac)
 
-            try:
-                assets = build_normalized_assets(stac.assets, col_info, wanted)
-            except ValueError as exc:
-                item.status = WorkflowItemStatus.fetch_failed
-                item.error_message = str(exc)[:500]
-                fail_runs_for_item(db, item.id, str(exc))
-                db.commit()
-                raise
-
-            aoi_geom = to_shape(aoi.geometry)
-            workflow_id = item.workflow_id
-
-            item.status = WorkflowItemStatus.fetching
+        try:
+            assets = build_normalized_assets(stac.assets, col_info, wanted)
+        except ValueError as exc:
+            item.status = WorkflowItemStatus.fetch_failed
+            item.error_message = str(exc)[:500]
+            fail_runs_for_item(db, item.id, str(exc))
             db.commit()
+            raise
 
-            staged: list[tuple[str, str]] = []
-            try:
-                # inside the try, because the item is already `fetching`:
-                # a signer that raises outside it strands the scene there with its runs still queued
-                # one signing round-trip for the whole scene, not one per band
-                names = list(assets)
-                signed = dict(zip(names, provider.sign([assets[n]["href"] for n in names])))
+        aoi_geom = to_shape(aoi.geometry)
 
-                for name, asset in assets.items():
-                    array, transform, crs = load_band(
-                        asset["href"],
-                        aoi_geom,
-                        signed.get(name),
-                        native_gsd_m=col_info.resolution_m,
-                        target_gsd_m=gsd,
-                    )
-                    if array is None or array.size == 0:
-                        raise ValueError(f"empty array for band '{name}'")
-                    # store physical units, not digital numbers: the collection owns the conversion,
-                    # so a model never learns which archive it came from
-                    array = col_info.band(name).calibrate(array)
-                    path = os.path.join(tmpdir, f"{name}.tif")
-                    cog.write_to_disk(path, array, transform, crs)
-                    staged.append((name, path))
-                    del array
-            except Exception as exc:
-                _mark_item_failed(session_factory, workflow_item_id, WorkflowItemStatus.fetch_failed, exc)
-                raise
+        item.status = WorkflowItemStatus.fetching
+        db.commit()
 
-            item.status = WorkflowItemStatus.uploading
-            db.commit()
+        try:
+            # inside the try, because the item is already `fetching`:
+            # a signer that raises outside it strands the scene there with its runs still queued
+            # one signing round-trip for the whole scene, not one per band
+            names = list(assets)
+            signed = dict(zip(names, provider.sign([assets[n]["href"] for n in names])))
+            scratch.ensure_dirs(item.id)
 
-            try:
-                for name, path in staged:
-                    key = store.band_key(workflow_id, item.id, name)
-                    if store.band_exists(key):
-                        continue  # retry idempotency within this workflow
-                    store.upload_file(key, path)
-            except Exception as exc:
-                _mark_item_failed(session_factory, workflow_item_id, WorkflowItemStatus.upload_failed, exc)
-                raise
-    finally:
-        shutil.rmtree(tmpdir, ignore_errors=True)
+            for name, asset in assets.items():
+                array, transform, crs = load_band(
+                    asset["href"],
+                    aoi_geom,
+                    signed.get(name),
+                    native_gsd_m=col_info.resolution_m,
+                    target_gsd_m=gsd,
+                )
+                if array is None or array.size == 0:
+                    raise ValueError(f"empty array for band '{name}'")
+                # store physical units, not digital numbers: the collection owns the conversion,
+                # so a model never learns which archive it came from
+                array = col_info.band(name).calibrate(array)
+                path = scratch.band_path(item.id, name)
+                cog.write_to_disk(f"{path}.part", array, transform, crs)
+                os.replace(f"{path}.part", path)
+                del array
+        except Exception as exc:
+            _mark_item_failed(session_factory, workflow_item_id, WorkflowItemStatus.fetch_failed, exc)
+            raise
 
     return workflow_item_id

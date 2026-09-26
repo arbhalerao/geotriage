@@ -169,10 +169,9 @@ export default function ItemDetailPage() {
 
   const [activeBand, setActiveBand] = useState<string | null>(null);
 
-  // bands available for this item = union of required_bands + derived_rasters across the model runs that actually succeeded
   const availableBands = useMemo(() => {
     if (!item || !models) return [] as string[];
-    const kept = layersKept(item.imagery_kept);
+    const kept = layersKept(item.imagery_kept, item.processed_at !== null);
     const successfulSlugs = new Set(
       item.model_runs.filter((r) => r.status === "success").map((r) => r.model_slug),
     );

@@ -35,6 +35,9 @@ class ModelSpec:
     def run(self, bands):
         return self.runner.run(bands)
 
+    def run_scene(self, scene_dir: str, bands: list[str], collection_slug: str, run_id: str):
+        return self.runner.run_scene(scene_dir, bands, collection_slug, run_id)
+
     def screen(self, bands) -> bool:
         return self.runner.screen(bands)
 

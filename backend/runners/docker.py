@@ -27,18 +27,20 @@ DEFAULT_MEMORY = os.getenv("RUN_MEMORY", "2g")
 DEFAULT_CPUS = os.getenv("RUN_CPUS", "2")
 DEFAULT_PIDS = os.getenv("RUN_PIDS_LIMIT", "256")
 
-# where job directories are created, as this process sees it, and as the docker daemon sees it
-# they differ whenever the platform itself runs in a container: `docker run -v` paths are resolved by the daemon on the host,
-# not inside the caller
-# leaving these unset (running the platform directly on the host) makes them the same path
 SCRATCH = os.getenv("RUN_SCRATCH") or tempfile.gettempdir()
-SCRATCH_HOST = os.getenv("RUN_SCRATCH_HOST") or SCRATCH
+SCRATCH_VOLUME = os.getenv("RUN_SCRATCH_VOLUME") or None
 
 
-def to_host_path(path: str) -> str:
-    if SCRATCH_HOST == SCRATCH:
-        return path
-    return os.path.join(SCRATCH_HOST, os.path.relpath(path, SCRATCH))
+def mount_args(source: str, target: str, mode: str) -> list[str]:
+    relative = os.path.relpath(source, SCRATCH)
+    if SCRATCH_VOLUME and not relative.startswith(".."):
+        spec = f"type=volume,src={SCRATCH_VOLUME},dst={target}"
+        if relative != ".":
+            spec += f",volume-subpath={relative}"
+        if mode == "ro":
+            spec += ",readonly"
+        return ["--mount", spec]
+    return ["-v", f"{source}:{target}:{mode}"]
 
 
 def _limits(network: bool) -> list[str]:
@@ -72,7 +74,7 @@ def docker_run(
     """
     argv = ["docker", "run", *_limits(network)]
     for source, target, mode in mounts or []:
-        argv += ["-v", f"{to_host_path(source)}:{target}:{mode}"]
+        argv += mount_args(source, target, mode)
     argv += [image, *command]
 
     log.debug("image exec: %s", " ".join(argv))
@@ -171,6 +173,36 @@ class DockerRunner:
                 return result
             finally:
                 shutil.rmtree(out_dir, ignore_errors=True)
+
+    def run_scene(self, scene_dir: str, bands: list[str], collection_slug: str, run_id: str) -> dict[str, Any]:
+        job = {
+            "collection_slug": collection_slug,
+            "bands": {name: f"/job/bands/{name}.tif" for name in bands},
+            "raster_dir": "/out",
+            "parameters": {},
+        }
+        job_name = f"job-{run_id}.json"
+        job_path = os.path.join(scene_dir, job_name)
+        out_dir = os.path.join(scene_dir, f"out-{run_id}")
+        try:
+            with open(job_path, "w") as handle:
+                json.dump(job, handle)
+            _publish(job_path)
+            os.makedirs(out_dir, exist_ok=True)
+            os.chmod(out_dir, 0o777)
+            docker_run(
+                self.image,
+                ["run", "--job", f"/job/{job_name}", "--out", "/out/result.json"],
+                mounts=[(scene_dir, "/job", "ro"), (out_dir, "/out", "rw")],
+                timeout_s=self.timeout_s,
+            )
+            result = _read_result(out_dir, self.image)
+            result["rasters"] = _load_rasters(result.get("rasters", {}), out_dir)
+            return result
+        finally:
+            shutil.rmtree(out_dir, ignore_errors=True)
+            if os.path.exists(job_path):
+                os.remove(job_path)
 
     def screen(self, bands: Bands) -> bool:
         with _staged(bands) as (in_dir, _job_path):
@@ -281,7 +313,8 @@ def _write_band(path, array, transform, crs) -> None:
         "transform": transform,
         "crs": crs,
         "nodata": float(np.nan),
-        "compress": "DEFLATE",
+        "compress": "ZSTD",
+        "predictor": 3,
     }
     with rasterio.open(path, "w", **profile) as dst:
         dst.write(data, 1)

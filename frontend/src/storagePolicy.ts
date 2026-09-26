@@ -26,6 +26,7 @@ export function keptBytes(kept: "all" | "some" | "results" | "none", e: StorageE
   return [e.result_bytes, all];
 }
 
-export function layersKept(imagery: ImageryKept): { inputs: boolean; results: boolean } {
-  return { inputs: imagery === null || imagery === "inputs_and_results", results: imagery !== "none" };
+export function layersKept(imagery: ImageryKept, finished: boolean): { inputs: boolean; results: boolean } {
+  if (imagery === null) return { inputs: finished, results: finished };
+  return { inputs: imagery === "inputs_and_results", results: imagery !== "none" };
 }

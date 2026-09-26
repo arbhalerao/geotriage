@@ -15,8 +15,20 @@ logging.basicConfig(
 log = logging.getLogger("worker.run")
 
 
+def sweep_scratch() -> None:
+    from core.db.sync import get_session
+    from pipeline.scratch import sweep
+
+    try:
+        with get_session() as db:
+            log.info("swept %d leftover scratch folders", sweep(db))
+    except Exception:  # noqa: BLE001 — leftovers are wasted space, never a reason not to start
+        log.warning("couldn't sweep the scratch volume", exc_info=True)
+
+
 def main() -> None:
     concurrency = int(os.getenv("WORKER_CONCURRENCY", "4"))
+    sweep_scratch()
     stop_event = threading.Event()
 
     def _handle_signal(signum, _frame):

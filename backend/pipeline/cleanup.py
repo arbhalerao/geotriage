@@ -1,4 +1,5 @@
 import logging
+import os
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -9,6 +10,7 @@ from core.db.models.stac import StacItem
 from core.db.models.workflow import Workflow, WorkflowModelCollectionConfig, WorkflowModelConfig
 from domain.catalogue import get_model
 from domain.storage import imagery_to_keep
+from pipeline import scratch
 from storage import client as store
 
 log = logging.getLogger(__name__)
@@ -38,17 +40,26 @@ def apply_storage_policy(db: Session, item: WorkflowItem) -> None:
         return
     workflow = db.get(Workflow, item.workflow_id)
     keep = imagery_to_keep(workflow.storage_policy.value, item.overall_severity.value if item.overall_severity else None, scored=item.status == WorkflowItemStatus.processed)
-    if keep != "inputs_and_results":
+    if keep != "none":
         inputs, results = layer_names(db, item)
-        doomed = inputs if keep == "results" else inputs | results
-        store.delete_keys([store.band_key(item.workflow_id, item.id, name) for name in sorted(doomed)])
+        files = {name: scratch.map_path(item.id, name) for name in results}
+        if keep == "inputs_and_results":
+            files.update({name: scratch.band_path(item.id, name) for name in inputs})
+        for name, path in sorted(files.items()):
+            if os.path.exists(path):
+                store.upload_file(store.band_key(item.workflow_id, item.id, name), path)
     item.imagery_kept = ImageryKept(keep)
+
+
+def finish_scene(db: Session, item: WorkflowItem) -> None:
+    apply_storage_policy(db, item)
+    db.commit()
+    scratch.remove_scene(item.id)
 
 
 def apply_storage_policy_quietly(db: Session, item: WorkflowItem) -> None:
     try:
-        apply_storage_policy(db, item)
-        db.commit()
-    except Exception:  # noqa: BLE001 — leftover imagery is wasted space, never a reason to fail a scene's scoring
+        finish_scene(db, item)
+    except Exception:  # noqa: BLE001 — an upload that failed is retried at finalize, never a reason to fail a scene's scoring
         db.rollback()
         log.warning("couldn't apply the storage policy to scene %s, finalize will try again", item.id, exc_info=True)

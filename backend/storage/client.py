@@ -1,6 +1,14 @@
 from __future__ import annotations
 
+import base64
+import hashlib
+import hmac
+import json
+import logging
+import re
 import sys
+import time
+import urllib.request
 from typing import Any
 
 import boto3
@@ -8,6 +16,8 @@ from botocore.client import Config
 from botocore.exceptions import ClientError
 
 from core.config import settings
+
+log = logging.getLogger(__name__)
 
 _client = None
 
@@ -17,12 +27,9 @@ _MISSING_CODES = ("404", "NoSuchKey", "NotFound")
 def s3() -> Any:
     global _client
     if _client is None:
-        endpoint = settings.MINIO_ENDPOINT
-        if not endpoint.startswith("http"):
-            endpoint = f"http://{endpoint}"
         _client = boto3.client(
             "s3",
-            endpoint_url=endpoint,
+            endpoint_url=_endpoint(),
             aws_access_key_id=settings.MINIO_ROOT_USER,
             aws_secret_access_key=settings.MINIO_ROOT_PASSWORD,
             region_name="us-east-1",
@@ -49,10 +56,6 @@ def upload_file(key: str, path: str) -> None:
     s3().upload_file(path, settings.MINIO_BUCKET, key)
 
 
-def put_bytes(key: str, body: bytes, content_type: str = "image/tiff") -> None:
-    s3().put_object(Bucket=settings.MINIO_BUCKET, Key=key, Body=body, ContentType=content_type)
-
-
 def get_bytes(key: str) -> bytes | None:
     try:
         obj = s3().get_object(Bucket=settings.MINIO_BUCKET, Key=key)
@@ -77,13 +80,30 @@ def delete_workflow_prefix(workflow_id) -> None:
         )
 
 
-def delete_keys(keys: list[str]) -> None:
-    if not keys:
-        return
-    s3().delete_objects(
-        Bucket=settings.MINIO_BUCKET,
-        Delete={"Objects": [{"Key": key} for key in keys], "Quiet": True},
-    )
+def _endpoint() -> str:
+    endpoint = settings.MINIO_ENDPOINT
+    return endpoint if endpoint.startswith("http") else f"http://{endpoint}"
+
+
+def _metrics_token() -> str:
+    def encode(data: bytes) -> str:
+        return base64.urlsafe_b64encode(data).rstrip(b"=").decode()
+
+    header = encode(json.dumps({"alg": "HS512", "typ": "JWT"}).encode())
+    claims = encode(json.dumps({"exp": int(time.time()) + 60, "sub": settings.MINIO_ROOT_USER, "iss": "prometheus"}).encode())
+    signature = encode(hmac.new(settings.MINIO_ROOT_PASSWORD.encode(), f"{header}.{claims}".encode(), hashlib.sha512).digest())
+    return f"{header}.{claims}.{signature}"
+
+
+def free_bytes() -> int | None:
+    request = urllib.request.Request(f"{_endpoint()}/minio/v2/metrics/cluster", headers={"Authorization": f"Bearer {_metrics_token()}"})
+    try:
+        body = urllib.request.urlopen(request, timeout=5).read().decode()
+    except Exception:  # noqa: BLE001 — not knowing the free space skips that check, it never stops a run
+        log.warning("couldn't read MinIO's free space", exc_info=True)
+        return None
+    found = re.search(r"^minio_cluster_capacity_usable_free_bytes(?:\{[^}]*\})? ([0-9.e+]+)$", body, re.MULTILINE)
+    return int(float(found.group(1))) if found else None
 
 
 def init_bucket() -> None:
