@@ -118,5 +118,22 @@ def test_a_place_that_is_not_found_suggests_a_shorter_query():
     assert "only the place's name" in toolbox().find_place("the lakes near Atlantis")["note"]
 
 
+def test_a_name_wrapped_in_other_words_is_found_by_its_capitalised_part():
+    result = toolbox().find_place("port of Rotterdam")
+    assert result["places"][0]["name"].startswith("Rotterdam")
+    assert "'Rotterdam'" in result["matched"], "the model is told which name the matches are for"
+    assert toolbox().find_place("lakes near Pune")["places"], "a description ending in a name finds the name"
+
+
+def test_lowercase_words_never_start_a_retry():
+    tools = toolbox()
+    assert tools.find_place("my farm near the river")["places"] == []
+    assert tools.last_found == []
+
+
+def test_a_place_found_as_typed_says_nothing_about_matching():
+    assert "matched" not in toolbox().find_place("Rotterdam, Netherlands")
+
+
 def test_one_place_at_several_sizes_is_said_to_be_one_place():
     assert "same place at different sizes" in toolbox().find_place("Delhi, India")["note"]

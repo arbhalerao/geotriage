@@ -1,0 +1,3303 @@
+{
+  "suite": "builder",
+  "started_at": "2026-09-14T17:59:22.725888+00:00",
+  "finished_at": "2026-09-14T18:00:55.268105+00:00",
+  "git": "c597243-dirty",
+  "client": {
+    "provider": "ollama",
+    "model": "qwen3:4b-instruct-2507-q4_K_M",
+    "options": {
+      "temperature": 0,
+      "seed": 0,
+      "num_ctx": 8192
+    }
+  },
+  "prompts": {
+    "builder": "builder@dfb654fb"
+  },
+  "summary": {
+    "kind": 0.952,
+    "valid": 1.0,
+    "mode": 0.97,
+    "dates": 0.97,
+    "area": 0.97,
+    "model": 0.97,
+    "collections": 0.97,
+    "asks_needlessly": 0.03,
+    "interval": 0.929,
+    "asks_when_needed": 0.833,
+    "cases": 63,
+    "errors": 0,
+    "input_tokens": 499925,
+    "output_tokens": 9263,
+    "median_ms": 54022
+  },
+  "cases": [
+    {
+      "id": "dhaka-water-2024",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "draft",
+        "message": "NDWI Water Body Detector over Dhaka for 2024.",
+        "draft": {
+          "name": "NDWI Water Body Detector, Dhaka",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  90.2290144,
+                  23.6043863
+                ],
+                [
+                  90.5490144,
+                  23.6043863
+                ],
+                [
+                  90.5490144,
+                  23.9243863
+                ],
+                [
+                  90.2290144,
+                  23.9243863
+                ],
+                [
+                  90.2290144,
+                  23.6043863
+                ]
+              ]
+            ]
+          },
+          "time_mode": "historical",
+          "time_end": "2024-12-31T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2",
+            "landsat-c2-l1"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "time_start": "2024-01-01T00:00:00+00:00"
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6900,
+      "output_tokens": 138,
+      "duration_ms": 51608
+    },
+    {
+      "id": "dhaka-floods-daily",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "draft",
+        "message": "NDWI Water Body Detector watching for flooding around Dhaka every day until the end of October 2026.",
+        "draft": {
+          "name": "NDWI Water Body Detector, Dhaka",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  90.2290144,
+                  23.6043863
+                ],
+                [
+                  90.5490144,
+                  23.6043863
+                ],
+                [
+                  90.5490144,
+                  23.9243863
+                ],
+                [
+                  90.2290144,
+                  23.9243863
+                ],
+                [
+                  90.2290144,
+                  23.6043863
+                ]
+              ]
+            ]
+          },
+          "time_mode": "recurring",
+          "time_end": "2026-10-31T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2",
+            "landsat-c2-l1"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "poll_interval_minutes": 1440
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0,
+        "interval": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6906,
+      "output_tokens": 141,
+      "duration_ms": 52066
+    },
+    {
+      "id": "delhi-heat-may-2024",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "draft",
+        "message": "Land Surface Temperature Detector over Delhi for May 2024.",
+        "draft": {
+          "name": "Land Surface Temperature Detector, Delhi",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  76.8388351,
+                  28.4046285
+                ],
+                [
+                  77.3453379,
+                  28.4046285
+                ],
+                [
+                  77.3453379,
+                  28.8834464
+                ],
+                [
+                  76.8388351,
+                  28.8834464
+                ],
+                [
+                  76.8388351,
+                  28.4046285
+                ]
+              ]
+            ]
+          },
+          "time_mode": "historical",
+          "time_end": "2024-05-31T23:59:59+00:00",
+          "collection_slugs": [
+            "landsat-c2-l2"
+          ],
+          "models": [
+            {
+              "model_slug": "lst-detector"
+            }
+          ],
+          "time_start": "2024-05-01T00:00:00+00:00"
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6840,
+      "output_tokens": 134,
+      "duration_ms": 47168
+    },
+    {
+      "id": "chilika-weekly",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "NDWI Water Body Detector over Chilika Lake every week through June 2027.",
+        "draft": {
+          "name": "NDWI Water Body Detector, Chilika Lake",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  85.0934163,
+                  19.4673244
+                ],
+                [
+                  85.6574151,
+                  19.4673244
+                ],
+                [
+                  85.6574151,
+                  19.9033379
+                ],
+                [
+                  85.0934163,
+                  19.9033379
+                ],
+                [
+                  85.0934163,
+                  19.4673244
+                ]
+              ]
+            ]
+          },
+          "time_mode": "recurring",
+          "time_end": "2027-06-30T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2",
+            "landsat-c2-l1"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "poll_interval_minutes": 10080
+        },
+        "warnings": [],
+        "tool_calls": 4,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0,
+        "interval": 1.0
+      },
+      "error": null,
+      "calls": 4,
+      "cached": 4,
+      "input_tokens": 9410,
+      "output_tokens": 164,
+      "duration_ms": 63220
+    },
+    {
+      "id": "patna-floods-aug-2025",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "NDWI Water Body Detector over Patna for August 2025.",
+        "draft": {
+          "name": "NDWI Water Body Detector, Patna",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  85.0118412,
+                  25.5389546
+                ],
+                [
+                  85.2641902,
+                  25.5389546
+                ],
+                [
+                  85.2641902,
+                  25.6510479
+                ],
+                [
+                  85.0118412,
+                  25.6510479
+                ],
+                [
+                  85.0118412,
+                  25.5389546
+                ]
+              ]
+            ]
+          },
+          "time_mode": "historical",
+          "time_end": "2025-08-31T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2",
+            "landsat-c2-l1"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "time_start": "2025-08-01T00:00:00+00:00"
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6890,
+      "output_tokens": 138,
+      "duration_ms": 57347
+    },
+    {
+      "id": "cairo-temperature-summer-2025",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "Land Surface Temperature Detector over Cairo, Egypt from June to August 2025 using Landsat Collection 2 Level-2 data.",
+        "draft": {
+          "name": "Land Surface Temperature Detector, Cairo",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  31.2200331,
+                  29.7483062
+                ],
+                [
+                  31.9090054,
+                  29.7483062
+                ],
+                [
+                  31.9090054,
+                  30.3209168
+                ],
+                [
+                  31.2200331,
+                  30.3209168
+                ],
+                [
+                  31.2200331,
+                  29.7483062
+                ]
+              ]
+            ]
+          },
+          "time_mode": "historical",
+          "time_end": "2025-08-31T23:59:59+00:00",
+          "collection_slugs": [
+            "landsat-c2-l2"
+          ],
+          "models": [
+            {
+              "model_slug": "lst-detector"
+            }
+          ],
+          "time_start": "2025-06-01T00:00:00+00:00"
+        },
+        "warnings": [],
+        "tool_calls": 4,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0
+      },
+      "error": null,
+      "calls": 4,
+      "cached": 4,
+      "input_tokens": 9536,
+      "output_tokens": 178,
+      "duration_ms": 72322
+    },
+    {
+      "id": "jakarta-floods-daily",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "draft",
+        "message": "NDWI Water Body Detector over Jakarta for flooding monitoring every day until the end of the year.",
+        "draft": {
+          "name": "NDWI Water Body Detector, Special Capital Region of Jakarta",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  106.3146732,
+                  -6.3744575
+                ],
+                [
+                  106.973975,
+                  -6.3744575
+                ],
+                [
+                  106.973975,
+                  -4.9993635
+                ],
+                [
+                  106.3146732,
+                  -4.9993635
+                ],
+                [
+                  106.3146732,
+                  -6.3744575
+                ]
+              ]
+            ]
+          },
+          "time_mode": "recurring",
+          "time_end": "2026-12-31T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2",
+            "landsat-c2-l1"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "poll_interval_minutes": 1440
+        },
+        "warnings": [],
+        "tool_calls": 4,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0,
+        "interval": 1.0
+      },
+      "error": null,
+      "calls": 4,
+      "cached": 4,
+      "input_tokens": 9376,
+      "output_tokens": 160,
+      "duration_ms": 63720
+    },
+    {
+      "id": "lake-urmia-2023",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "NDWI Water Body Detector over Lake Urmia during 2023.",
+        "draft": {
+          "name": "NDWI Water Body Detector, Lake Urmia",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  45.051512,
+                  37.1331558
+                ],
+                [
+                  45.8073663,
+                  37.1331558
+                ],
+                [
+                  45.8073663,
+                  38.242107
+                ],
+                [
+                  45.051512,
+                  38.242107
+                ],
+                [
+                  45.051512,
+                  37.1331558
+                ]
+              ]
+            ]
+          },
+          "time_mode": "historical",
+          "time_end": "2023-12-31T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2",
+            "landsat-c2-l1"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "time_start": "2023-01-01T00:00:00+00:00"
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6783,
+      "output_tokens": 141,
+      "duration_ms": 44801
+    },
+    {
+      "id": "phoenix-heat-daily",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "Land Surface Temperature Detector over Phoenix, Arizona daily until 31 October 2026.",
+        "draft": {
+          "name": "Land Surface Temperature Detector, Phoenix",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  -112.3240289,
+                  33.2904827
+                ],
+                [
+                  -111.9255304,
+                  33.2904827
+                ],
+                [
+                  -111.9255304,
+                  33.9183794
+                ],
+                [
+                  -112.3240289,
+                  33.9183794
+                ],
+                [
+                  -112.3240289,
+                  33.2904827
+                ]
+              ]
+            ]
+          },
+          "time_mode": "recurring",
+          "time_end": "2026-10-31T23:59:59+00:00",
+          "collection_slugs": [
+            "landsat-c2-l2"
+          ],
+          "models": [
+            {
+              "model_slug": "lst-detector"
+            }
+          ],
+          "poll_interval_minutes": 1440
+        },
+        "warnings": [],
+        "tool_calls": 4,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0,
+        "interval": 1.0
+      },
+      "error": null,
+      "calls": 4,
+      "cached": 4,
+      "input_tokens": 9416,
+      "output_tokens": 165,
+      "duration_ms": 68630
+    },
+    {
+      "id": "kerala-floods-aug-2018",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "NDWI Water Body Detector over Alappuzha during August 2018.",
+        "draft": {
+          "name": "NDWI Water Body Detector, Alappuzha",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  76.2794604,
+                  9.1101406
+                ],
+                [
+                  76.6911251,
+                  9.1101406
+                ],
+                [
+                  76.6911251,
+                  9.8910134
+                ],
+                [
+                  76.2794604,
+                  9.8910134
+                ],
+                [
+                  76.2794604,
+                  9.1101406
+                ]
+              ]
+            ]
+          },
+          "time_mode": "historical",
+          "time_end": "2018-08-31T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2",
+            "landsat-c2-l1"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "time_start": "2018-08-01T00:00:00+00:00"
+        },
+        "warnings": [],
+        "tool_calls": 4,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0
+      },
+      "error": null,
+      "calls": 4,
+      "cached": 4,
+      "input_tokens": 9394,
+      "output_tokens": 167,
+      "duration_ms": 64919
+    },
+    {
+      "id": "mettur-reservoir-weekly",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "message": "Do you mean Stanley Reservoir in Tamil Nadu, India, or another location? And what should I look for there?",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 0.0,
+        "asks_needlessly": 1.0,
+        "mode": 0.0,
+        "dates": 0.0,
+        "area": 0.0,
+        "model": 0.0,
+        "collections": 0.0,
+        "interval": 0.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6580,
+      "output_tokens": 132,
+      "duration_ms": 33665
+    },
+    {
+      "id": "seville-heat-july-2025",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "Land Surface Temperature Detector over Seville in July 2025.",
+        "draft": {
+          "name": "Land Surface Temperature Detector, Seville",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  -6.0329183,
+                  37.3002036
+                ],
+                [
+                  -5.8191571,
+                  37.3002036
+                ],
+                [
+                  -5.8191571,
+                  37.4529579
+                ],
+                [
+                  -6.0329183,
+                  37.4529579
+                ],
+                [
+                  -6.0329183,
+                  37.3002036
+                ]
+              ]
+            ]
+          },
+          "time_mode": "historical",
+          "time_end": "2025-07-31T23:59:59+00:00",
+          "collection_slugs": [
+            "landsat-c2-l2"
+          ],
+          "models": [
+            {
+              "model_slug": "lst-detector"
+            }
+          ],
+          "time_start": "2025-07-01T00:00:00+00:00"
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6842,
+      "output_tokens": 135,
+      "duration_ms": 50011
+    },
+    {
+      "id": "lagos-floods-twice-daily",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "NDWI Water Body Detector over Lagos twice a day until 30 November 2026.",
+        "draft": {
+          "name": "NDWI Water Body Detector, Lagos",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  3.2341795,
+                  6.2950575
+                ],
+                [
+                  3.5541795,
+                  6.2950575
+                ],
+                [
+                  3.5541795,
+                  6.6150575
+                ],
+                [
+                  3.2341795,
+                  6.6150575
+                ],
+                [
+                  3.2341795,
+                  6.2950575
+                ]
+              ]
+            ]
+          },
+          "time_mode": "recurring",
+          "time_end": "2026-11-30T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2",
+            "landsat-c2-l1"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "poll_interval_minutes": 720
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0,
+        "interval": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6850,
+      "output_tokens": 136,
+      "duration_ms": 50495
+    },
+    {
+      "id": "poyang-lake-2022",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "NDWI Water Body Detector over Poyang Lake from July 1 to October 31, 2022, to track water level changes.",
+        "draft": {
+          "name": "NDWI Water Body Detector, Poyang Lake",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  115.8453423,
+                  28.3940383
+                ],
+                [
+                  116.7639076,
+                  28.3940383
+                ],
+                [
+                  116.7639076,
+                  29.7555059
+                ],
+                [
+                  115.8453423,
+                  29.7555059
+                ],
+                [
+                  115.8453423,
+                  28.3940383
+                ]
+              ]
+            ]
+          },
+          "time_mode": "historical",
+          "time_end": "2022-10-31T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2",
+            "landsat-c2-l1"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "time_start": "2022-07-01T00:00:00+00:00"
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6804,
+      "output_tokens": 156,
+      "duration_ms": 47201
+    },
+    {
+      "id": "karachi-heat-6h",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "Land Surface Temperature Detector over Karachi every 6 hours until the end of September 2026.",
+        "draft": {
+          "name": "Land Surface Temperature Detector, Karachi Division",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  66.2862312,
+                  24.4273517
+                ],
+                [
+                  67.5827753,
+                  24.4273517
+                ],
+                [
+                  67.5827753,
+                  25.676796
+                ],
+                [
+                  66.2862312,
+                  25.676796
+                ],
+                [
+                  66.2862312,
+                  24.4273517
+                ]
+              ]
+            ]
+          },
+          "time_mode": "recurring",
+          "time_end": "2026-09-30T23:59:59+00:00",
+          "collection_slugs": [
+            "landsat-c2-l2"
+          ],
+          "models": [
+            {
+              "model_slug": "lst-detector"
+            }
+          ],
+          "poll_interval_minutes": 360
+        },
+        "warnings": [],
+        "tool_calls": 4,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0,
+        "interval": 1.0
+      },
+      "error": null,
+      "calls": 4,
+      "cached": 4,
+      "input_tokens": 9418,
+      "output_tokens": 164,
+      "duration_ms": 67654
+    },
+    {
+      "id": "valencia-floods-nov-2024",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "NDWI Water Body Detector over Valencia, Spain for November 2024.",
+        "draft": {
+          "name": "NDWI Water Body Detector, Valencia",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  -0.4325512,
+                  39.2784496
+                ],
+                [
+                  -0.2725205,
+                  39.2784496
+                ],
+                [
+                  -0.2725205,
+                  39.566609
+                ],
+                [
+                  -0.4325512,
+                  39.566609
+                ],
+                [
+                  -0.4325512,
+                  39.2784496
+                ]
+              ]
+            ]
+          },
+          "time_mode": "historical",
+          "time_end": "2024-11-30T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2",
+            "landsat-c2-l1"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "time_start": "2024-11-01T00:00:00+00:00"
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6895,
+      "output_tokens": 139,
+      "duration_ms": 51904
+    },
+    {
+      "id": "pune-lake-last-summer",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "NDWI Water Body Detector over lakes near Pune during last summer.",
+        "draft": {
+          "name": "NDWI Water Body Detector, Pune",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  73.6945071,
+                  18.3613738
+                ],
+                [
+                  74.0145071,
+                  18.3613738
+                ],
+                [
+                  74.0145071,
+                  18.6813738
+                ],
+                [
+                  73.6945071,
+                  18.6813738
+                ],
+                [
+                  73.6945071,
+                  18.3613738
+                ]
+              ]
+            ]
+          },
+          "time_mode": "historical",
+          "time_end": "2026-08-31T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2",
+            "landsat-c2-l1"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "time_start": "2026-06-01T00:00:00+00:00"
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 2,
+      "input_tokens": 6872,
+      "output_tokens": 137,
+      "duration_ms": 69097
+    },
+    {
+      "id": "ahmedabad-heat-last-month",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "draft",
+        "message": "Land Surface Temperature Detector over Ahmedabad last month.",
+        "draft": {
+          "name": "Land Surface Temperature Detector, Ahmedabad",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  72.4200568,
+                  22.8615374
+                ],
+                [
+                  72.7400568,
+                  22.8615374
+                ],
+                [
+                  72.7400568,
+                  23.1815374
+                ],
+                [
+                  72.4200568,
+                  23.1815374
+                ],
+                [
+                  72.4200568,
+                  22.8615374
+                ]
+              ]
+            ]
+          },
+          "time_mode": "historical",
+          "time_end": "2026-08-31T23:59:59+00:00",
+          "collection_slugs": [
+            "landsat-c2-l2"
+          ],
+          "models": [
+            {
+              "model_slug": "lst-detector"
+            }
+          ],
+          "time_start": "2026-08-01T00:00:00+00:00"
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6846,
+      "output_tokens": 131,
+      "duration_ms": 51579
+    },
+    {
+      "id": "bangkok-water-last-year",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "NDWI Water Body Detector over Bangkok for last year.",
+        "draft": {
+          "name": "NDWI Water Body Detector, Bangkok",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  100.3278772,
+                  13.2191019
+                ],
+                [
+                  100.9386039,
+                  13.2191019
+                ],
+                [
+                  100.9386039,
+                  13.9551693
+                ],
+                [
+                  100.3278772,
+                  13.9551693
+                ],
+                [
+                  100.3278772,
+                  13.2191019
+                ]
+              ]
+            ]
+          },
+          "time_mode": "historical",
+          "time_end": "2025-12-31T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2",
+            "landsat-c2-l1"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "time_start": "2025-01-01T00:00:00+00:00"
+        },
+        "warnings": [],
+        "tool_calls": 4,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0
+      },
+      "error": null,
+      "calls": 4,
+      "cached": 4,
+      "input_tokens": 9352,
+      "output_tokens": 158,
+      "duration_ms": 66965
+    },
+    {
+      "id": "hyderabad-lakes-past-90-days",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "NDWI Water Body Detector over Hussain Sagar for the past 90 days.",
+        "draft": {
+          "name": "NDWI Water Body Detector, Hussain Sagar",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  78.4623422,
+                  17.4085927
+                ],
+                [
+                  78.4867613,
+                  17.4085927
+                ],
+                [
+                  78.4867613,
+                  17.4373612
+                ],
+                [
+                  78.4623422,
+                  17.4373612
+                ],
+                [
+                  78.4623422,
+                  17.4085927
+                ]
+              ]
+            ]
+          },
+          "time_mode": "historical",
+          "time_end": "2026-09-14T12:00:00+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2",
+            "landsat-c2-l1"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "time_start": "2026-06-16T00:00:00+00:00"
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6802,
+      "output_tokens": 143,
+      "duration_ms": 45862
+    },
+    {
+      "id": "kutch-alert-new-water",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "NDWI Water Body Detector over Rann of Kutch daily until December 2026.",
+        "draft": {
+          "name": "NDWI Water Body Detector, Rann of Kutch",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  69.0076436,
+                  23.095231
+                ],
+                [
+                  71.394241,
+                  23.095231
+                ],
+                [
+                  71.394241,
+                  24.4858576
+                ],
+                [
+                  69.0076436,
+                  24.4858576
+                ],
+                [
+                  69.0076436,
+                  23.095231
+                ]
+              ]
+            ]
+          },
+          "time_mode": "recurring",
+          "time_end": "2026-12-31T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2",
+            "landsat-c2-l1"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "poll_interval_minutes": 1440
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0,
+        "interval": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6795,
+      "output_tokens": 139,
+      "duration_ms": 46636
+    },
+    {
+      "id": "dubai-heat-next-3-months",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "draft",
+        "message": "Land Surface Temperature Detector over Dubai every day for the next 3 months until 14 December 2026.",
+        "draft": {
+          "name": "Land Surface Temperature Detector, Dubai",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  54.7153981,
+                  24.6230801
+                ],
+                [
+                  56.205298,
+                  24.6230801
+                ],
+                [
+                  56.205298,
+                  25.5250676
+                ],
+                [
+                  54.7153981,
+                  25.5250676
+                ],
+                [
+                  54.7153981,
+                  24.6230801
+                ]
+              ]
+            ]
+          },
+          "time_mode": "recurring",
+          "time_end": "2026-12-14T23:59:59+00:00",
+          "collection_slugs": [
+            "landsat-c2-l2"
+          ],
+          "models": [
+            {
+              "model_slug": "lst-detector"
+            }
+          ],
+          "poll_interval_minutes": 1440
+        },
+        "warnings": [],
+        "tool_calls": 4,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0,
+        "interval": 1.0
+      },
+      "error": null,
+      "calls": 4,
+      "cached": 4,
+      "input_tokens": 9754,
+      "output_tokens": 169,
+      "duration_ms": 78263
+    },
+    {
+      "id": "manila-starting-now",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "NDWI Water Body Detector over Manila every 12 hours until mid November 2026.",
+        "draft": {
+          "name": "NDWI Water Body Detector, Manila",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  120.7917034,
+                  14.5508249
+                ],
+                [
+                  121.0261685,
+                  14.5508249
+                ],
+                [
+                  121.0261685,
+                  14.6395473
+                ],
+                [
+                  120.7917034,
+                  14.6395473
+                ],
+                [
+                  120.7917034,
+                  14.5508249
+                ]
+              ]
+            ]
+          },
+          "time_mode": "recurring",
+          "time_end": "2026-11-15T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2",
+            "landsat-c2-l1"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "poll_interval_minutes": 720
+        },
+        "warnings": [],
+        "tool_calls": 4,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0,
+        "interval": 1.0
+      },
+      "error": null,
+      "calls": 4,
+      "cached": 4,
+      "input_tokens": 9279,
+      "output_tokens": 161,
+      "duration_ms": 64593
+    },
+    {
+      "id": "lahore-heat-june-2025",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "Land Surface Temperature Detector over Lahore for June 2025 to check for unusually high temperatures.",
+        "draft": {
+          "name": "Land Surface Temperature Detector, Lahore",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  74.1541829,
+                  31.4056822
+                ],
+                [
+                  74.4741829,
+                  31.4056822
+                ],
+                [
+                  74.4741829,
+                  31.7256822
+                ],
+                [
+                  74.1541829,
+                  31.7256822
+                ],
+                [
+                  74.1541829,
+                  31.4056822
+                ]
+              ]
+            ]
+          },
+          "time_mode": "historical",
+          "time_end": "2025-06-30T23:59:59+00:00",
+          "collection_slugs": [
+            "landsat-c2-l2"
+          ],
+          "models": [
+            {
+              "model_slug": "lst-detector"
+            }
+          ],
+          "time_start": "2025-06-01T00:00:00+00:00"
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6861,
+      "output_tokens": 141,
+      "duration_ms": 48745
+    },
+    {
+      "id": "brahmaputra-hourly",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "draft",
+        "message": "NDWI Water Body Detector over Guwahati for rising water every hour until the end of October.",
+        "draft": {
+          "name": "NDWI Water Body Detector, Guwahati",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  91.593943,
+                  26.0205978
+                ],
+                [
+                  91.913943,
+                  26.0205978
+                ],
+                [
+                  91.913943,
+                  26.3405978
+                ],
+                [
+                  91.593943,
+                  26.3405978
+                ],
+                [
+                  91.593943,
+                  26.0205978
+                ]
+              ]
+            ]
+          },
+          "time_mode": "recurring",
+          "time_end": "2026-10-31T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2",
+            "landsat-c2-l1"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "poll_interval_minutes": 60
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0,
+        "interval": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6868,
+      "output_tokens": 137,
+      "duration_ms": 49691
+    },
+    {
+      "id": "sylhet-floods-2022",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "NDWI Water Body Detector over Sylhet Division, Bangladesh for June 2022.",
+        "draft": {
+          "name": "NDWI Water Body Detector, Sylhet Division",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  90.9277778,
+                  23.9743765
+                ],
+                [
+                  92.4994356,
+                  23.9743765
+                ],
+                [
+                  92.4994356,
+                  25.2073482
+                ],
+                [
+                  90.9277778,
+                  25.2073482
+                ],
+                [
+                  90.9277778,
+                  23.9743765
+                ]
+              ]
+            ]
+          },
+          "time_mode": "historical",
+          "time_end": "2022-06-30T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2",
+            "landsat-c2-l1"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "time_start": "2022-06-01T00:00:00+00:00"
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6880,
+      "output_tokens": 143,
+      "duration_ms": 52027
+    },
+    {
+      "id": "athens-heat-through-next-summer",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "Land Surface Temperature Detector over Athens weekly through next summer.",
+        "draft": {
+          "name": "Land Surface Temperature Detector, Athens",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  23.5748324,
+                  37.8155648
+                ],
+                [
+                  23.8948324,
+                  37.8155648
+                ],
+                [
+                  23.8948324,
+                  38.1355648
+                ],
+                [
+                  23.5748324,
+                  38.1355648
+                ],
+                [
+                  23.5748324,
+                  37.8155648
+                ]
+              ]
+            ]
+          },
+          "time_mode": "recurring",
+          "time_end": "2027-08-31T23:59:59+00:00",
+          "collection_slugs": [
+            "landsat-c2-l2"
+          ],
+          "models": [
+            {
+              "model_slug": "lst-detector"
+            }
+          ],
+          "poll_interval_minutes": 10080
+        },
+        "warnings": [],
+        "tool_calls": 4,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0,
+        "interval": 1.0
+      },
+      "error": null,
+      "calls": 4,
+      "cached": 4,
+      "input_tokens": 9422,
+      "output_tokens": 156,
+      "duration_ms": 71150
+    },
+    {
+      "id": "riyadh-heat-first-half-2026",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "Land Surface Temperature Detector over Riyadh for the first half of this year.",
+        "draft": {
+          "name": "Land Surface Temperature Detector, Riyadh",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  46.5560104,
+                  24.478916
+                ],
+                [
+                  46.8760104,
+                  24.478916
+                ],
+                [
+                  46.8760104,
+                  24.798916
+                ],
+                [
+                  46.5560104,
+                  24.798916
+                ],
+                [
+                  46.5560104,
+                  24.478916
+                ]
+              ]
+            ]
+          },
+          "time_mode": "historical",
+          "time_end": "2026-06-30T23:59:59+00:00",
+          "collection_slugs": [
+            "landsat-c2-l2"
+          ],
+          "models": [
+            {
+              "model_slug": "lst-detector"
+            }
+          ],
+          "time_start": "2026-01-01T00:00:00+00:00"
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6851,
+      "output_tokens": 135,
+      "duration_ms": 50057
+    },
+    {
+      "id": "kolkata-floods-till-diwali",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "NDWI Water Body Detector over Kolkata for waterlogging every day until 8 November 2026.",
+        "draft": {
+          "name": "NDWI Water Body Detector, Kolkata",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  88.2421429,
+                  22.4335321
+                ],
+                [
+                  88.4589549,
+                  22.4335321
+                ],
+                [
+                  88.4589549,
+                  22.6325679
+                ],
+                [
+                  88.2421429,
+                  22.6325679
+                ],
+                [
+                  88.2421429,
+                  22.4335321
+                ]
+              ]
+            ]
+          },
+          "time_mode": "recurring",
+          "time_end": "2026-11-08T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2",
+            "landsat-c2-l1"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "poll_interval_minutes": 1440
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0,
+        "interval": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6858,
+      "output_tokens": 138,
+      "duration_ms": 50293
+    },
+    {
+      "id": "bhopal-lake-spring",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "NDWI Water Body Detector over Upper Lake, Bhopal from March to May 2026.",
+        "draft": {
+          "name": "NDWI Water Body Detector, Upper Lake",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  77.2657213,
+                  23.2083721
+                ],
+                [
+                  77.3981795,
+                  23.2083721
+                ],
+                [
+                  77.3981795,
+                  23.2716407
+                ],
+                [
+                  77.2657213,
+                  23.2716407
+                ],
+                [
+                  77.2657213,
+                  23.2083721
+                ]
+              ]
+            ]
+          },
+          "time_mode": "historical",
+          "time_end": "2026-05-31T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2",
+            "landsat-c2-l1"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "time_start": "2026-03-01T00:00:00+00:00"
+        },
+        "warnings": [],
+        "tool_calls": 4,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0
+      },
+      "error": null,
+      "calls": 4,
+      "cached": 4,
+      "input_tokens": 9422,
+      "output_tokens": 172,
+      "duration_ms": 64729
+    },
+    {
+      "id": "springfield-which",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "question",
+        "message": "Do you mean Springfield in Illinois, Massachusetts, Missouri, Ohio, or Oregon?",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 4,
+        "repairs": 1,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_when_needed": 1.0
+      },
+      "error": null,
+      "calls": 4,
+      "cached": 4,
+      "input_tokens": 9860,
+      "output_tokens": 209,
+      "duration_ms": 82885
+    },
+    {
+      "id": "hyderabad-which",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "message": "Do you mean Hyderabad in Telangana, India or in Sindh, Pakistan?",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 5,
+        "repairs": 1,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_when_needed": 1.0
+      },
+      "error": null,
+      "calls": 5,
+      "cached": 5,
+      "input_tokens": 13211,
+      "output_tokens": 242,
+      "duration_ms": 126278
+    },
+    {
+      "id": "georgia-which",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "message": "Do you mean Georgia the country or Georgia the U.S. state, and what should I look for there?",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 5,
+        "repairs": 1,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_when_needed": 1.0
+      },
+      "error": null,
+      "calls": 5,
+      "cached": 5,
+      "input_tokens": 12289,
+      "output_tokens": 234,
+      "duration_ms": 94497
+    },
+    {
+      "id": "portland-which",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "message": "What should I look for in Portland? I can run: NDWI Water Body Detector, Land Surface Temperature Detector, Ship Counter.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_when_needed": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6984,
+      "output_tokens": 117,
+      "duration_ms": 60313
+    },
+    {
+      "id": "victoria-which",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "message": "Do you mean Victoria, Australia; Victoria, Capital Regional District, British Columbia, Canada; Victoria County, Texas, United States; or Victoria, Victoria County, Texas, United States?",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 4,
+        "repairs": 1,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_when_needed": 1.0
+      },
+      "error": null,
+      "calls": 4,
+      "cached": 4,
+      "input_tokens": 9796,
+      "output_tokens": 229,
+      "duration_ms": 98820
+    },
+    {
+      "id": "chennai-what",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "draft",
+        "message": "Ship Counter over Chennai every day until December 2026.",
+        "draft": {
+          "name": "Ship Counter, Chennai",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  80.1401875,
+                  12.8519771
+                ],
+                [
+                  80.3328982,
+                  12.8519771
+                ],
+                [
+                  80.3328982,
+                  13.235158
+                ],
+                [
+                  80.1401875,
+                  13.235158
+                ],
+                [
+                  80.1401875,
+                  12.8519771
+                ]
+              ]
+            ]
+          },
+          "time_mode": "recurring",
+          "time_end": "2026-12-31T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2"
+          ],
+          "models": [
+            {
+              "model_slug": "ship-counter"
+            }
+          ],
+          "poll_interval_minutes": 1440
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 0.0,
+        "valid": 1.0,
+        "asks_when_needed": 0.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6819,
+      "output_tokens": 127,
+      "duration_ms": 44528
+    },
+    {
+      "id": "nairobi-what",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "NDWI Water Body Detector over Nairobi for 2025.",
+        "draft": {
+          "name": "NDWI Water Body Detector, Nairobi",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  36.6647016,
+                  -1.4448822
+                ],
+                [
+                  37.1048735,
+                  -1.4448822
+                ],
+                [
+                  37.1048735,
+                  -1.1606749
+                ],
+                [
+                  36.6647016,
+                  -1.1606749
+                ],
+                [
+                  36.6647016,
+                  -1.4448822
+                ]
+              ]
+            ]
+          },
+          "time_mode": "historical",
+          "time_end": "2025-12-31T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2",
+            "landsat-c2-l1"
+          ],
+          "models": [
+            {
+              "model_slug": "ndwi-water-detector"
+            }
+          ],
+          "time_start": "2025-01-01T00:00:00+00:00"
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 0.0,
+        "valid": 1.0,
+        "asks_when_needed": 0.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6871,
+      "output_tokens": 136,
+      "duration_ms": 57087
+    },
+    {
+      "id": "mumbai-when",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "question",
+        "message": "When would you like to check the water around Mumbai? For example, last month, this year so far, or a specific date range?",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 4,
+        "repairs": 1,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_when_needed": 1.0
+      },
+      "error": null,
+      "calls": 4,
+      "cached": 4,
+      "input_tokens": 9286,
+      "output_tokens": 196,
+      "duration_ms": 95542
+    },
+    {
+      "id": "cairo-heat-when",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "message": "When would you like to see the heat in Cairo? For example, during a specific period like last month or next summer?",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 4,
+        "repairs": 1,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_when_needed": 1.0
+      },
+      "error": null,
+      "calls": 4,
+      "cached": 4,
+      "input_tokens": 9397,
+      "output_tokens": 198,
+      "duration_ms": 80455
+    },
+    {
+      "id": "my-farm-where",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "message": "I couldn't find your farm. Could you specify the name and region of your farm, like 'Farm in Punjab, India'?",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_when_needed": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6756,
+      "output_tokens": 119,
+      "duration_ms": 43456
+    },
+    {
+      "id": "the-city-where",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "message": "Which city do you mean? I can look for land surface temperature in places like San Jose, Nagpur, or Accra.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 4,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_when_needed": 1.0
+      },
+      "error": null,
+      "calls": 4,
+      "cached": 4,
+      "input_tokens": 9197,
+      "output_tokens": 138,
+      "duration_ms": 52607
+    },
+    {
+      "id": "somewhere-coastal",
+      "tags": [],
+      "output": {
+        "kind": "question",
+        "message": "Do you mean a specific coastal location, such as a city or region? I can run the NDWI Water Body Detector to detect surface water extent, but I need a specific place name and region to begin.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 4,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "asks_when_needed": 1.0
+      },
+      "error": null,
+      "calls": 4,
+      "cached": 4,
+      "input_tokens": 9215,
+      "output_tokens": 156,
+      "duration_ms": 57209
+    },
+    {
+      "id": "pune-heat-sentinel",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "cannot",
+        "message": "The Land Surface Temperature Detector requires thermal infrared data, which is not available in Sentinel-2. Only Landsat collections provide the necessary thermal bands.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 4,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": "models"
+      },
+      "scores": {
+        "kind": 1.0
+      },
+      "error": null,
+      "calls": 4,
+      "cached": 4,
+      "input_tokens": 9590,
+      "output_tokens": 144,
+      "duration_ms": 67387
+    },
+    {
+      "id": "assam-watch-past-end",
+      "tags": [],
+      "output": {
+        "kind": "cannot",
+        "message": "A recurring workflow cannot end in the past or today; it must end in the future. The requested end date of 31 January 2026 is before today (14 September 2026), so it is invalid.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 5,
+        "repairs": 1,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": "models"
+      },
+      "scores": {
+        "kind": 1.0
+      },
+      "error": null,
+      "calls": 5,
+      "cached": 5,
+      "input_tokens": 12150,
+      "output_tokens": 283,
+      "duration_ms": 89690
+    },
+    {
+      "id": "delhi-heat-future",
+      "tags": [],
+      "output": {
+        "kind": "cannot",
+        "message": "The Land Surface Temperature Detector can measure surface temperature, but it only analyzes existing satellite scenes, not future dates like December 2027. Therefore, it cannot provide data for that time.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": "models"
+      },
+      "scores": {
+        "kind": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6846,
+      "output_tokens": 131,
+      "duration_ms": 54022
+    },
+    {
+      "id": "punjab-vegetation",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "cannot",
+        "message": "None of the available detectors can monitor crop health. The Land Surface Temperature Detector, which might be relevant, requires thermal infrared data that is not available in the supported collections.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 4,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": "models"
+      },
+      "scores": {
+        "kind": 1.0
+      },
+      "error": null,
+      "calls": 4,
+      "cached": 4,
+      "input_tokens": 9398,
+      "output_tokens": 150,
+      "duration_ms": 84304
+    },
+    {
+      "id": "mumbai-ships",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "Ship Counter over Mumbai harbour during 2025.",
+        "draft": {
+          "name": "Ship Counter, Mumbai",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  72.7092035,
+                  18.894999
+                ],
+                [
+                  73.0292035,
+                  18.894999
+                ],
+                [
+                  73.0292035,
+                  19.214999
+                ],
+                [
+                  72.7092035,
+                  19.214999
+                ],
+                [
+                  72.7092035,
+                  18.894999
+                ]
+              ]
+            ]
+          },
+          "time_mode": "historical",
+          "time_end": "2025-12-31T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2"
+          ],
+          "models": [
+            {
+              "model_slug": "ship-counter"
+            }
+          ],
+          "time_start": "2025-01-01T00:00:00+00:00"
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6778,
+      "output_tokens": 131,
+      "duration_ms": 44574
+    },
+    {
+      "id": "delhi-air-quality",
+      "tags": [],
+      "output": {
+        "kind": "cannot",
+        "message": "None of the detectors measure air pollution. You can monitor water bodies, land surface temperature, or ship activity, but not air pollution.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": "models"
+      },
+      "scores": {
+        "kind": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6828,
+      "output_tokens": 119,
+      "duration_ms": 43176
+    },
+    {
+      "id": "chennai-radar",
+      "tags": [],
+      "output": {
+        "kind": "cannot",
+        "message": "The NDWI Water Body Detector does not work with Sentinel-1 radar data. Sentinel-1 is a radar satellite, and the detector is designed for optical imagery like Sentinel-2 or Landsat.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 4,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": "models"
+      },
+      "scores": {
+        "kind": 1.0
+      },
+      "error": null,
+      "calls": 4,
+      "cached": 4,
+      "input_tokens": 9530,
+      "output_tokens": 157,
+      "duration_ms": 66207
+    },
+    {
+      "id": "alps-snow",
+      "tags": [],
+      "output": {
+        "kind": "cannot",
+        "message": "None of the detectors measure snow cover. You can monitor water bodies, land surface temperature, or ships, but not snow.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": "models"
+      },
+      "scores": {
+        "kind": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6841,
+      "output_tokens": 117,
+      "duration_ms": 47592
+    },
+    {
+      "id": "tokyo-night-lights",
+      "tags": [],
+      "output": {
+        "kind": "cannot",
+        "message": "Tokyo is about 3,126,439 km\u00b2, over the 500,000 km\u00b2 limit. Try a city, district or lake.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": "area"
+      },
+      "scores": {
+        "kind": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6763,
+      "output_tokens": 109,
+      "duration_ms": 43014
+    },
+    {
+      "id": "dhaka-water-with-lst",
+      "tags": [],
+      "output": {
+        "kind": "cannot",
+        "message": "The Land Surface Temperature Detector does not detect flood water; it measures surface temperature. To detect flood water, use the NDWI Water Body Detector.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": "models"
+      },
+      "scores": {
+        "kind": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6924,
+      "output_tokens": 122,
+      "duration_ms": 58453
+    },
+    {
+      "id": "africa-daily",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "cannot",
+        "message": "Africa is about 30,153,621 km\u00b2, over the 500,000 km\u00b2 limit. Try a city, district or lake.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": "area"
+      },
+      "scores": {
+        "kind": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6760,
+      "output_tokens": 107,
+      "duration_ms": 37850
+    },
+    {
+      "id": "india-heat-2024",
+      "tags": [],
+      "output": {
+        "kind": "cannot",
+        "message": "India is about 9,843,927 km\u00b2, over the 500,000 km\u00b2 limit. Try a city, district or lake.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": "area"
+      },
+      "scores": {
+        "kind": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6765,
+      "output_tokens": 105,
+      "duration_ms": 47498
+    },
+    {
+      "id": "brazil-water",
+      "tags": [],
+      "output": {
+        "kind": "cannot",
+        "message": "Brazil is about 21,172,290 km\u00b2, over the 500,000 km\u00b2 limit. Try a city, district or lake.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": "area"
+      },
+      "scores": {
+        "kind": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6766,
+      "output_tokens": 108,
+      "duration_ms": 42997
+    },
+    {
+      "id": "algeria-heat-weekly",
+      "tags": [
+        "quick"
+      ],
+      "output": {
+        "kind": "cannot",
+        "message": "The area of Algeria is too large for the Land Surface Temperature Detector to process.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": "models"
+      },
+      "scores": {
+        "kind": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6894,
+      "output_tokens": 109,
+      "duration_ms": 45863
+    },
+    {
+      "id": "whole-planet",
+      "tags": [],
+      "output": {
+        "kind": "cannot",
+        "message": "No place was found for 'whole planet'. You must specify a specific location to scan for floods.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": "area"
+      },
+      "scores": {
+        "kind": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6771,
+      "output_tokens": 112,
+      "duration_ms": 47698
+    },
+    {
+      "id": "australia-2023",
+      "tags": [],
+      "output": {
+        "kind": "cannot",
+        "message": "Australia is about 46,217,201 km\u00b2, over the 500,000 km\u00b2 limit. Try a city, district or lake.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": "area"
+      },
+      "scores": {
+        "kind": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6757,
+      "output_tokens": 109,
+      "duration_ms": 56644
+    },
+    {
+      "id": "canada-floods",
+      "tags": [],
+      "output": {
+        "kind": "cannot",
+        "message": "Canada is about 20,992,273 km\u00b2, over the 500,000 km\u00b2 limit. Try a city, district or lake.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": "area"
+      },
+      "scores": {
+        "kind": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6757,
+      "output_tokens": 105,
+      "duration_ms": 42044
+    },
+    {
+      "id": "usa-heat",
+      "tags": [],
+      "output": {
+        "kind": "cannot",
+        "message": "United States is about 336,531,605 km\u00b2, over the 500,000 km\u00b2 limit. Try a city, district or lake.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": "area"
+      },
+      "scores": {
+        "kind": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6775,
+      "output_tokens": 108,
+      "duration_ms": 43920
+    },
+    {
+      "id": "singapore-ships-daily",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "Ship Counter around Singapore every day until the end of the year.",
+        "draft": {
+          "name": "Ship Counter, Singapore",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  103.5655797,
+                  1.1303611
+                ],
+                [
+                  104.5712337,
+                  1.1303611
+                ],
+                [
+                  104.5712337,
+                  1.5143183
+                ],
+                [
+                  103.5655797,
+                  1.5143183
+                ],
+                [
+                  103.5655797,
+                  1.1303611
+                ]
+              ]
+            ]
+          },
+          "time_mode": "recurring",
+          "time_end": "2026-12-31T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2"
+          ],
+          "models": [
+            {
+              "model_slug": "ship-counter"
+            }
+          ],
+          "poll_interval_minutes": 1440
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0,
+        "interval": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6825,
+      "output_tokens": 125,
+      "duration_ms": 59165
+    },
+    {
+      "id": "rotterdam-ships-march",
+      "tags": [],
+      "output": {
+        "kind": "draft",
+        "message": "Ship Counter over Rotterdam for March 2025.",
+        "draft": {
+          "name": "Ship Counter, Rotterdam",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  4.3793095,
+                  51.8616672
+                ],
+                [
+                  4.6018092,
+                  51.8616672
+                ],
+                [
+                  4.6018092,
+                  51.9942735
+                ],
+                [
+                  4.3793095,
+                  51.9942735
+                ],
+                [
+                  4.3793095,
+                  51.8616672
+                ]
+              ]
+            ]
+          },
+          "time_mode": "historical",
+          "time_end": "2025-03-31T23:59:59+00:00",
+          "collection_slugs": [
+            "sentinel-2-l2a",
+            "landsat-c2-l2"
+          ],
+          "models": [
+            {
+              "model_slug": "ship-counter"
+            }
+          ],
+          "time_start": "2025-03-01T00:00:00+00:00"
+        },
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": null
+      },
+      "scores": {
+        "kind": 1.0,
+        "valid": 1.0,
+        "asks_needlessly": 0.0,
+        "mode": 1.0,
+        "dates": 1.0,
+        "area": 1.0,
+        "model": 1.0,
+        "collections": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 2,
+      "input_tokens": 6874,
+      "output_tokens": 132,
+      "duration_ms": 64819
+    },
+    {
+      "id": "chennai-ships-mss",
+      "tags": [],
+      "output": {
+        "kind": "cannot",
+        "message": "The Ship Counter does not work with Landsat Collection 2 Level-1 (MSS) as it lacks the required blue band. Use Landsat Collection 2 Level-2 instead.",
+        "draft": null,
+        "warnings": [],
+        "tool_calls": 3,
+        "repairs": 0,
+        "gave_up": false,
+        "estimate": null,
+        "problems": [],
+        "stopped_at": "models"
+      },
+      "scores": {
+        "kind": 1.0
+      },
+      "error": null,
+      "calls": 3,
+      "cached": 3,
+      "input_tokens": 6950,
+      "output_tokens": 131,
+      "duration_ms": 56155
+    }
+  ],
+  "tag": null
+}

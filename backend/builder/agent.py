@@ -13,7 +13,7 @@ from builder.catalogue import Catalogue
 from builder.estimate import Estimator, can_estimate
 from builder.guardrails import MAX_AREA_KM2, WARN_AREA_KM2, WARN_HISTORY_DAYS
 from domain.storage import format_bytes
-from builder.places import Places
+from builder.places import Place, Places
 from builder.tools import Toolbox
 from llm import Client, Tool, ToolCall, load_prompt
 from llm.structured import every_field_required
@@ -238,9 +238,10 @@ def settle(
     on_step: Callable[[str], None] = lambda _step: None,
 ) -> tuple[Outcome, list[str]]:
     message = answer.message.strip()
+    if answer.kind == "cannot" and message:
+        return _model_refusal(message, toolbox), []
     if answer.kind != "draft":
-        stopped_at = "models" if answer.kind == "cannot" else None
-        return Outcome(kind=answer.kind, message=message, stopped_at=stopped_at), ([] if message else [f"a {answer.kind} needs a message, the question to ask or the reason"])
+        return Outcome(kind=answer.kind, message=message), ([] if message else [f"a {answer.kind} needs a message, the question to ask or the reason"])
 
     problems = []
     place = toolbox.found.get(answer.place_id or "")
@@ -248,14 +249,7 @@ def settle(
         problems.append(f"place_id {answer.place_id!r} isn't one that find_place returned")
     elif place.area_km2 > MAX_AREA_KM2:
         # a guardrail, not a mistake to fix: no draft, whatever the model makes of it
-        return (
-            Outcome(
-                kind="cannot",
-                message=f"{place.name.split(',')[0]} is about {place.area_km2:,.0f} km², over the {MAX_AREA_KM2:,} km² limit. Try a city, district or lake.",
-                stopped_at="area",
-            ),
-            [],
-        )
+        return _too_large(place), []
 
     model = catalogue.models.get(answer.model_slug or "")
     if model is None:
@@ -324,6 +318,28 @@ def settle(
             [],
         )
     return Outcome(kind="draft", message=message, draft=payload, warnings=warnings, estimate=estimate.as_result()), []
+
+
+def _too_large(place: Place) -> Outcome:
+    return Outcome(
+        kind="cannot",
+        message=f"{place.name.split(',')[0]} is about {place.area_km2:,.0f} km², over the {MAX_AREA_KM2:,} km² limit. Try a city, district or lake.",
+        stopped_at="area",
+    )
+
+
+_ABOUT_SIZE = re.compile(r"\b(too (large|big)|size|km²|km2)\b", re.IGNORECASE)
+_ABOUT_FINDING = re.compile(r"\b(find|found|locate|location|place|named|name)\b", re.IGNORECASE)
+
+
+def _model_refusal(message: str, toolbox: Toolbox) -> Outcome:
+    found = toolbox.last_found
+    if found is not None and not found and _ABOUT_FINDING.search(message):
+        return Outcome(kind="cannot", message=message, stopped_at="area")
+    too_large = [place for place in found or [] if place.area_km2 > MAX_AREA_KM2]
+    if too_large and _ABOUT_SIZE.search(message):
+        return _too_large(too_large[0])
+    return Outcome(kind="cannot", message=message, stopped_at="models")
 
 
 def _day(value: str | None) -> date | None:

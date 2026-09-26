@@ -39,6 +39,7 @@ class Toolbox:
         self.found: dict[str, Place] = {}
         # place_id -> every distinct place its lookup matched, for the ids whose name is ambiguous
         self.ambiguous: dict[str, list[Place]] = {}
+        self.last_found: list[Place] | None = None
 
     def call(self, name: str, arguments: dict) -> dict:
         handlers = {"list_models": self.list_models, "list_collections": self.list_collections, "find_place": self.find_place}
@@ -48,6 +49,19 @@ class Toolbox:
             return handlers[name](**arguments)
         except TypeError as exc:
             return {"error": f"wrong arguments for {name}: {exc}"}
+
+    def _search(self, query: str) -> tuple[list[Place], str]:
+        places = self.places.search(query)
+        words = query.split()
+        for i in range(1, len(words)):
+            if places:
+                break
+            if words[i][:1].isupper():
+                shorter = " ".join(words[i:])
+                places = self.places.search(shorter)
+                if places:
+                    return places, shorter
+        return places, query
 
     def list_models(self) -> dict:
         return {"models": [{"slug": m.slug, "name": m.name, "description": m.description} for m in self.catalogue.models.values()]}
@@ -66,9 +80,10 @@ class Toolbox:
 
     def find_place(self, query: str) -> dict:
         try:
-            places = self.places.search(query)
+            places, matched = self._search(query)
         except Exception as exc:  # noqa: BLE001 — a failed lookup is something the model can say, not a crash
             return {"error": f"the place lookup failed: {exc}"}
+        self.last_found = places
         if not places:
             # a geocoder wants a name, not a description, and a small model otherwise gives up here
             return {"places": [], "note": f"nothing found for {query!r}. Try again with only the place's name and region, like 'Lake Titicaca, Peru', leaving out words like near or around."}
@@ -82,6 +97,8 @@ class Toolbox:
                 self.ambiguous[place_id] = distinct
             matches.append({"place_id": place_id, "name": place.name, "type": place.kind, "area_km2": round(place.area_km2), "too_large": place.area_km2 > MAX_AREA_KM2})
         result = {"places": matches}
+        if matched != query:
+            result["matched"] = f"nothing was found for {query!r}, these are for {matched!r}"
         if len(distinct) > 1:
             result["different_places_with_this_name"] = [p.name for p in distinct]
         elif len(matches) > 1:

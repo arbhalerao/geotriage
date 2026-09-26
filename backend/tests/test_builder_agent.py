@@ -111,6 +111,43 @@ def test_a_place_over_the_limit_is_refused_whatever_the_model_drafts():
     assert outcome.stopped_at == "area"
 
 
+def test_a_refusal_after_a_lookup_that_found_nothing_stops_at_the_area():
+    fake = FakeClient([calls(("find_place", {"query": "Atlantis"})), calls(("answer", {"kind": "cannot", "message": "I couldn't find Atlantis."}))])
+    outcome = build([{"role": "user", "content": "Water in Atlantis in 2024"}], fake, CATALOGUE, PLACES)
+    assert (outcome.kind, outcome.message, outcome.stopped_at) == ("cannot", "I couldn't find Atlantis.", "area")
+
+
+def test_a_refusal_over_a_place_too_large_reads_like_the_guardrail():
+    fake = FakeClient([calls(("find_place", {"query": "Africa"})), calls(("answer", {"kind": "cannot", "message": "The area of Africa is too large."}))])
+    outcome = build([{"role": "user", "content": "Watch Africa"}], fake, CATALOGUE, PLACES)
+    assert (outcome.kind, outcome.stopped_at) == ("cannot", "area")
+    assert "over the 500,000 km² limit" in outcome.message
+
+
+def test_a_country_refused_for_its_size_reads_like_the_guardrail_even_beside_a_small_namesake():
+    fake = FakeClient([calls(("find_place", {"query": "Algeria"})), calls(("answer", {"kind": "cannot", "message": "The area of Algeria is too large to process."}))])
+    outcome = build([{"role": "user", "content": "Heat across Algeria weekly"}], fake, CATALOGUE, PLACES)
+    assert (outcome.stopped_at, outcome.message.startswith("Algeria is about")) == ("area", True)
+
+
+def test_a_refusal_about_the_detectors_comes_first_even_for_a_place_too_large():
+    fake = FakeClient([calls(("find_place", {"query": "Africa"})), calls(("answer", {"kind": "cannot", "message": "None of the detectors measure night lights."}))])
+    outcome = build([{"role": "user", "content": "Night lights across Africa"}], fake, CATALOGUE, PLACES)
+    assert (outcome.message, outcome.stopped_at) == ("None of the detectors measure night lights.", "models")
+
+
+def test_a_refusal_about_the_detectors_comes_first_even_for_a_place_not_found():
+    fake = FakeClient([calls(("find_place", {"query": "Atlantis"})), calls(("answer", {"kind": "cannot", "message": "No detector measures snow."}))])
+    outcome = build([{"role": "user", "content": "Snow in Atlantis"}], fake, CATALOGUE, PLACES)
+    assert outcome.stopped_at == "models"
+
+
+def test_a_refusal_after_finding_the_place_is_about_the_detectors():
+    fake = FakeClient([look_up(), calls(("answer", {"kind": "cannot", "message": "No detector measures air quality."}))])
+    outcome = build([{"role": "user", "content": "Air quality in Dhaka in 2024"}], fake, CATALOGUE, PLACES)
+    assert (outcome.message, outcome.stopped_at) == ("No detector measures air quality.", "models")
+
+
 def test_a_question_passes_through_with_its_message():
     fake = FakeClient([calls(("find_place", {"query": "Springfield"})), calls(("answer", {"kind": "question", "message": "Which Springfield?"}))])
     outcome = build([{"role": "user", "content": "Water in Springfield"}], fake, CATALOGUE, PLACES)
