@@ -19,6 +19,8 @@ class EstimateCreate(BaseModel):
 
     @model_validator(mode="after")
     def valid_as_a_workflow(self) -> "EstimateCreate":
+        if self.time_mode != "historical":
+            raise ValueError("only a historical workflow's storage can be estimated")
         WorkflowCreate(name="estimate", **self.model_dump())
         return self
 

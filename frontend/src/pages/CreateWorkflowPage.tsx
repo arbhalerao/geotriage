@@ -216,7 +216,7 @@ export default function CreateWorkflowPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     // Enter in a field submits a form even with the button disabled, so the same rule is checked here
-    if (!canSubmit || !storage.estimated || drafting) return;
+    if (!canSubmit || !storage.ready || drafting) return;
     const wf = await createWorkflow.mutateAsync({
       name,
       geometry: drawnGeometry,
@@ -243,22 +243,20 @@ export default function CreateWorkflowPage() {
 
   const formVisible = start === "manual" || (start === "describe" && hasDraft);
 
-  // everything the data a workflow stages depends on, once all of it is set; sorted, so ticking collections in another order is no change
   const estimateRequest = useMemo<EstimateRequest | null>(() => {
-    if (!drawnGeometry || !datesValid || !selectedModelSlug || selectedCollections.length === 0) return null;
+    if (mode !== "historical" || !drawnGeometry || !datesValid || !selectedModelSlug || selectedCollections.length === 0) return null;
     return {
       geometry: drawnGeometry,
-      time_mode: mode,
-      time_start: mode === "historical" ? startOfDayUtc(timeStart) : null,
+      time_mode: "historical",
+      time_start: startOfDayUtc(timeStart),
       time_end: startOfDayUtc(timeEnd),
-      poll_interval_minutes: mode === "recurring" ? pollInterval : null,
       collection_slugs: [...selectedCollections].sort(),
       models: [{ model_slug: selectedModelSlug }],
     };
-  }, [drawnGeometry, datesValid, selectedModelSlug, selectedCollections, mode, timeStart, timeEnd, pollInterval]);
+  }, [drawnGeometry, datesValid, selectedModelSlug, selectedCollections, mode, timeStart, timeEnd]);
 
   // creating waits for a current estimate, so nobody creates a workflow without seeing what it stages
-  const storage = useStorageEstimate(estimateRequest, estimateSeed, storagePolicy, setStoragePolicy);
+  const storage = useStorageEstimate(estimateRequest, estimateSeed, storagePolicy, setStoragePolicy, mode === "recurring");
 
   const canSubmit =
     !!name && !!drawnGeometry && datesValid &&
@@ -487,7 +485,7 @@ export default function CreateWorkflowPage() {
         </FormSection>
 
         {/* 5 storage: what the workflow keeps, and an estimate of it, the same in both ways of starting */}
-        <FormSection title="Storage estimate">
+        <FormSection title="Storage estimate and policy">
           {storage.body}
         </FormSection>
 
@@ -501,7 +499,7 @@ export default function CreateWorkflowPage() {
         {/* only with the form: before a way in is chosen there is nothing to create or cancel */}
         {formVisible && (
           <div className="flex gap-3">
-            <button type="submit" disabled={createWorkflow.isPending || !canSubmit || !storage.estimated || drafting}
+            <button type="submit" disabled={createWorkflow.isPending || !canSubmit || !storage.ready || drafting}
               className="px-6 py-2 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white rounded text-sm font-medium transition-colors">
               {createWorkflow.isPending ? "Creating…" : "Create workflow"}
             </button>
@@ -509,7 +507,7 @@ export default function CreateWorkflowPage() {
               className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded text-sm transition-colors">
               Cancel
             </button>
-            {canSubmit && !storage.estimated && <span className="text-xs text-gray-500 self-center">Estimate storage first</span>}
+            {canSubmit && !storage.ready && <span className="text-xs text-gray-500 self-center">Estimate storage first</span>}
             {!canSubmit && name && (
               <span className="text-xs text-gray-500 self-center">
                 {!drawnGeometry

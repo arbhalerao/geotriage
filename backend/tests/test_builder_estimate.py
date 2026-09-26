@@ -6,7 +6,7 @@ import pytest
 
 from builder.agent import build
 from builder.catalogue import Catalogue
-from builder.estimate import ArchiveEstimator, Estimate, search_window
+from builder.estimate import ArchiveEstimator, Estimate, can_estimate
 from builder.places import RecordedPlaces
 from domain.storage import bbox_area_km2, format_bytes, staged_bytes
 from evals.runner import EVALS_DIR
@@ -39,10 +39,10 @@ class Fixed:
 
 
 def estimate(staged_gb: float, free_gb: float = 100, scenes: int = 40, capped: bool = False) -> Estimate:
-    return Estimate(scenes=scenes, staged_bytes=int(staged_gb * GB), free_bytes=int(free_gb * GB), capped=capped, from_past_window=False)
+    return Estimate(scenes=scenes, staged_bytes=int(staged_gb * GB), free_bytes=int(free_gb * GB), capped=capped)
 
 
-def draft_for(estimator) -> "Outcome":
+def draft_for(estimator, **answer) -> "Outcome":
     replies = [
         Reply("", tool_calls=[ToolCall("find_place", {"query": "Dhaka, Bangladesh"})]),
         Reply(
@@ -59,6 +59,7 @@ def draft_for(estimator) -> "Outcome":
                         "model_slug": "ndwi-water-detector",
                         "collection_slugs": [],
                         "message": "Water over Dhaka for 2024.",
+                        **answer,
                     },
                 )
             ],
@@ -119,16 +120,16 @@ def test_staged_size_is_scenes_times_rasters_times_pixels():
     assert staged_bytes(scenes=10, area_km2=100, resolution_m=10, rasters=3) == 10 * 3 * 1_000_000 * 4
 
 
-def test_a_recurring_draft_is_counted_over_the_same_length_of_time_before_today():
-    now = datetime(2026, 9, 14, 12, tzinfo=timezone.utc)
-    start, end, from_past = search_window({"time_mode": "recurring", "time_end": "2026-10-14T12:00:00+00:00"}, now)
-    assert (start, end, from_past) == (datetime(2026, 8, 15, 12, tzinfo=timezone.utc), now, True)
+def test_a_recurring_draft_is_never_estimated():
+    fixed = Fixed(estimate(staged_gb=1))
+    outcome = draft_for(fixed, time_mode="recurring", time_start=None, time_end="2026-12-31", poll_interval_minutes=1440)
+    assert (outcome.kind, outcome.estimate, fixed.asked) == ("draft", None, [])
 
 
-def test_a_historical_draft_is_counted_over_its_own_range():
-    now = datetime(2026, 9, 14, tzinfo=timezone.utc)
-    start, end, from_past = search_window({"time_mode": "historical", "time_start": "2024-01-01T00:00:00+00:00", "time_end": "2024-12-31T23:59:59+00:00"}, now)
-    assert (start.year, end.year, from_past) == (2024, 2024, False)
+def test_only_a_historical_workflow_can_be_estimated():
+    assert can_estimate({"time_mode": "historical"}) and not can_estimate({"time_mode": "recurring"})
+    with pytest.raises(ValueError, match="only a historical"):
+        ArchiveEstimator(session_factory=lambda: None).estimate({"time_mode": "recurring", "geometry": {}, "time_end": "2026-12-31"}, datetime(2026, 9, 14, tzinfo=timezone.utc))
 
 
 def test_sizes_read_naturally():

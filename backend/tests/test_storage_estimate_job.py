@@ -85,3 +85,8 @@ def test_an_estimate_is_refused_for_a_workflow_that_couldn_t_be_created():
         request(time_end="2099-01-01T00:00:00Z")
     with pytest.raises(ValidationError):
         request(collection_slugs=[])
+
+
+def test_a_recurring_workflow_is_not_estimated():
+    with pytest.raises(ValidationError, match="only a historical"):
+        request(time_mode="recurring", time_start=None, time_end="2099-01-01T00:00:00Z", poll_interval_minutes=1440)

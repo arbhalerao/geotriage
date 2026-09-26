@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field, ValidationError, field_validator
 from api.schemas import workflow as workflow_schema
 from builder import calendar
 from builder.catalogue import Catalogue
-from builder.estimate import Estimator
+from builder.estimate import Estimator, can_estimate
 from builder.guardrails import MAX_AREA_KM2, WARN_AREA_KM2, WARN_HISTORY_DAYS
 from domain.storage import format_bytes
 from builder.places import Places
@@ -305,7 +305,7 @@ def settle(
         warnings.append(f"{place.name.split(',')[0]} is a large area, about {place.area_km2:,.0f} km², so runs will be slow")
     if answer.time_mode == "historical" and (end - start).days > WARN_HISTORY_DAYS:
         warnings.append(f"{(end - start).days} days is a long period, so runs will be slow")
-    if estimator is None:
+    if estimator is None or not can_estimate(payload):
         return Outcome(kind="draft", message=message, draft=payload, warnings=warnings), []
 
     on_step("Estimating storage needs")

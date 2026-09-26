@@ -19,7 +19,6 @@ class Estimate:
     staged_bytes: int
     free_bytes: int
     capped: bool
-    from_past_window: bool
     input_bytes: int = 0
     result_bytes: int = 0
 
@@ -35,11 +34,8 @@ class Estimator(Protocol):
     def estimate(self, draft: dict, now: datetime) -> Estimate: ...
 
 
-def search_window(draft: dict, now: datetime) -> tuple[datetime, datetime, bool]:
-    end = datetime.fromisoformat(draft["time_end"])
-    if draft["time_mode"] == "historical":
-        return datetime.fromisoformat(draft["time_start"]), end, False
-    return now - (end - now), now, True
+def can_estimate(draft: dict) -> bool:
+    return draft.get("time_mode") == "historical"
 
 
 class ArchiveEstimator:
@@ -58,9 +54,11 @@ class ArchiveEstimator:
 
             self._session_factory = get_session
 
+        if not can_estimate(draft):
+            raise ValueError("only a historical workflow's storage can be estimated")
         area = shape(draft["geometry"])
         area_km2 = bbox_area_km2(area.bounds)
-        start, end, from_past = search_window(draft, now)
+        start, end = datetime.fromisoformat(draft["time_start"]), datetime.fromisoformat(draft["time_end"])
 
         free = free_bytes(self._scratch)
         limit_bytes = MAX_SHARE_OF_FREE_DISK * free
@@ -104,7 +102,6 @@ class ArchiveEstimator:
             staged_bytes=total_bytes,
             free_bytes=free,
             capped=capped,
-            from_past_window=from_past,
             input_bytes=input_total,
             result_bytes=result_total,
         )

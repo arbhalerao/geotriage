@@ -31,8 +31,9 @@ export function useStorageEstimate(
   seed: { result: StorageEstimateResult; token: number } | null,
   policy: StoragePolicy,
   onPolicyChange: (policy: StoragePolicy) => void,
-): { body: ReactNode; estimated: boolean } {
-  const signature = request ? JSON.stringify({ ...request, poll_interval_minutes: null }) : null;
+  recurring: boolean,
+): { body: ReactNode; ready: boolean } {
+  const signature = request ? JSON.stringify(request) : null;
   const [estimated, setEstimated] = useState<{ result: StorageEstimateResult; signature: string | null } | null>(null);
   const [pending, setPending] = useState<{ id: string; signature: string } | null>(null);
   const [failed, setFailed] = useState<{ message: string; signature: string | null } | null>(null);
@@ -67,51 +68,52 @@ export function useStorageEstimate(
     }
   }
 
-  const result = shown?.result;
-  const pastDays = request ? Math.max(1, Math.round((Date.parse(request.time_end) - Date.now()) / 86_400_000)) : 0;
+  const result = recurring ? undefined : shown?.result;
+  const choosable = recurring || !!result;
   const body = (
     <div className="space-y-3">
-      {/* always there, blank until estimated, so nothing jumps when it fills in; each box below carries its own size */}
-      <Rows
-        rows={[
-          ["Scenes", result ? `${atLeast(String(result.scenes), result.capped)}${result.from_past_window ? ` in the past ${pastDays} days` : ""}` : "-"],
-        ]}
-      />
-      {/* a policy is chosen against its size, so the boxes stay grey, with none selected, until there is an estimate;
+      {recurring ? (
+        <p className="text-sm text-gray-500">Storage can't be estimated for a recurring workflow. Each run checks it before downloading.</p>
+      ) : (
+        <Rows rows={[["Scenes", result ? atLeast(String(result.scenes), result.capped) : "-"]]} />
+      )}
+      {/* the boxes stay grey, with none selected, until they can be chosen;
           then the selected one takes its colour, red for the policy that keeps the most through to green for the least */}
-      <div role="radiogroup" aria-label="Storage policy" aria-disabled={!result} className="grid grid-cols-1 sm:grid-cols-5 gap-2">
+      <div role="radiogroup" aria-label="Storage policy" aria-disabled={!choosable} className="grid grid-cols-1 sm:grid-cols-5 gap-2">
         {POLICIES.map((p) => {
-          const selected = !!result && policy === p.value;
+          const selected = choosable && policy === p.value;
           return (
             <label
               key={p.value}
               className={`flex flex-col px-3 py-2 rounded border text-left transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand-500 ${
-                !result
+                !choosable
                   ? "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
                   : selected
                     ? `${p.selected} text-gray-900 cursor-pointer`
                     : "border-gray-300 bg-white text-gray-600 hover:border-gray-400 cursor-pointer"
               }`}
             >
-              <input type="radio" name="storage_policy" value={p.value} checked={selected} disabled={!result} onChange={() => onPolicyChange(p.value)} className="sr-only" />
+              <input type="radio" name="storage_policy" value={p.value} checked={selected} disabled={!choosable} onChange={() => onPolicyChange(p.value)} className="sr-only" />
               <span className="text-xs font-medium">{p.label}</span>
-              <span className={`text-xs mt-0.5 flex-1 ${result ? "text-gray-500" : "text-gray-400"}`}>{p.description}</span>
+              <span className={`text-xs mt-0.5 flex-1 ${choosable ? "text-gray-500" : "text-gray-400"}`}>{p.description}</span>
               {result && <span className="text-xs text-gray-900 mt-2">{keptSize(keptBytes(p.kept, result), result.capped)}</span>}
             </label>
           );
         })}
       </div>
-      {error && <p className="text-sm text-red-700">{error}</p>}
-      <button
-        type="button"
-        onClick={estimate}
-        disabled={!request || working}
-        className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded text-sm transition-colors disabled:opacity-50 disabled:hover:bg-gray-100 disabled:cursor-not-allowed"
-      >
-        {working ? "Estimating…" : "Estimate"}
-      </button>
+      {!recurring && error && <p className="text-sm text-red-700">{error}</p>}
+      {!recurring && (
+        <button
+          type="button"
+          onClick={estimate}
+          disabled={!request || working}
+          className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded text-sm transition-colors disabled:opacity-50 disabled:hover:bg-gray-100 disabled:cursor-not-allowed"
+        >
+          {working ? "Estimating…" : "Estimate"}
+        </button>
+      )}
     </div>
   );
 
-  return { body, estimated: !!shown };
+  return { body, ready: recurring || !!shown };
 }
